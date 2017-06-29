@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd"
+	default-lazy-init="true" default-init-method="init">
+
+	<!-- Storm config -->
+	<bean id="stormConfig" class="org.springframework.beans.factory.config.MapFactoryBean">
+		<property name="sourceMap">
+			<map>
+				<entry key="kafka.brokerZkStr" value="hdp-demo.org:2181" />
+				<entry key="kafka.brokerZkPath" value="/brokers" />
+				<entry key="kafka.offset.zkServers">
+					<list>
+						<value>hdp-demo.org</value>
+					</list>
+				</entry>
+				<entry key="kafka.offset.zkPort" value="2181" />
+				<entry key="kafka.offset.zkRoot" value="/kafka-offset" />
+			</map>
+		</property>
+	</bean>
+
+	<!-- <bean id="metricsKafkaClient" class="cn.com.dnt.bds.ap.storm.util.KafkaClient"> 
+		<property name="properties"> <props> <prop key="bootstrap.servers">hadoop001.icccuat.com:6667</prop> 
+		<prop key="value.serializer">org.apache.kafka.common.serialization.ByteArraySerializer</prop> 
+		<prop key="key.serializer">org.apache.kafka.common.serialization.ByteArraySerializer</prop> 
+		</props> </property> <property name="defaultTopic" value="metrics" /> </bean> -->
+
+<!-- 	<bean id="hbaseHelper" class="com.hand.bdss.common.hbase.HBaseHelper" /> -->
+
+<!-- 	<bean id="searchHelper" class="com.hand.bdss.common.es.SearchHelper"> -->
+<!-- 		<property name="serverClusterName" value="hdp_es_cluster" /> -->
+<!-- 		<property name="serverPort" value="9300" /> -->
+<!-- 		<property name="serverAddr" value="hadoop004.edcs.org,hadoop005.edcs.org,hadoop006.edcs.org" /> -->
+<!-- 	</bean> -->
+
+<!-- 	<bean id="hbaseService" class="com.hand.bdss.storm.service.HBaseService"> -->
+<!-- 		<property name="hbaseHelper" ref="hbaseHelper" /> -->
+<!-- 	</bean> -->
+
+<!-- 	<bean id="infomationHandler" class="com.hand.bdss.storm.service.InfomationHandler" /> -->
+
+<!-- 	<bean id="searchService" class="com.hand.bdss.storm.service.SearchService"> -->
+<!-- 		<property name="searchHelper" ref="searchHelper" /> -->
+<!-- 	</bean> -->
+
+<!-- 	<bean id="documentProcess" class="com.hand.bdss.storm.service.DocumentProcess" /> -->
+
+</beans>
