@@ -47,6 +47,7 @@ public class CacheService {
 
     private static Vector<String> ruleIds = new Vector<String>();
 
+
     private static ScriptCacheMapping scriptCacheMapping = new ScriptCacheMapping();
 
     private static volatile boolean inited = false;
@@ -54,6 +55,24 @@ public class CacheService {
     private static volatile Thread updateThread;
 
     private String ruleConfigVersion;
+
+    private String processInfoJson;//存流程信息
+
+    public String getProcessInfoJson() {
+        return processInfoJson;
+    }
+
+    public void setProcessInfoJson(String processInfoJson) {
+        this.processInfoJson = processInfoJson;
+    }
+
+    public String getRuleConfigVersion() {
+        return ruleConfigVersion;
+    }
+
+    public void setRuleConfigVersion(String ruleConfigVersion) {
+        this.ruleConfigVersion = ruleConfigVersion;
+    }
 
     public void setProxyJedisPool(ProxyJedisPool proxyJedisPool) {
         this.proxyJedisPool = proxyJedisPool;
@@ -156,7 +175,7 @@ public class CacheService {
             jedis = proxyJedisPool.getResource();
 
             String newMdProcessjosn = jedis.get(RedisCacheKey.getMDProcessKey());
-            if (!StringUtils.equals(newMdProcessjosn, ruleConfigVersion)) {
+            if (!StringUtils.equals(newMdProcessjosn, processInfoJson)) {
                 //Preconditions.checkNotNull(data);
                 ruleConfig.clear();
                 ruleIds.clear();
@@ -183,6 +202,7 @@ public class CacheService {
                             ruleConfigCapalist.add(ruleConfCapacity);
                             cacheScript(ruleConfCapacity.getStepId(), ruleConfCapacity.getRuleScript(), ruleConfCapacity.getHashcode());
                             ruleIds.add(ruleConfCapacity.getStepId());
+
                         }
                         if (mDstepInfo.getScriptCurrent() != null) {
                             RuleConfig ruleConfCurrent = new RuleConfig();
@@ -236,16 +256,16 @@ public class CacheService {
                         }
                         /***将每个流程的各种场景放入scriptcachemapping*/
                     }
-                    ruleConfig.put("电流场景id", ruleConfigCurrlist);
-                    ruleConfig.put("容量场景id", ruleConfigCapalist);
-                    ruleConfig.put("能量场景id", ruleConfigEnerlist);
-                    ruleConfig.put("温度场景id", ruleConfigTemplist);
-                    ruleConfig.put("时间场景id", ruleConfigTimelist);
-                    ruleConfig.put("电压场景id", ruleConfigVoltlist);
+                    ruleConfig.put(mDprocessInfo.getProcessID()+"curr", ruleConfigCurrlist);
+                    ruleConfig.put(mDprocessInfo.getProcessID()+"capa", ruleConfigCapalist);
+                    ruleConfig.put(mDprocessInfo.getProcessID()+"enger", ruleConfigEnerlist);
+                    ruleConfig.put(mDprocessInfo.getProcessID()+"temp", ruleConfigTemplist);
+                    ruleConfig.put(mDprocessInfo.getProcessID()+"time", ruleConfigTimelist);
+                    ruleConfig.put(mDprocessInfo.getProcessID()+"volt", ruleConfigVoltlist);
 
                 }
             }
-            ruleConfigVersion = newMdProcessjosn ;
+            processInfoJson = newMdProcessjosn ;
         } finally {
             JedisFactory.closeQuietly(jedis);
         }

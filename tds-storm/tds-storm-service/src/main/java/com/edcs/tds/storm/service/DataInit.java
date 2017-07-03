@@ -36,7 +36,7 @@ public class DataInit {
 		}
 		TestingMessage testingMsg = JsonUtils.toObject(json, TestingMessage.class);
 		//设置测试数据的唯一id
-		String msgId = testingMsg.getRemark()+testingMsg.getSetpName()+testingMsg.getSequenceId();
+		String msgId = testingMsg.getRemark()+testingMsg.getStepName()+testingMsg.getSequenceId();
 		testingMsg.setMessageId(msgId);
 		
 		JSONObject jsonObject = JsonUtils.parseObject(json);

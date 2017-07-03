@@ -19,6 +19,7 @@ import groovy.lang.Script;
 
 public class RuleCalc {
 
+
     protected final Logger logger = LoggerFactory.getLogger(RuleCalc.class);
 
     public void TestingRuleCalc(ScriptExecutor scriptExecutor, ExecuteContext executeContext, Binding shellContext,
@@ -63,5 +64,6 @@ public class RuleCalc {
         // TODO 将结果集写入Redis缓存
 
     }
+
 
 }
