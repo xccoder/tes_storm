@@ -113,7 +113,7 @@ public class CalcBolt extends BaseRichBolt {
 			DataInit.initShellContext(testingMessage, enginecommonservice, executeContext, shellContext);
 			
 			// 开始规则计算匹配
-			ConcurrentMap<Long, List<RuleConfig>> ruleConfig = CacheService.getRuleConfig();
+			ConcurrentMap<String, List<RuleConfig>> ruleConfig = CacheService.getRuleConfig();
 			// 核心计算
 			calc.TestingRuleCalc(scriptExecutor, executeContext, shellContext, ruleConfig);
 

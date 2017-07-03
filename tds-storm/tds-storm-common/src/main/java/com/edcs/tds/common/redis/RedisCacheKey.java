@@ -2,6 +2,7 @@ package com.edcs.tds.common.redis;
 
 import com.google.common.base.Joiner;
 
+import org.omg.CORBA.PUBLIC_MEMBER;
 import redis.clients.util.SafeEncoder;
 
 public class RedisCacheKey {
@@ -19,4 +20,16 @@ public class RedisCacheKey {
 		return joiner.join(ROOT, CONFIG, "RULE", "VERSION");
 	}
 
+	public static String getMDProcessKey(){
+		return joiner.join(ROOT,CONFIG,"PRO");
+	}
+	public static String getMDStepKey(){
+		return joiner.join(ROOT,CONFIG,"STEP");
+	}
+	public static String getMDSubKey(){
+		return joiner.join(ROOT,CONFIG,"SUB");
+	}
+	public static String getMDChangeKey(){
+		return joiner.join(ROOT,CONFIG,"CHANGE");
+	}
 }

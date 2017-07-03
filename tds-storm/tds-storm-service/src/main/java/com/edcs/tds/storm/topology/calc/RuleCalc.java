@@ -21,12 +21,12 @@ public class RuleCalc {
 	protected final Logger logger = LoggerFactory.getLogger(RuleCalc.class);
 
 	public void TestingRuleCalc(ScriptExecutor scriptExecutor, ExecuteContext executeContext, Binding shellContext,
-			ConcurrentMap<Long, List<RuleConfig>> ruleConfig) {
+			ConcurrentMap<String, List<RuleConfig>> ruleConfig) {
 
 		TestingMessage testingMessage = executeContext.getTestingMessage();
 		int matchedCount = 0;
 
-		for (Entry<Long, List<RuleConfig>> entry : ruleConfig.entrySet()) {
+		for (Entry<String, List<RuleConfig>> entry : ruleConfig.entrySet()) {
 
 			for (RuleConfig rule : entry.getValue()) {
 				boolean ruleIsMatched = false;
@@ -34,8 +34,8 @@ public class RuleCalc {
 				long executeBeginTime = System.currentTimeMillis();
 
 				try {
-					// 从缓存中取对应ID的规则脚本开始执行
-					Script script = CacheService.getScriptCache().get(rule.getId()).getRight();
+					// 从缓存中取对应ID的规则脚本开始执行				     //流程工步ID
+					Script script = CacheService.getScriptCache().get(rule.getId()).getRight();//ScriptCacheMapping中;
 					script.setBinding(shellContext);
 					ruleIsMatched = scriptExecutor.execute(script);
 				} catch (Exception e) {
