@@ -157,7 +157,11 @@ public class CacheService {
 
             String newMdProcessjosn = jedis.get(RedisCacheKey.getMDProcessKey());
             if (!StringUtils.equals(newMdProcessjosn, ruleConfigVersion)) {
+                //Preconditions.checkNotNull(data);
+                ruleConfig.clear();
+                ruleIds.clear();
                 List<MDprocessInfo> mDprocessInfos = JsonUtils.toArray(newMdProcessjosn, MDprocessInfo.class);
+
                 for (MDprocessInfo mDprocessInfo : mDprocessInfos) {
 
                     List<MDStepInfo> mdStepInfos = mDprocessInfo.getMdStepInfoList();
@@ -177,6 +181,8 @@ public class CacheService {
                             ruleConfCapacity.setRuleGroup(1L);
                             ruleConfCapacity.setStepId(mDstepInfo.getRemark() + String.valueOf(mDstepInfo.getStepId()));
                             ruleConfigCapalist.add(ruleConfCapacity);
+                            cacheScript(ruleConfCapacity.getStepId(), ruleConfCapacity.getRuleScript(), ruleConfCapacity.getHashcode());
+                            ruleIds.add(ruleConfCapacity.getStepId());
                         }
                         if (mDstepInfo.getScriptCurrent() != null) {
                             RuleConfig ruleConfCurrent = new RuleConfig();
@@ -185,6 +191,8 @@ public class CacheService {
                             ruleConfCurrent.setRuleGroup(1L);
                             ruleConfCurrent.setStepId(mDstepInfo.getRemark() + String.valueOf(mDstepInfo.getStepId()));
                             ruleConfigCurrlist.add(ruleConfCurrent);
+                            cacheScript(ruleConfCurrent.getStepId(), ruleConfCurrent.getRuleScript(), ruleConfCurrent.getHashcode());
+                            ruleIds.add(ruleConfCurrent.getStepId());
                         }
                         if (mDstepInfo.getScriptTemperature() != null) {
                             RuleConfig ruleConfTemperature = new RuleConfig();
@@ -193,6 +201,8 @@ public class CacheService {
                             ruleConfTemperature.setRuleGroup(1L);
                             ruleConfTemperature.setStepId(mDstepInfo.getRemark() + String.valueOf(mDstepInfo.getStepId()));
                             ruleConfigTemplist.add(ruleConfTemperature);
+                            cacheScript(ruleConfTemperature.getStepId(), ruleConfTemperature.getRuleScript(), ruleConfTemperature.getHashcode());
+                            ruleIds.add(ruleConfTemperature.getStepId());
                         }
                         if (mDstepInfo.getScriptTime() != null) {
                             RuleConfig ruleConfTime = new RuleConfig();
@@ -201,6 +211,8 @@ public class CacheService {
                             ruleConfTime.setRuleGroup(1L);
                             ruleConfTime.setStepId(mDstepInfo.getRemark() + String.valueOf(mDstepInfo.getStepId()));
                             ruleConfigTimelist.add(ruleConfTime);
+                            cacheScript(ruleConfTime.getStepId(), ruleConfTime.getRuleScript(), ruleConfTime.getHashcode());
+                            ruleIds.add(ruleConfTime.getStepId());
                         }
                         if (mDstepInfo.getScriptVoltage() != null) {
                             RuleConfig ruleConfVoltage = new RuleConfig();
@@ -209,6 +221,8 @@ public class CacheService {
                             ruleConfVoltage.setStepId(mDstepInfo.getRemark() + String.valueOf(mDstepInfo.getStepId()));
                             ruleConfVoltage.setRuleGroup(1L);
                             ruleConfigVoltlist.add(ruleConfVoltage);
+                            cacheScript(ruleConfVoltage.getStepId(), ruleConfVoltage.getRuleScript(), ruleConfVoltage.getHashcode());
+                            ruleIds.add(ruleConfVoltage.getStepId());
                         }
                         if (mDstepInfo.getScriptEnergy() != null && mDstepInfo.getScriptEnergy().equals("")) {
                             RuleConfig ruleConfEnergy = new RuleConfig();
@@ -217,6 +231,8 @@ public class CacheService {
                             ruleConfEnergy.setRuleGroup(1L);
                             ruleConfEnergy.setStepId(mDstepInfo.getRemark() + String.valueOf(mDstepInfo.getStepId()));
                             ruleConfigEnerlist.add(ruleConfEnergy);
+                            cacheScript(ruleConfEnergy.getStepId(), ruleConfEnergy.getRuleScript(), ruleConfEnergy.getHashcode());
+                            ruleIds.add(ruleConfEnergy.getStepId());
                         }
                         /***将每个流程的各种场景放入scriptcachemapping*/
                     }
@@ -233,8 +249,9 @@ public class CacheService {
         } finally {
             JedisFactory.closeQuietly(jedis);
         }
-        try {
-         /*   jedis = proxyJedisPool.getResource();
+       /* try {
+
+         *//*   jedis = proxyJedisPool.getResource();
             String newVersion = jedis.get(RedisCacheKey.getRuleConfigVersion());
             // 判断Redis中的缓存版本，如果有新版本则更新数据
             if (!StringUtils.equals(newVersion, ruleConfigVersion)) {
@@ -263,10 +280,10 @@ public class CacheService {
 
                 logger.info("Update IDV topology rule config cache...");
             }
-            ruleConfigVersion = newVersion;*/
+            ruleConfigVersion = newVersion;*//*
         } finally {
             JedisFactory.closeQuietly(jedis);
-        }
+        }*/
     }
 
     /**

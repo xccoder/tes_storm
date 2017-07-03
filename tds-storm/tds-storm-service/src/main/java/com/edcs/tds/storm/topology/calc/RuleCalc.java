@@ -36,7 +36,7 @@ public class RuleCalc {
 
 				try {
 					// 从缓存中取对应ID的规则脚本开始执行				     //流程工步ID
-					Script script = CacheService.getScriptCache().get(rule.getId()).getRight();//ScriptCacheMapping中;
+					Script script = CacheService.getScriptCache().get(rule.getStepId()).getRight();//ScriptCacheMapping中;
 					script.setBinding(shellContext);
 					ruleIsMatched = scriptExecutor.execute(script);
 				} catch (Exception e) {
