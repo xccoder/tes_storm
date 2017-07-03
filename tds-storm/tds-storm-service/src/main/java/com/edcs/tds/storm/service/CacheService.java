@@ -77,6 +77,9 @@ public class CacheService {
     public void setProxyJedisPool(ProxyJedisPool proxyJedisPool) {
         this.proxyJedisPool = proxyJedisPool;
     }
+    public ProxyJedisPool getProxyJedisPool() {
+		return proxyJedisPool;
+	}
 
     public static VariableDict getVariableDict() {
         return variableDict.get();
