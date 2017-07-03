@@ -1,9 +1,5 @@
 package com.edcs.tds.storm.model;
 
-import org.omg.CORBA.DataOutputStream;
-import org.omg.CORBA.StringHolder;
-import org.omg.PortableInterceptor.ServerRequestInfo;
-
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -15,7 +11,7 @@ import java.util.List;
 public class MDprocessInfo implements Serializable {
 
     private static final long serialVersionUID = -8747661550591511712L;
-
+    private String handle;
     private String processID;//流程号
     private String site;//1000表示测试的是电芯
     private String remark;//流程文件标识号
@@ -23,6 +19,7 @@ public class MDprocessInfo implements Serializable {
     private String groupName;//组别
     private String sfc;//电芯barcode
     private String engineer;//测试工程师
+    private String packageId;
     private String project;//测试项目
     private String description;//描述
     private String svModel;//model
@@ -61,9 +58,61 @@ public class MDprocessInfo implements Serializable {
     private String constantIRValue;//横阻值
     private String cycleTemperature;//循环温度
     private String storeTemperature;//存储温度
+    private String txStatus;//流程状态
     private Date createDateTime;//创建日期
+    private String createUser;//创建用户
+    private Date modifiedDateTime;//最后修改时间
+    private String modifiedUser;//最后修改用户
     private List<MDStepInfo> mdStepInfoList;//流程下所有工步
     private String rootRemark;
+
+    public String getHandle() {
+        return handle;
+    }
+
+    public void setHandle(String handle) {
+        this.handle = handle;
+    }
+
+    public String getPackageId() {
+        return packageId;
+    }
+
+    public void setPackageId(String packageId) {
+        this.packageId = packageId;
+    }
+
+    public String getTxStatus() {
+        return txStatus;
+    }
+
+    public void setTxStatus(String txStatus) {
+        this.txStatus = txStatus;
+    }
+
+    public String getCreateUser() {
+        return createUser;
+    }
+
+    public void setCreateUser(String createUser) {
+        this.createUser = createUser;
+    }
+
+    public Date getModifiedDateTime() {
+        return modifiedDateTime;
+    }
+
+    public void setModifiedDateTime(Date modifiedDateTime) {
+        this.modifiedDateTime = modifiedDateTime;
+    }
+
+    public String getModifiedUser() {
+        return modifiedUser;
+    }
+
+    public void setModifiedUser(String modifiedUser) {
+        this.modifiedUser = modifiedUser;
+    }
 
     public String getRootRemark() {
         return rootRemark;
