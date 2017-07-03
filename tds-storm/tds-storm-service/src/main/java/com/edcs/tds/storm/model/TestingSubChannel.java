@@ -15,7 +15,7 @@ public class TestingSubChannel implements Serializable {
 	// TODO 补充实际的字段
 	private int sequenceId;//记录序号(每一条数据的序号，一个流程这个记录序号一直在累加)
 	private int cycle;//循环序号（一个流程中工步与工步之间的循环序号。这个序号是有可能出现问题的，需要处理）(后期可能不用这个字段，因为strom系统上线之后可能机器已经在运行了。)
-	private int setpId;//工步序号
+	private int stepId;//工步序号
 	private BigDecimal testTimeDuration;//测试相对时长
 	private BigDecimal voltage;//电压
 	private BigDecimal current;//电流
@@ -42,11 +42,11 @@ public class TestingSubChannel implements Serializable {
 	public void setCycle(int cycle) {
 		this.cycle = cycle;
 	}
-	public int getSetpId() {
-		return setpId;
+	public int getStepId() {
+		return stepId;
 	}
-	public void setSetpId(int setpId) {
-		this.setpId = setpId;
+	public void setStepId(int stepId) {
+		this.stepId = stepId;
 	}
 	public BigDecimal getTestTimeDuration() {
 		return testTimeDuration;
