@@ -4,3 +4,4 @@ tds-storm/
 *.iml
 *.classpath
 *.prefs
+*.class
