@@ -199,7 +199,7 @@ public class CacheService {
                         if (mDstepInfo.getScriptCapacity() != null) {
                             RuleConfig ruleConfCapacity = new RuleConfig();
                             ruleConfCapacity.setRuleScript(mDstepInfo.getScriptCapacity());
-                            ruleConfCapacity.setHashcode(" ");
+                            ruleConfCapacity.setHashcode(mDstepInfo.getScriptCapacityhash());
                             ruleConfCapacity.setRuleGroup(1L);
                             ruleConfCapacity.setStepId(mDstepInfo.getRemark() + String.valueOf(mDstepInfo.getStepId()));
                             ruleConfigCapalist.add(ruleConfCapacity);
@@ -210,7 +210,7 @@ public class CacheService {
                         if (mDstepInfo.getScriptCurrent() != null) {
                             RuleConfig ruleConfCurrent = new RuleConfig();
                             ruleConfCurrent.setRuleScript(mDstepInfo.getScriptCurrent());
-                            ruleConfCurrent.setHashcode(" ");
+                            ruleConfCurrent.setHashcode(mDstepInfo.getScriptCurrenthash());
                             ruleConfCurrent.setRuleGroup(1L);
                             ruleConfCurrent.setStepId(mDstepInfo.getRemark() + String.valueOf(mDstepInfo.getStepId()));
                             ruleConfigCurrlist.add(ruleConfCurrent);
@@ -220,7 +220,7 @@ public class CacheService {
                         if (mDstepInfo.getScriptTemperature() != null) {
                             RuleConfig ruleConfTemperature = new RuleConfig();
                             ruleConfTemperature.setRuleScript(mDstepInfo.getScriptTemperature());
-                            ruleConfTemperature.setHashcode(" ");
+                            ruleConfTemperature.setHashcode(mDstepInfo.getScriptTemperaturehash());
                             ruleConfTemperature.setRuleGroup(1L);
                             ruleConfTemperature.setStepId(mDstepInfo.getRemark() + String.valueOf(mDstepInfo.getStepId()));
                             ruleConfigTemplist.add(ruleConfTemperature);
@@ -230,7 +230,7 @@ public class CacheService {
                         if (mDstepInfo.getScriptTime() != null) {
                             RuleConfig ruleConfTime = new RuleConfig();
                             ruleConfTime.setRuleScript(mDstepInfo.getScriptTime());
-                            ruleConfTime.setHashcode(" ");
+                            ruleConfTime.setHashcode(mDstepInfo.getScriptTimehash());
                             ruleConfTime.setRuleGroup(1L);
                             ruleConfTime.setStepId(mDstepInfo.getRemark() + String.valueOf(mDstepInfo.getStepId()));
                             ruleConfigTimelist.add(ruleConfTime);
@@ -240,7 +240,7 @@ public class CacheService {
                         if (mDstepInfo.getScriptVoltage() != null) {
                             RuleConfig ruleConfVoltage = new RuleConfig();
                             ruleConfVoltage.setRuleScript(mDstepInfo.getScriptVoltage());
-                            ruleConfVoltage.setHashcode(" ");
+                            ruleConfVoltage.setHashcode(mDstepInfo.getScriptVoltagehash());
                             ruleConfVoltage.setStepId(mDstepInfo.getRemark() + String.valueOf(mDstepInfo.getStepId()));
                             ruleConfVoltage.setRuleGroup(1L);
                             ruleConfigVoltlist.add(ruleConfVoltage);
@@ -250,7 +250,7 @@ public class CacheService {
                         if (mDstepInfo.getScriptEnergy() != null && mDstepInfo.getScriptEnergy().equals("")) {
                             RuleConfig ruleConfEnergy = new RuleConfig();
                             ruleConfEnergy.setRuleScript(mDstepInfo.getScriptEnergy());
-                            ruleConfEnergy.setHashcode(" ");
+                            ruleConfEnergy.setHashcode(mDstepInfo.getScriptEnergyhash());
                             ruleConfEnergy.setRuleGroup(1L);
                             ruleConfEnergy.setStepId(mDstepInfo.getRemark() + String.valueOf(mDstepInfo.getStepId()));
                             ruleConfigEnerlist.add(ruleConfEnergy);
