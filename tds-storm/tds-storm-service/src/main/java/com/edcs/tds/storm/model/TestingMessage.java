@@ -1,283 +1,201 @@
 package com.edcs.tds.storm.model;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.sql.Date;
 import java.util.List;
-
+/**
+ * 测试数据的实体类（实时数据）
+ * @author LiQF
+ *
+ */
 public class TestingMessage implements Serializable {
 
 	private static final long serialVersionUID = -7703529162886545641L;
 
 	// TODO 修改为实际的数据类型
-	private String messageId;
+	private String messageId; //<SITE>,<REMARK>,<SFC>,<CATEGORY>,<ALERT_SEQUENCE_NUMBER>
 	private boolean isDebug;
-	private String barcode;
-	private String remark;
-	private String icRange;
-	private String ivRange;
-	private String channelId;
-	private String sequenceId;
-	private Integer cycle;
-	private String setpId;
-	private String setpName;
-	private String testTime;
-	private String volt;
-	private String curr;
-	private String ir;
-	private String temperature;
-	private String ccap;
-	private String dccap;
-	private String ceng;
-	private String dceng;
-	private String absTime;
-	private List<TestingSubChannel> subChannel;
-	private String resourceId;
-	private String dataFlag;
-	private String workType;
-	private Integer businessCycle;
-
+	private String sfc;//电芯号(SFC) barcode
+	private String remark;//流程文件标识号：T3-20160415-1317-246454_DCR_35（测试单号+流程名称+电芯号）要求是全局唯一号
+	private BigDecimal svIcRange;//电流量程：正在进行测试的通道的电流量程。用以作为判异阈值计算输入（通道最大量程）
+	private BigDecimal svIvRange;//电压量程：正在进行测试的通道的电压量程。用以作为判异阈值计算输入
+	private int channelId;//通道号
+	private int sequenceId;//记录序号(每一条数据的序号，一个流程这个记录序号一直在累加)
+	private int cycle;//循环序号（一个流程中工步与工步之间的循环序号。这个序号是有可能出现问题的，需要处理）(后期可能不用这个字段，因为strom系统上线之后可能机器已经在运行了。可能使用  businessCycle)
+	private int setpId;//工步序号
+	private String setpName;//工步名称
+	private BigDecimal testTimeDuration;//测试相对时长
+	private BigDecimal pvVoltage;//电压
+	private BigDecimal pvCurrent;//电流
+	private BigDecimal pvIr;//内阻
+	private BigDecimal pvTemperature;//温度  temperature
+	private BigDecimal pvChargeCapacity;//充电容量  充电容量和放电容量一定有一个为0   ccap
+	private BigDecimal pvDischargeCapacity;//放电容量 dccap
+	private BigDecimal pvChargeEnergy;//充电能量
+	private BigDecimal pvDischargeEnergy;//放电能量 dceng
+	private Date timestamp;//测试绝对时间 absTime
+	private List<TestingSubChannel> subChannel;//辅助通道
+	private String resourceId;//设备号
+	private int pvDataFlag;//数据类型标识,能够表示工步起始点，工步终结点等信息
+	private String pvWorkType;//工作状态。正常情况下标识为正常测试状态。能够标识测试的停止，完成，保护等状态
+	private int businessCycle;//业务循环号。
+	
+	
 	public String getMessageId() {
 		return messageId;
 	}
-
 	public void setMessageId(String messageId) {
 		this.messageId = messageId;
 	}
-
 	public boolean isDebug() {
 		return isDebug;
 	}
-
 	public void setDebug(boolean isDebug) {
 		this.isDebug = isDebug;
 	}
-
-	public String getBarcode() {
-		return barcode;
+	public String getSfc() {
+		return sfc;
 	}
-
-	public void setBarcode(String barcode) {
-		this.barcode = barcode;
+	public void setSfc(String sfc) {
+		this.sfc = sfc;
 	}
-
 	public String getRemark() {
 		return remark;
 	}
-
 	public void setRemark(String remark) {
 		this.remark = remark;
 	}
-
-	public String getIcRange() {
-		return icRange;
+	public BigDecimal getSvIcRange() {
+		return svIcRange;
 	}
-
-	public void setIcRange(String icRange) {
-		this.icRange = icRange;
+	public void setSvIcRange(BigDecimal svIcRange) {
+		this.svIcRange = svIcRange;
 	}
-
-	public String getIvRange() {
-		return ivRange;
+	public BigDecimal getSvIvRange() {
+		return svIvRange;
 	}
-
-	public void setIvRange(String ivRange) {
-		this.ivRange = ivRange;
+	public void setSvIvRange(BigDecimal svIvRange) {
+		this.svIvRange = svIvRange;
 	}
-
-	public String getChannelId() {
+	public int getChannelId() {
 		return channelId;
 	}
-
-	public void setChannelId(String channelId) {
+	public void setChannelId(int channelId) {
 		this.channelId = channelId;
 	}
-
-	public String getSequenceId() {
+	public int getSequenceId() {
 		return sequenceId;
 	}
-
-	public void setSequenceId(String sequenceId) {
+	public void setSequenceId(int sequenceId) {
 		this.sequenceId = sequenceId;
 	}
-
-	public Integer getCycle() {
+	public int getCycle() {
 		return cycle;
 	}
-
-	public void setCycle(Integer cycle) {
+	public void setCycle(int cycle) {
 		this.cycle = cycle;
 	}
-
-	public String getSetpId() {
+	public int getSetpId() {
 		return setpId;
 	}
-
-	public void setSetpId(String setpId) {
+	public void setSetpId(int setpId) {
 		this.setpId = setpId;
 	}
-
 	public String getSetpName() {
 		return setpName;
 	}
-
 	public void setSetpName(String setpName) {
 		this.setpName = setpName;
 	}
-
-	public String getTestTime() {
-		return testTime;
+	public BigDecimal getTestTimeDuration() {
+		return testTimeDuration;
 	}
-
-	public void setTestTime(String testTime) {
-		this.testTime = testTime;
+	public void setTestTimeDuration(BigDecimal testTimeDuration) {
+		this.testTimeDuration = testTimeDuration;
 	}
-
-	public String getVolt() {
-		return volt;
+	public BigDecimal getPvVoltage() {
+		return pvVoltage;
 	}
-
-	public void setVolt(String volt) {
-		this.volt = volt;
+	public void setPvVoltage(BigDecimal pvVoltage) {
+		this.pvVoltage = pvVoltage;
 	}
-
-	public String getCurr() {
-		return curr;
+	public BigDecimal getPvCurrent() {
+		return pvCurrent;
 	}
-
-	public void setCurr(String curr) {
-		this.curr = curr;
+	public void setPvCurrent(BigDecimal pvCurrent) {
+		this.pvCurrent = pvCurrent;
 	}
-
-	public String getIr() {
-		return ir;
+	public BigDecimal getPvIr() {
+		return pvIr;
 	}
-
-	public void setIr(String ir) {
-		this.ir = ir;
+	public void setPvIr(BigDecimal pvIr) {
+		this.pvIr = pvIr;
 	}
-
-	public String getTemperature() {
-		return temperature;
+	public BigDecimal getPvTemperature() {
+		return pvTemperature;
 	}
-
-	public void setTemperature(String temperature) {
-		this.temperature = temperature;
+	public void setPvTemperature(BigDecimal pvTemperature) {
+		this.pvTemperature = pvTemperature;
 	}
-
-	public String getCcap() {
-		return ccap;
+	public BigDecimal getPvChargeCapacity() {
+		return pvChargeCapacity;
 	}
-
-	public void setCcap(String ccap) {
-		this.ccap = ccap;
+	public void setPvChargeCapacity(BigDecimal pvChargeCapacity) {
+		this.pvChargeCapacity = pvChargeCapacity;
 	}
-
-	public String getDccap() {
-		return dccap;
+	public BigDecimal getPvDischargeCapacity() {
+		return pvDischargeCapacity;
 	}
-
-	public void setDccap(String dccap) {
-		this.dccap = dccap;
+	public void setPvDischargeCapacity(BigDecimal pvDischargeCapacity) {
+		this.pvDischargeCapacity = pvDischargeCapacity;
 	}
-
-	public String getCeng() {
-		return ceng;
+	public BigDecimal getPvChargeEnergy() {
+		return pvChargeEnergy;
 	}
-
-	public void setCeng(String ceng) {
-		this.ceng = ceng;
+	public void setPvChargeEnergy(BigDecimal pvChargeEnergy) {
+		this.pvChargeEnergy = pvChargeEnergy;
 	}
-
-	public String getDceng() {
-		return dceng;
+	public BigDecimal getPvDischargeEnergy() {
+		return pvDischargeEnergy;
 	}
-
-	public void setDceng(String dceng) {
-		this.dceng = dceng;
+	public void setPvDischargeEnergy(BigDecimal pvDischargeEnergy) {
+		this.pvDischargeEnergy = pvDischargeEnergy;
 	}
-
-	public String getAbsTime() {
-		return absTime;
+	public Date getTimestamp() {
+		return timestamp;
 	}
-
-	public void setAbsTime(String absTime) {
-		this.absTime = absTime;
+	public void setTimestamp(Date timestamp) {
+		this.timestamp = timestamp;
 	}
-
 	public List<TestingSubChannel> getSubChannel() {
 		return subChannel;
 	}
-
 	public void setSubChannel(List<TestingSubChannel> subChannel) {
 		this.subChannel = subChannel;
 	}
-
 	public String getResourceId() {
 		return resourceId;
 	}
-
 	public void setResourceId(String resourceId) {
 		this.resourceId = resourceId;
 	}
-
-	public String getDataFlag() {
-		return dataFlag;
+	public int getPvDataFlag() {
+		return pvDataFlag;
 	}
-
-	public void setDataFlag(String dataFlag) {
-		this.dataFlag = dataFlag;
+	public void setPvDataFlag(int pvDataFlag) {
+		this.pvDataFlag = pvDataFlag;
 	}
-
-	public String getWorkType() {
-		return workType;
+	public String getPvWorkType() {
+		return pvWorkType;
 	}
-
-	public void setWorkType(String workType) {
-		this.workType = workType;
+	public void setPvWorkType(String pvWorkType) {
+		this.pvWorkType = pvWorkType;
 	}
-
-	public Integer getBusinessCycle() {
+	public int getBusinessCycle() {
 		return businessCycle;
 	}
-
-	public void setBusinessCycle(Integer businessCycle) {
+	public void setBusinessCycle(int businessCycle) {
 		this.businessCycle = businessCycle;
 	}
-
-	public TestingMessage() {
-		super();
-	}
-
-	public TestingMessage(String messageId, boolean isDebug, String barcode, String remark, String icRange,
-			String ivRange, String channelId, String sequenceId, Integer cycle, String setpId, String setpName,
-			String testTime, String volt, String curr, String ir, String temperature, String ccap, String dccap,
-			String ceng, String dceng, String absTime, List<TestingSubChannel> subChannel, String resourceId,
-			String dataFlag, String workType) {
-		super();
-		this.messageId = messageId;
-		this.isDebug = isDebug;
-		this.barcode = barcode;
-		this.remark = remark;
-		this.icRange = icRange;
-		this.ivRange = ivRange;
-		this.channelId = channelId;
-		this.sequenceId = sequenceId;
-		this.cycle = cycle;
-		this.setpId = setpId;
-		this.setpName = setpName;
-		this.testTime = testTime;
-		this.volt = volt;
-		this.curr = curr;
-		this.ir = ir;
-		this.temperature = temperature;
-		this.ccap = ccap;
-		this.dccap = dccap;
-		this.ceng = ceng;
-		this.dceng = dceng;
-		this.absTime = absTime;
-		this.subChannel = subChannel;
-		this.resourceId = resourceId;
-		this.dataFlag = dataFlag;
-		this.workType = workType;
-	}
-
 }
