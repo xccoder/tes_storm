@@ -29,7 +29,7 @@ import groovy.lang.Binding;
 
 public class CalcBolt extends BaseRichBolt {
 
-	private final Logger logger = LoggerFactory.getLogger(CalcBolt.class);
+	private static final Logger logger = LoggerFactory.getLogger(CalcBolt.class);
 
 	private static final long serialVersionUID = 5443752882009732861L;
 

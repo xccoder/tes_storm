@@ -14,7 +14,7 @@ public class EngineTest {
 				"int c = a + b;System.out.println(c); if(c > 6){return false;}else{return true;};");
 
 		ScriptCacheMapping scriptCacheMapping = new ScriptCacheMapping();
-		scriptCacheMapping.addScript(1L, "hashcode1", ScriptExecutor.getDefaultShell().parse(scriptText.toString()));
+		scriptCacheMapping.addScript("1", "hashcode1", ScriptExecutor.getDefaultShell().parse(scriptText.toString()));
 		
 		for (int i = 0; i < 20; i++) {
 			Binding shellContext = new Binding();
@@ -22,7 +22,7 @@ public class EngineTest {
 			shellContext.setProperty("b", i*2);
 
 			ScriptExecutor executor = new ScriptExecutor();
-			Script script2 = scriptCacheMapping.getScript(1L);
+			Script script2 = scriptCacheMapping.getScript("1");
 			script2.setBinding(shellContext);
 
 			long st = System.currentTimeMillis();
