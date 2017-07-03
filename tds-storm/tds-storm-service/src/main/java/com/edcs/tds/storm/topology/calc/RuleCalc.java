@@ -44,7 +44,6 @@ public class RuleCalc {
                     script.setProperty("IMaxRange", testingMessage.getSvIcRange());
 //					 电流
                     script.setProperty("I", testingMessage.getPvCurrent());
-                    script.setProperty("ILast",);
                     script.setBinding(shellContext);
                 } catch (Exception e) {
                     executeUsedTime = System.currentTimeMillis() - executeBeginTime;
