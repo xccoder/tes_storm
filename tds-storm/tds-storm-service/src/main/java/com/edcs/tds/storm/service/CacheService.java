@@ -45,7 +45,7 @@ public class CacheService {
 
     private static ConcurrentMap<String, List<RuleConfig>> ruleConfig = Maps.newConcurrentMap();
 
-    private static Vector<Long> ruleIds = new Vector<Long>();
+    private static Vector<String> ruleIds = new Vector<String>();
 
     private static ScriptCacheMapping scriptCacheMapping = new ScriptCacheMapping();
 
@@ -63,7 +63,7 @@ public class CacheService {
         return variableDict.get();
     }
 
-    public static ConcurrentMap<Long, Pair<String, Script>> getScriptCache() {
+    public static ConcurrentMap<String, Pair<String, Script>> getScriptCache() {
         return scriptCacheMapping.getScriptCache();
     }
 
@@ -155,78 +155,81 @@ public class CacheService {
         try {
             jedis = proxyJedisPool.getResource();
 
-            String mdProcessjosn = jedis.get(RedisCacheKey.getMDProcessKey());
-            List<MDprocessInfo> mDprocessInfos = JsonUtils.toArray(mdProcessjosn, MDprocessInfo.class);
-            for (MDprocessInfo mDprocessInfo : mDprocessInfos){
+            String newMdProcessjosn = jedis.get(RedisCacheKey.getMDProcessKey());
+            if (!StringUtils.equals(newMdProcessjosn, ruleConfigVersion)) {
+                List<MDprocessInfo> mDprocessInfos = JsonUtils.toArray(newMdProcessjosn, MDprocessInfo.class);
+                for (MDprocessInfo mDprocessInfo : mDprocessInfos) {
 
-            List<MDStepInfo> mdStepInfos = mDprocessInfo.getMdStepInfoList();
+                    List<MDStepInfo> mdStepInfos = mDprocessInfo.getMdStepInfoList();
 
-            List<RuleConfig> ruleConfigCurrlist = new ArrayList<>();//电流场景
-            List<RuleConfig> ruleConfigTemplist = new ArrayList<>();//温度场景
-            List<RuleConfig> ruleConfigCapalist = new ArrayList<>();//容量场景
-            List<RuleConfig> ruleConfigTimelist = new ArrayList<>();//时间场景
-            List<RuleConfig> ruleConfigVoltlist = new ArrayList<>();//电压场景
-            List<RuleConfig> ruleConfigEnerlist = new ArrayList<>();//能量场景
-            //将每一条工步数据的每个脚本给ruleconfig对象;
-            for (MDStepInfo  mDstepInfo  : mdStepInfos) {
-                if (mDstepInfo.getScriptCapacity() != null) {
-                    RuleConfig ruleConfCapacity = new RuleConfig();
-                    ruleConfCapacity.setRuleScript(mDstepInfo.getScriptCapacity());
-                    ruleConfCapacity.setHashcode(" ");
-                    ruleConfCapacity.setRuleGroup(1L);
-                    ruleConfCapacity.setStepId(mDstepInfo.getRemark()+String.valueOf(mDstepInfo.getStepId()));
-                    ruleConfigCapalist.add(ruleConfCapacity);
+                    List<RuleConfig> ruleConfigCurrlist = new ArrayList<>();//电流场景
+                    List<RuleConfig> ruleConfigTemplist = new ArrayList<>();//温度场景
+                    List<RuleConfig> ruleConfigCapalist = new ArrayList<>();//容量场景
+                    List<RuleConfig> ruleConfigTimelist = new ArrayList<>();//时间场景
+                    List<RuleConfig> ruleConfigVoltlist = new ArrayList<>();//电压场景
+                    List<RuleConfig> ruleConfigEnerlist = new ArrayList<>();//能量场景
+                    //将每一条工步数据的每个脚本给ruleconfig对象;
+                    for (MDStepInfo mDstepInfo : mdStepInfos) {
+                        if (mDstepInfo.getScriptCapacity() != null) {
+                            RuleConfig ruleConfCapacity = new RuleConfig();
+                            ruleConfCapacity.setRuleScript(mDstepInfo.getScriptCapacity());
+                            ruleConfCapacity.setHashcode(" ");
+                            ruleConfCapacity.setRuleGroup(1L);
+                            ruleConfCapacity.setStepId(mDstepInfo.getRemark() + String.valueOf(mDstepInfo.getStepId()));
+                            ruleConfigCapalist.add(ruleConfCapacity);
+                        }
+                        if (mDstepInfo.getScriptCurrent() != null) {
+                            RuleConfig ruleConfCurrent = new RuleConfig();
+                            ruleConfCurrent.setRuleScript(mDstepInfo.getScriptCurrent());
+                            ruleConfCurrent.setHashcode(" ");
+                            ruleConfCurrent.setRuleGroup(1L);
+                            ruleConfCurrent.setStepId(mDstepInfo.getRemark() + String.valueOf(mDstepInfo.getStepId()));
+                            ruleConfigCurrlist.add(ruleConfCurrent);
+                        }
+                        if (mDstepInfo.getScriptTemperature() != null) {
+                            RuleConfig ruleConfTemperature = new RuleConfig();
+                            ruleConfTemperature.setRuleScript(mDstepInfo.getScriptTemperature());
+                            ruleConfTemperature.setHashcode(" ");
+                            ruleConfTemperature.setRuleGroup(1L);
+                            ruleConfTemperature.setStepId(mDstepInfo.getRemark() + String.valueOf(mDstepInfo.getStepId()));
+                            ruleConfigTemplist.add(ruleConfTemperature);
+                        }
+                        if (mDstepInfo.getScriptTime() != null) {
+                            RuleConfig ruleConfTime = new RuleConfig();
+                            ruleConfTime.setRuleScript(mDstepInfo.getScriptTime());
+                            ruleConfTime.setHashcode(" ");
+                            ruleConfTime.setRuleGroup(1L);
+                            ruleConfTime.setStepId(mDstepInfo.getRemark() + String.valueOf(mDstepInfo.getStepId()));
+                            ruleConfigTimelist.add(ruleConfTime);
+                        }
+                        if (mDstepInfo.getScriptVoltage() != null) {
+                            RuleConfig ruleConfVoltage = new RuleConfig();
+                            ruleConfVoltage.setRuleScript(mDstepInfo.getScriptVoltage());
+                            ruleConfVoltage.setHashcode(" ");
+                            ruleConfVoltage.setStepId(mDstepInfo.getRemark() + String.valueOf(mDstepInfo.getStepId()));
+                            ruleConfVoltage.setRuleGroup(1L);
+                            ruleConfigVoltlist.add(ruleConfVoltage);
+                        }
+                        if (mDstepInfo.getScriptEnergy() != null && mDstepInfo.getScriptEnergy().equals("")) {
+                            RuleConfig ruleConfEnergy = new RuleConfig();
+                            ruleConfEnergy.setRuleScript(mDstepInfo.getScriptEnergy());
+                            ruleConfEnergy.setHashcode(" ");
+                            ruleConfEnergy.setRuleGroup(1L);
+                            ruleConfEnergy.setStepId(mDstepInfo.getRemark() + String.valueOf(mDstepInfo.getStepId()));
+                            ruleConfigEnerlist.add(ruleConfEnergy);
+                        }
+                        /***将每个流程的各种场景放入scriptcachemapping*/
+                    }
+                    ruleConfig.put("电流场景id", ruleConfigCurrlist);
+                    ruleConfig.put("容量场景id", ruleConfigCapalist);
+                    ruleConfig.put("能量场景id", ruleConfigEnerlist);
+                    ruleConfig.put("温度场景id", ruleConfigTemplist);
+                    ruleConfig.put("时间场景id", ruleConfigTimelist);
+                    ruleConfig.put("电压场景id", ruleConfigVoltlist);
+
                 }
-                if (mDstepInfo.getScriptCurrent()!= null) {
-                    RuleConfig ruleConfCurrent = new RuleConfig();
-                    ruleConfCurrent.setRuleScript(mDstepInfo.getScriptCurrent());
-                    ruleConfCurrent.setHashcode(" ");
-                    ruleConfCurrent.setRuleGroup(1L);
-                    ruleConfCurrent.setStepId(mDstepInfo.getRemark()+String.valueOf(mDstepInfo.getStepId()));
-                    ruleConfigCurrlist.add(ruleConfCurrent);
-                }
-                if (mDstepInfo.getScriptTemperature() != null) {
-                    RuleConfig ruleConfTemperature = new RuleConfig();
-                    ruleConfTemperature.setRuleScript(mDstepInfo.getScriptTemperature());
-                    ruleConfTemperature.setHashcode(" ");
-                    ruleConfTemperature.setRuleGroup(1L);
-                    ruleConfTemperature.setStepId(mDstepInfo.getRemark()+String.valueOf(mDstepInfo.getStepId()));
-                    ruleConfigTemplist.add(ruleConfTemperature);
-                }
-                if (mDstepInfo.getScriptTime() != null) {
-                    RuleConfig ruleConfTime = new RuleConfig();
-                    ruleConfTime.setRuleScript(mDstepInfo.getScriptTime());
-                    ruleConfTime.setHashcode(" ");
-                    ruleConfTime.setRuleGroup(1L);
-                    ruleConfTime.setStepId(mDstepInfo.getRemark()+String.valueOf(mDstepInfo.getStepId()));
-                    ruleConfigTimelist.add(ruleConfTime);
-                }
-                if (mDstepInfo.getScriptVoltage() != null) {
-                    RuleConfig ruleConfVoltage = new RuleConfig();
-                    ruleConfVoltage.setRuleScript(mDstepInfo.getScriptVoltage());
-                    ruleConfVoltage.setHashcode(" ");
-                    ruleConfVoltage.setStepId(mDstepInfo.getRemark()+String.valueOf(mDstepInfo.getStepId()));
-                    ruleConfVoltage.setRuleGroup(1L);
-                    ruleConfigVoltlist.add(ruleConfVoltage);
-                }
-                if (mDstepInfo.getScriptEnergy() != null && mDstepInfo.getScriptEnergy().equals("")){
-                    RuleConfig ruleConfEnergy = new RuleConfig();
-                    ruleConfEnergy.setRuleScript(mDstepInfo.getScriptEnergy());
-                    ruleConfEnergy.setHashcode(" ");
-                    ruleConfEnergy.setRuleGroup(1L);
-                    ruleConfEnergy.setStepId(mDstepInfo.getRemark()+String.valueOf(mDstepInfo.getStepId()));
-                    ruleConfigEnerlist.add(ruleConfEnergy);
-                }
-                /***将每个流程的各种场景放入scriptcachemapping*/
             }
-            ruleConfig.put("电流场景id",ruleConfigCurrlist);
-            ruleConfig.put("容量场景id",ruleConfigCapalist);
-            ruleConfig.put("能量场景id",ruleConfigEnerlist);
-            ruleConfig.put("温度场景id",ruleConfigTemplist);
-            ruleConfig.put("时间场景id",ruleConfigTimelist);
-            ruleConfig.put("电压场景id",ruleConfigVoltlist);
-
-            }
+            ruleConfigVersion = newMdProcessjosn ;
         } finally {
             JedisFactory.closeQuietly(jedis);
         }
@@ -271,8 +274,8 @@ public class CacheService {
      */
     public void cleanInvalidCache() {
         if (ruleIds.size() > 0 && scriptCacheMapping.getScriptCache().size() > 0) {
-            Set<Long> cachedIds = scriptCacheMapping.getScriptCache().keySet();
-            for (Long id : cachedIds) {
+            Set<String> cachedIds = scriptCacheMapping.getScriptCache().keySet();
+            for (String id : cachedIds) {
                 if (!ruleIds.contains(id)) {
                     logger.info("Remove the invalid script caching, rule id: {}.", id);
                     scriptCacheMapping.remove(id);
@@ -288,7 +291,7 @@ public class CacheService {
      * @param scriptContent
      * @param hashcode
      */
-    private void cacheScript(Long id, String scriptContent, String hashcode) {
+    private void cacheScript(String id, String scriptContent, String hashcode) {
         // 判断新的脚本内容与缓存是否有差异，如果有则重新编译
         if (!scriptCacheMapping.isDifference(id, hashcode)) {//id暂定为流程加工步id
             scriptCacheMapping.addScript(id, hashcode, ScriptExecutor.getDefaultShell().parse(scriptContent));

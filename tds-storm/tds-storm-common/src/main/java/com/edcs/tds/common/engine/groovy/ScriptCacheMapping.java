@@ -15,30 +15,30 @@ public class ScriptCacheMapping implements Serializable {
 
 	private static final long serialVersionUID = -6401408716509581348L;
 
-	private static ConcurrentMap<Long, Pair<String, Script>> scriptCache = Maps.newConcurrentMap();
+	private static ConcurrentMap<String, Pair<String, Script>> scriptCache = Maps.newConcurrentMap();
 
-	public ConcurrentMap<Long, Pair<String, Script>> getScriptCache() {
+	public ConcurrentMap<String, Pair<String, Script>> getScriptCache() {
 		return scriptCache;
 	}
 
-	public void addScript(Long id, String hash, Script obj) {
+	public void addScript(String id, String hash, Script obj) {
 		if (!contains(id)) {
 			scriptCache.put(id, Pair.of(hash, obj));
 		}
 	}
 
-	public boolean contains(Long id) {
+	public boolean contains(String id) {
 		return scriptCache.containsKey(id);
 	}
 
-	public boolean isDifference(Long id, String hash) {
+	public boolean isDifference(String id, String hash) {
 		if (!contains(id)) {
 			return false;
 		}
 		return scriptCache.get(id).getLeft().equals(hash);
 	}
 
-	public Script getScript(Long id) {
+	public Script getScript(String id) {
 		if (!contains(id)) {
 			return null;
 		}
@@ -52,7 +52,7 @@ public class ScriptCacheMapping implements Serializable {
 		return null;
 	}
 
-	public void remove(Long id) {
+	public void remove(String id) {
 		if (contains(id)) {
 			scriptCache.remove(id);
 		}

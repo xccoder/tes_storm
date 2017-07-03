@@ -27,8 +27,9 @@ public class RuleCalc {
 		int matchedCount = 0;
 
 		for (Entry<String, List<RuleConfig>> entry : ruleConfig.entrySet()) {
-
+		//遍历每一个场景
 			for (RuleConfig rule : entry.getValue()) {
+				//遍历一个场景下工步的规则组
 				boolean ruleIsMatched = false;
 				long executeUsedTime = 0;
 				long executeBeginTime = System.currentTimeMillis();
