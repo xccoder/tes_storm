@@ -56,6 +56,16 @@ public class CacheService {
 
     private String ruleConfigVersion;
 
+    private String processInfoJson;//存流程信息
+
+    public String getProcessInfoJson() {
+        return processInfoJson;
+    }
+
+    public void setProcessInfoJson(String processInfoJson) {
+        this.processInfoJson = processInfoJson;
+    }
+
     public String getRuleConfigVersion() {
         return ruleConfigVersion;
     }
@@ -165,7 +175,7 @@ public class CacheService {
             jedis = proxyJedisPool.getResource();
 
             String newMdProcessjosn = jedis.get(RedisCacheKey.getMDProcessKey());
-            if (!StringUtils.equals(newMdProcessjosn, ruleConfigVersion)) {
+            if (!StringUtils.equals(newMdProcessjosn, processInfoJson)) {
                 //Preconditions.checkNotNull(data);
                 ruleConfig.clear();
                 ruleIds.clear();
@@ -255,7 +265,7 @@ public class CacheService {
 
                 }
             }
-            ruleConfigVersion = newMdProcessjosn ;
+            processInfoJson = newMdProcessjosn ;
         } finally {
             JedisFactory.closeQuietly(jedis);
         }
