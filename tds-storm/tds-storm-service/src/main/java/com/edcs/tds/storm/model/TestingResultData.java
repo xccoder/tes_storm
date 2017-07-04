@@ -16,7 +16,7 @@ public class TestingResultData implements Serializable{
 	 */
 	private static final long serialVersionUID = 7962734736148641268L;
 	
-	private String hadele;//<SITE>,<REMARK>,<SFC>,<CATEGORY>,<ALERT_SEQUENCE_NUMBER>
+	private String handle;//<SITE>,<REMARK>,<SFC>,<CATEGORY>,<ALERT_SEQUENCE_NUMBER>
 	private String site;
 	private String remark;//流程编号
 	private int stepId;//工步序号
@@ -42,10 +42,10 @@ public class TestingResultData implements Serializable{
 	private String modifiedUser;//最后修改用户
 	
 	public String getHadele() {
-		return hadele;
+		return handle;
 	}
 	public void setHadele(String hadele) {
-		this.hadele = hadele;
+		this.handle = hadele;
 	}
 	public String getSite() {
 		return site;
