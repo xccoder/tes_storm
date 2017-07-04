@@ -1,13 +1,16 @@
 package com.edcs.tds.storm.service;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.edcs.tds.common.util.JsonUtils;
 import com.edcs.tds.storm.model.MDStepInfo;
 import com.edcs.tds.storm.model.MDprocessInfo;
 import com.edcs.tds.storm.model.TestingMessage;
-import com.edcs.tds.storm.util.JsonUtils;
+import com.edcs.tds.storm.util.DBHelperUtils;
 
 import redis.clients.jedis.Jedis;
 
@@ -91,4 +94,26 @@ public class DataService {
 		}
 		return testingMessage;
 	}
+	
+	
+	public static void main(String[] args) {/*
+		System.out.println("12222222");
+		String sql = "select *from TX_ALERT_INFO";// SQL语句
+		DBHelperUtils db1 = new DBHelperUtils(sql);// 创建DBHelper对象
+		try {
+			ResultSet ret = db1.pst.executeQuery();// 执行语句，得到结果集
+			while (ret.next()) {
+				String uid = ret.getString(1);
+				String ufname = ret.getString(2);
+				String ulname = ret.getString(3);
+				String udate = ret.getString(4);
+				System.out.println(uid + "\t" + ufname + "\t" + ulname + "\t" + udate);
+			} // 显示数据
+			ret.close();
+			db1.close();// 关闭连接
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	*/}  
+
 }
