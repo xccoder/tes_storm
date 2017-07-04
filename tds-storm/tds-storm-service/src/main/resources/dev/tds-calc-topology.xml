@@ -7,7 +7,6 @@
 
 	<import resource="classpath:topology-base.xml" />
 	<bean id="cacheService" class="com.edcs.tds.storm.service.CacheService">
-		<!--<property name="hbaseHelper" ref="hbaseHelper" />-->
 	</bean>
 
 </beans>
