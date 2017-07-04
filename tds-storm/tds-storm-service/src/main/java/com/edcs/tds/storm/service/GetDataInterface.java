@@ -16,7 +16,7 @@ public class GetDataInterface {
 	 * @param i 表示获取这条测试数据的上几条测试数据
 	 * @return
 	 */
-	public static TestingMessage getUpTestingMsg(TestingMessage testingMessage,int i){
+	public static TestingMessage getUpTestingMsg(TestingMessage testingMessage,int i,CacheService cacheService){
 		
 		return null;
 	}
@@ -27,8 +27,9 @@ public class GetDataInterface {
 	 * @param remark
 	 * @return
 	 */
-	 public static int  getCycleNum(String remark){
+	 public static int  getCycleNum(String remark,CacheService cacheService){
 		 int cycleNum = 0;
+		 
 		 return cycleNum;
 	 }
 	

@@ -53,7 +53,7 @@ public class DataService {
 						 * 根据rootRemark先去redis中查询这条和rootRemark对应的remark的流程数据，如果找不到则再去HANA中找。
 						 * （查找这个和rootRemark相同的remark 的流程循环次数）
 						 */
-						int cycleNum = GetDataInterface.getCycleNum(rootRemark);
+						int cycleNum = GetDataInterface.getCycleNum(rootRemark,cacheService);
 						testingMessage.setBusinessCycle(cycleNum+1);
 						break;
 					}else{
@@ -72,9 +72,10 @@ public class DataService {
 							boolean isCycleSignalStep = mdStepInfo.isCycleSignalStep();
 							if(isCycleSignalStep){
 								//获取这条测试数据的上一条测试数据（通过流程的remark+记录序号来获取）
-								TestingMessage  upTestingMessage = GetDataInterface.getUpTestingMsg(testingMessage,1);
+								TestingMessage  upTestingMessage = GetDataInterface.getUpTestingMsg(testingMessage,1,cacheService);
 								if(upTestingMessage==null){
 //									throw new Exception("该数据的上一条数据找不到，可能上一条数据还没有处理完！！");
+									System.out.println("该数据的上一条数据找不到，可能上一条数据还没有处理完！！");
 								}
 								if(upTestingMessage.getStepId()!=testingMessage.getStepId()){
 									//如果当前测试数据的工步类型不等于它上一条数据的工步类型则businessCycle+1
