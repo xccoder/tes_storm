@@ -3,6 +3,7 @@ package com.edcs.tds.storm.model;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.Date;
 
 /**
  * 测试结果数据实体类（以一个算法为单位，一个算法对应一个这样的实体类）
@@ -16,7 +17,7 @@ public class TestingResultData implements Serializable{
 	 */
 	private static final long serialVersionUID = 7962734736148641268L;
 	
-	private String handle;//<SITE>,<REMARK>,<SFC>,<CATEGORY>,<ALERT_SEQUENCE_NUMBER>
+	private String handle;//TxAlertInfoBO:<SITE>,<REMARK>,<SFC>,<CATEGORY>,<ALERT_SEQUENCE_NUMBER>
 	private String site;
 	private String remark;//流程编号
 	private int stepId;//工步序号
@@ -25,28 +26,39 @@ public class TestingResultData implements Serializable{
 	private String sfc;//电芯号
 	private String category;//类别（电流，电压。。。。）
 	private int altetSequenceNumber;//序列值（同一个工步之间报警的序号）
-	private String txAlertListInfoBO;//TX_ALERT_LIST_INFO.HANDLE
-	private String status;//状态，new  、close
-	private String processDataBO;//MD_PROCESS_DATA.HANDLE
-	private Timestamp timestamp;//记录报警时间（什么时候报警的）
-	private String erpResourceBO;//ERP_RESOURCE.HANDLE
+	private String txAlertListInfoBO;//TX_ALERT_LIST_INFO.HANDLE  TxAlertListInfoBO:<SITE>,<ALERT_LIST_ID>
+	private String status;//状态，new  、close、inprogress
+	private String processDataBO;//MD_PROCESS_DATA.HANDLE  MdProcessInfoBO:<SITE>,<PROCESS_ID>,<REMARK>
+	private Date timestamp;//记录报警时间（什么时候报警的）
+	private String erpResourceBO;//ERP_RESOURCE.HANDLE   ErpResourceBO:<SITE>,<RESOURCE_ID>
 	private int channelId;//通道号
-	private int alertLevel;//报警级别
+	private String alertLevel;//报警级别
 	private String description;//报警信息描述
 	private BigDecimal upLimit;//报警上限
 	private BigDecimal lowLimit;//报警下限
-	private String originalProcessDataBO;//TX_ORIGINAL_PROCESS_DATA.HANDLE
+	private String originalProcessDataBO;//TX_ORIGINAL_PROCESS_DATA.HANDLE   TxOriginalProcessDataBO:<SITE>,<REMARK>,<SFC> ,<RESOURCE_ID>,<CHANNEL_ID>,<SEQUENCE_ID>
 	private Timestamp createdDateTime;//创建时间
 	private String createdUser;//创建用户
-	private Timestamp modifiedDateTime;//最后修改日期
+	private Date modifiedDateTime;//最后修改日期
 	private String modifiedUser;//最后修改用户
-	
-	public String getHadele() {
+	private String sequenceId;  //记录序号
+
+	public String getSequenceId() {
+		return sequenceId;
+	}
+
+	public void setSequenceId(String sequenceId) {
+		this.sequenceId = sequenceId;
+	}
+
+	public String getHandle() {
 		return handle;
 	}
-	public void setHadele(String hadele) {
-		this.handle = hadele;
+
+	public void setHandle(String handle) {
+		this.handle = handle;
 	}
+
 	public String getSite() {
 		return site;
 	}
@@ -114,10 +126,10 @@ public class TestingResultData implements Serializable{
 	public void setProcessDataBO(String processDataBO) {
 		this.processDataBO = processDataBO;
 	}
-	public Timestamp getTimestamp() {
+	public Date getTimestamp() {
 		return timestamp;
 	}
-	public void setTimestamp(Timestamp timestamp) {
+	public void setTimestamp(Date timestamp) {
 		this.timestamp = timestamp;
 	}
 	public String getErpResourceBO() {
@@ -132,10 +144,10 @@ public class TestingResultData implements Serializable{
 	public void setChannelId(int channelId) {
 		this.channelId = channelId;
 	}
-	public int getAlertLevel() {
+	public String getAlertLevel() {
 		return alertLevel;
 	}
-	public void setAlertLevel(int alertLevel) {
+	public void setAlertLevel(String alertLevel) {
 		this.alertLevel = alertLevel;
 	}
 	public String getDescription() {
@@ -174,10 +186,10 @@ public class TestingResultData implements Serializable{
 	public void setCreatedUser(String createdUser) {
 		this.createdUser = createdUser;
 	}
-	public Timestamp getModifiedDateTime() {
+	public Date getModifiedDateTime() {
 		return modifiedDateTime;
 	}
-	public void setModifiedDateTime(Timestamp modifiedDateTime) {
+	public void setModifiedDateTime(Date modifiedDateTime) {
 		this.modifiedDateTime = modifiedDateTime;
 	}
 	public String getModifiedUser() {

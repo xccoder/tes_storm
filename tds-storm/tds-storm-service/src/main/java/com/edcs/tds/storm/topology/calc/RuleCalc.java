@@ -1,21 +1,23 @@
 package com.edcs.tds.storm.topology.calc;
 
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentMap;
 
-import com.edcs.tds.storm.model.MDStepInfo;
+import com.edcs.tds.storm.model.*;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.edcs.tds.common.engine.groovy.ScriptExecutor;
 import com.edcs.tds.common.model.RuleConfig;
-import com.edcs.tds.storm.model.ExecuteContext;
-import com.edcs.tds.storm.model.TestingMessage;
 import com.edcs.tds.storm.service.CacheService;
 
 import groovy.lang.Binding;
 import groovy.lang.Script;
+import redis.clients.jedis.Jedis;
 
 public class RuleCalc {
 
@@ -23,16 +25,20 @@ public class RuleCalc {
     protected final Logger logger = LoggerFactory.getLogger(RuleCalc.class);
 
     public void TestingRuleCalc(ScriptExecutor scriptExecutor, ExecuteContext executeContext, Binding shellContext,
-                                ConcurrentMap<String, List<RuleConfig>> ruleConfig,CacheService cacheService) {
+                                ConcurrentMap<String, List<RuleConfig>> ruleConfig, CacheService cacheService) {
 
         TestingMessage testingMessage = executeContext.getTestingMessage();
         int matchedCount = 0;
-
+        MDStepInfo mdStepInfo = new MDStepInfo();
+        MDprocessInfo mDprocessInfo = new MDprocessInfo();
+        TestingResultData testingResultData = new TestingResultData();
+        String categoty = null;
+        String alterLevel = null;
+        //遍历每一个场景
         for (Entry<String, List<RuleConfig>> entry : ruleConfig.entrySet()) {
-            //遍历每一个场景
+            categoty = entry.getKey().split("_")[1];
             for (RuleConfig rule : entry.getValue()) {
                 //遍历一个场景下工步的规则组
-                boolean ruleIsMatched = false;
                 long executeUsedTime = 0;
                 long executeBeginTime = System.currentTimeMillis();
 
@@ -40,19 +46,16 @@ public class RuleCalc {
                     // 从缓存中取对应ID的规则脚本开始执行				     //流程的工步ID
                     //从ScriptCacheMapping中匹配与当前工步相匹配的脚本
                     Script script = CacheService.getScriptCache().get(rule.getStepId()).getRight();
-
                     //					最大量程
                     script.setProperty("IMaxRange", testingMessage.getSvIcRange());
 //					 电流
                     script.setProperty("I", testingMessage.getPvCurrent());
-                    MDStepInfo mdStepInfo = new MDStepInfo();
                     //截止电流
                     script.setProperty("IEnd", mdStepInfo.getSvStepEndCurrent());
                     script.setProperty("P", mdStepInfo.getSvPower());
                     script.setProperty("UEnd", mdStepInfo.getSvStepEndVoltage());
-
-                    ruleIsMatched = scriptExecutor.execute(script);
                     script.setBinding(shellContext);
+                    alterLevel = scriptExecutor.execute(script);
                 } catch (Exception e) {
                     executeUsedTime = System.currentTimeMillis() - executeBeginTime;
                     logger.error("Rule execute error, rule id: {}." + e, rule.getId());
@@ -60,18 +63,48 @@ public class RuleCalc {
                 } finally {
                     executeUsedTime = System.currentTimeMillis() - executeBeginTime;
                 }
-                if (ruleIsMatched) {
+                if (StringUtils.isNotBlank(alterLevel) && alterLevel.equals("null")) {
                     matchedCount++;
                     // TODO 记录匹配的规则和相关数据
                     executeContext.addMatchedRule(rule.getId(), 0d, executeUsedTime);
+                    // TODO 将结果集写入Redis缓存
+                    Jedis jedis = cacheService.getProxyJedisPool().getResource();
+//      key = 流程号+工步号+序号+业务循环号
+                    String key = mdStepInfo.getRemark() + mdStepInfo.getStepId() + testingMessage.getSequenceId() + testingMessage.getBusinessCycle();
+                    String handle = "TxAlertInfoBO:" + mdStepInfo.getSite() + "," + mdStepInfo.getRemark() + "," + testingMessage.getSfc() + "," + categoty;
+                    testingResultData.setHandle(handle);
+                    testingResultData.setSite(mdStepInfo.getSite());
+                    testingResultData.setRemark(mdStepInfo.getRemark( ));
+                    testingResultData.setStepId(mdStepInfo.getStepId());
+                    testingResultData.setBusinessCycle(testingMessage.getBusinessCycle());
+                    testingResultData.setCycle(testingMessage.getCycle());
+                    testingResultData.setSfc(testingMessage.getSfc());
+                    testingResultData.setCategory(categoty);
+                    testingResultData.setAltetSequenceNumber(0);
+//                    TxAlertInfoBO:<SITE>,<REMARK>,<SFC>,<CATEGORY>
+                    testingResultData.setTxAlertListInfoBO("TxAlertInfoBO:"+mdStepInfo.getSite()+","+mdStepInfo.getRemark()+","+mDprocessInfo.getSfc()+","+categoty);
+                    testingResultData.setStatus("new");
+//                    MdProcessInfoBO:<SITE>,<PROCESS_ID>,<REMARK>
+                    testingResultData.setProcessDataBO("MdProcessInfoBO:" + mdStepInfo.getSite() + "," + mDprocessInfo.getProcessID() + "," + mDprocessInfo.getRemark());
+                    testingResultData.setTimestamp(testingMessage.getTimestamp());
+//ErpResourceBO:<SITE>,<RESOURCE_ID>
+                    testingResultData.setErpResourceBO("ErpResourceBO:"+","+mdStepInfo.getSite()+","+testingMessage.getResourceId());
+                    testingResultData.setChannelId(testingMessage.getChannelId());
+                    testingResultData.setAlertLevel(alterLevel);
+                    testingResultData.setDescription("异常数据");
+//                    testingResultData.setUpLimit();
+//                    testingResultData.setLowLimit();
+//                    TxOriginalProcessDataBO:<SITE>,<REMARK>,<SFC> ,<RESOURCE_ID>,<CHANNEL_ID>,<SEQUENCE_ID>
+                    testingResultData.setOriginalProcessDataBO("TxOriginalProcessDataBO:"+mdStepInfo.getSite()+","+mdStepInfo.getRemark()+","+mDprocessInfo.getSfc()+","+testingMessage.getResourceId()+","+testingMessage.getChannelId()+"，"+testingMessage.getSequenceId());
+                    testingResultData.setCreatedDateTime(new Timestamp(System.currentTimeMillis()));
+                    testingResultData.setCreatedUser("");
+                    testingResultData.setModifiedDateTime(new Date());
+                    testingResultData.setModifiedUser("");
+                    testingResultData.setSequenceId(String.valueOf(testingMessage.getSequenceId()));
+                    jedis.set(key, "");
+
                 }
             }
         }
-
-        // TODO 将结果集写入Redis缓存
-
-
     }
-
-
 }
