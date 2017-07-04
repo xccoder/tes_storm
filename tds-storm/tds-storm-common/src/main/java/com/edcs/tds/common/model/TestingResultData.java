@@ -24,7 +24,7 @@ public class TestingResultData implements Serializable{
 	private int businessCycle;//业务循环号。
 	private int cycle;//设备循环号
 	private String sfc;//电芯号
-	private String category;//类别（电流，电压。。。。）
+	private String category;//类别（电压，电流，温度，相对时间，容量和能量）
 	private int altetSequenceNumber;//序列值（同一个工步之间报警的序号）
 	private String txAlertListInfoBO;//TX_ALERT_LIST_INFO.HANDLE  TxAlertListInfoBO:<SITE>,<ALERT_LIST_ID>
 	private String status;//状态，new  、close、inprogress
@@ -42,6 +42,15 @@ public class TestingResultData implements Serializable{
 	private Date modifiedDateTime;//最后修改日期
 	private String modifiedUser;//最后修改用户
 	private String sequenceId;  //记录序号
+	
+	private BigDecimal testTimeDuration;//测试相对时长
+	private BigDecimal pvVoltage;//电压
+	private BigDecimal pvCurrent;//电流
+	private BigDecimal pvTemperature;//温度  temperature
+	private BigDecimal pvChargeCapacity;//充电容量  充电容量和放电容量一定有一个为0   ccap
+	private BigDecimal pvDischargeCapacity;//放电容量 dccap
+	private BigDecimal pvChargeEnergy;//充电能量
+	private BigDecimal pvDischargeEnergy;//放电能量 dceng
 
 	public String getSequenceId() {
 		return sequenceId;
@@ -199,4 +208,67 @@ public class TestingResultData implements Serializable{
 		this.modifiedUser = modifiedUser;
 	}
 
+	public BigDecimal getTestTimeDuration() {
+		return testTimeDuration;
+	}
+
+	public void setTestTimeDuration(BigDecimal testTimeDuration) {
+		this.testTimeDuration = testTimeDuration;
+	}
+
+	public BigDecimal getPvVoltage() {
+		return pvVoltage;
+	}
+
+	public void setPvVoltage(BigDecimal pvVoltage) {
+		this.pvVoltage = pvVoltage;
+	}
+
+	public BigDecimal getPvCurrent() {
+		return pvCurrent;
+	}
+
+	public void setPvCurrent(BigDecimal pvCurrent) {
+		this.pvCurrent = pvCurrent;
+	}
+
+	public BigDecimal getPvTemperature() {
+		return pvTemperature;
+	}
+
+	public void setPvTemperature(BigDecimal pvTemperature) {
+		this.pvTemperature = pvTemperature;
+	}
+
+	public BigDecimal getPvChargeCapacity() {
+		return pvChargeCapacity;
+	}
+
+	public void setPvChargeCapacity(BigDecimal pvChargeCapacity) {
+		this.pvChargeCapacity = pvChargeCapacity;
+	}
+
+	public BigDecimal getPvDischargeCapacity() {
+		return pvDischargeCapacity;
+	}
+
+	public void setPvDischargeCapacity(BigDecimal pvDischargeCapacity) {
+		this.pvDischargeCapacity = pvDischargeCapacity;
+	}
+
+	public BigDecimal getPvChargeEnergy() {
+		return pvChargeEnergy;
+	}
+
+	public void setPvChargeEnergy(BigDecimal pvChargeEnergy) {
+		this.pvChargeEnergy = pvChargeEnergy;
+	}
+
+	public BigDecimal getPvDischargeEnergy() {
+		return pvDischargeEnergy;
+	}
+
+	public void setPvDischargeEnergy(BigDecimal pvDischargeEnergy) {
+		this.pvDischargeEnergy = pvDischargeEnergy;
+	}
 }
