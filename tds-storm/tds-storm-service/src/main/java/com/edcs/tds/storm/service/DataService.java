@@ -96,7 +96,7 @@ public class DataService {
 	}
 	
 	
-	public static void main(String[] args) {/*
+	public static void main(String[] args) {
 		System.out.println("12222222");
 		String sql = "select *from TX_ALERT_INFO";// SQL语句
 		DBHelperUtils db1 = new DBHelperUtils(sql);// 创建DBHelper对象
@@ -114,6 +114,6 @@ public class DataService {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-	*/}  
+	}  
 
 }
