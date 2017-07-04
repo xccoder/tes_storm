@@ -9,13 +9,18 @@ import com.edcs.tds.storm.model.MDprocessInfo;
 import com.edcs.tds.storm.model.TestingMessage;
 import com.edcs.tds.storm.util.JsonUtils;
 
+import redis.clients.jedis.Jedis;
+
 public class DataService {
 
-	public int getCurrentCycleCount(String remark) {
-		// 如果有值则返回，无则返回-1
-		// TODO 查询Redis的循环次数
-		
-		return -1;
+	public int getCurrentCycleCount(String remark,CacheService cacheService) {
+		//查询某个流程的Redis的循环次数  如果有值则返回，无则返回-1
+		Jedis jedis = cacheService.getProxyJedisPool().getResource();
+		String cycleNum = jedis.get(remark);
+		if(!StringUtils.isNotBlank(cycleNum)){
+			return -1;
+		}
+		return Integer.parseInt(cycleNum);
 	}
 	
     /**
@@ -31,11 +36,7 @@ public class DataService {
      * @param testingMessage
      */
 	public TestingMessage updateBusinessCycle(TestingMessage testingMessage,CacheService cacheService) {
-		/*
-		 * 
-		 */
-		
-		if(testingMessage==null){
+		if(testingMessage==null || cacheService==null){
 			return null;
 		}
 		/*
@@ -89,5 +90,4 @@ public class DataService {
 		}
 		return testingMessage;
 	}
-
 }

@@ -27,6 +27,7 @@ import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseRichBolt;
 import backtype.storm.tuple.Tuple;
 import groovy.lang.Binding;
+import redis.clients.jedis.Jedis;
 
 public class CalcBolt extends BaseRichBolt {
 
@@ -90,22 +91,28 @@ public class CalcBolt extends BaseRichBolt {
             if (isRepeated) {
                 return;
             }
+            //修改测试数据中的业务循环号（businessCycle）
+            testingMessage = dataService.updateBusinessCycle(testingMessage, cacheService);
+
             executeContext.setDebug(testingMessage.isDebug());
             executeContext.setTestingMessage(testingMessage);
             // TODO 实现对异常的循环次数校验、处理
-            int currentCycle = dataService.getCurrentCycleCount(testingMessage.getRemark()); // TODO 从Redis读取
+            int currentCycle = dataService.getCurrentCycleCount(testingMessage.getRemark(), cacheService); // TODO 从Redis读取
+            int newCycle = currentCycle + 1;
+            Jedis jedis = cacheService.getProxyJedisPool().getResource();
             if (currentCycle != -1) {
                 int cycle = testingMessage.getCycle();
-                int newCycle = currentCycle + 1;
                 if (newCycle != cycle) {
-                    //TODO 更新Redis
-                    //TODO 更新business_cycle
+                    //更新Redis
+                    jedis.set(testingMessage.getRemark(), newCycle + "");
+                    //更新business_cycle
                     testingMessage.setBusinessCycle(newCycle);
                 }
             } else {
-                //TODO 更新Redis
+                //更新Redis
+                jedis.set(testingMessage.getRemark(), newCycle + "");
                 //TODO 更新business_cycle
-                testingMessage.setBusinessCycle(currentCycle);
+//				testingMessage.setBusinessCycle(currentCycle);
             }
 
             // TODO 加载主数据  CacheService.getDataXxxx();
@@ -144,4 +151,5 @@ public class CalcBolt extends BaseRichBolt {
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
         // NOTHING_TO_DO
     }
+
 }
