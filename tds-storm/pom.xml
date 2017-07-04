@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.edcs.tds</groupId>
@@ -8,6 +9,7 @@
   <modules>
   	<module>tds-storm-service</module>
   	<module>tds-storm-common</module>
+    <module>sync</module>
   </modules>
   
   <properties>
@@ -89,7 +91,7 @@
 			<groupId>jdk.tools</groupId>
 			<artifactId>jdk.tools</artifactId>
 			<scope>system</scope>
-            <systemPath>E:/devtool/jdk1.7.0_75/lib/tools.jar</systemPath>
+            <systemPath>E:/software/jdk1.7/jdk1.7.0_75/lib/tools.jar</systemPath>
 			<version>${jdk.version}</version>
 		</dependency>
 		<dependency>
@@ -97,7 +99,16 @@
            <artifactId>fastjson</artifactId>
            <version>${fastjson.version}</version>
         </dependency>
-		
+        <dependency>
+           <groupId>c3p0</groupId>
+           <artifactId>c3p0</artifactId>
+           <version>0.9.1.2</version>
+        </dependency>
+        <!-- <dependency>
+           <groupId>com.sap</groupId>
+           <artifactId>hana-connector-java</artifactId>
+           <version>1.0</version>
+        </dependency> -->
 	</dependencies>
 	<build>
 		<plugins>
