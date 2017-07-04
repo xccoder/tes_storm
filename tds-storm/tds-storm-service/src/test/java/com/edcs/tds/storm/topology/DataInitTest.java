@@ -1,5 +1,6 @@
 package com.edcs.tds.storm.topology;
 
+import backtype.storm.tuple.Tuple;
 import com.edcs.tds.storm.model.TestingMessage;
 import com.edcs.tds.storm.service.DataInit;
 
@@ -64,7 +65,8 @@ public class DataInitTest {
 			    +"\"workType\": 1"
 			  +"}}";
 		
-//		TestingMessage testingMessage = DataInit.initRequestMessage(str);
+		//TestingMessage testingMessage = DataInit.initRequestMessage();
+		//System.out.println(testingMessage.getCycle());
 		System.out.println("111111111");
 		}
 	

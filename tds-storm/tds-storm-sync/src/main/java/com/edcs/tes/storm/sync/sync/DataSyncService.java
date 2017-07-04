@@ -1,7 +1,8 @@
 package com.edcs.tes.storm.sync.sync;
 
+import com.edcs.tds.common.model.TestingResultData;
+import com.edcs.tds.common.util.DBHelperUtils;
 import com.edcs.tds.common.util.JsonUtils;
-import com.edcs.tes.storm.sync.model.TestingResultData;
 
 /**
  * Created by CaiSL2 on 2017/7/4.
@@ -13,13 +14,14 @@ import com.edcs.tes.storm.sync.model.TestingResultData;
 public class DataSyncService implements Runnable {
 
     private RedisSync redisSync;
-
+    private DBHelperUtils db ;
     @Override
     public void run() {
         String processJson = redisSync.getProcessJson();
+        db = new DBHelperUtils();
         if (processJson != null){
             TestingResultData testingResultData = JsonUtils.toObject(processJson, TestingResultData.class);
-
+            
         }
     }
 }
