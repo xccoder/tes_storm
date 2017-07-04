@@ -6,11 +6,11 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.edcs.tds.common.util.DBHelperUtils;
 import com.edcs.tds.common.util.JsonUtils;
 import com.edcs.tds.storm.model.MDStepInfo;
 import com.edcs.tds.storm.model.MDprocessInfo;
 import com.edcs.tds.storm.model.TestingMessage;
-import com.edcs.tds.storm.util.DBHelperUtils;
 
 import redis.clients.jedis.Jedis;
 
@@ -99,9 +99,9 @@ public class DataService {
 	public static void main(String[] args) {
 		System.out.println("12222222");
 		String sql = "select *from TX_ALERT_INFO";// SQL语句
-		DBHelperUtils db1 = new DBHelperUtils(sql);// 创建DBHelper对象
+		DBHelperUtils db1 = new DBHelperUtils();// 创建DBHelper对象
 		try {
-			ResultSet ret = db1.pst.executeQuery();// 执行语句，得到结果集
+			ResultSet ret = db1.selectList(sql);// 执行语句，得到结果集
 			while (ret.next()) {
 				String uid = ret.getString(1);
 				String ufname = ret.getString(2);
