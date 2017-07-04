@@ -1,5 +1,9 @@
 package com.edcs.tds.storm.service;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import com.edcs.tds.common.util.DBHelperUtils;
 import com.edcs.tds.storm.model.TestingMessage;
 
 /**
@@ -8,7 +12,7 @@ import com.edcs.tds.storm.model.TestingMessage;
  *
  */
 public class GetDataInterface {
-	
+	DBHelperUtils dbUtils = new DBHelperUtils();
 	/**
 	 * 根据流程号和序号来获取一条测试数据的上一条数据信息
 	 * 先到redis中去找，如果找不到再去HANA中找
@@ -33,5 +37,25 @@ public class GetDataInterface {
 		 return cycleNum;
 	 }
 	
+	 
+	 public static void main(String[] args) {
+			System.out.println("12222222");
+			String sql = "select *from TX_ALERT_INFO";// SQL语句
+			DBHelperUtils db1 = new DBHelperUtils();// 创建DBHelper对象
+			try {
+				ResultSet ret = db1.selectList(sql);// 执行语句，得到结果集
+				while (ret.next()) {
+					String uid = ret.getString(1);
+					String ufname = ret.getString(2);
+					String ulname = ret.getString(3);
+					String udate = ret.getString(4);
+					System.out.println(uid + "\t" + ufname + "\t" + ulname + "\t" + udate);
+				} // 显示数据
+				ret.close();
+				db1.close();// 关闭连接
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}  
 
 }
