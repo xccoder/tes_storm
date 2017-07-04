@@ -1,10 +1,10 @@
 package com.edcs.tds.storm.topology.calc;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentMap;
 
+import com.edcs.tds.storm.model.MDStepInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +23,7 @@ public class RuleCalc {
     protected final Logger logger = LoggerFactory.getLogger(RuleCalc.class);
 
     public void TestingRuleCalc(ScriptExecutor scriptExecutor, ExecuteContext executeContext, Binding shellContext,
-                                ConcurrentMap<String, List<RuleConfig>> ruleConfig) {
+                                ConcurrentMap<String, List<RuleConfig>> ruleConfig,CacheService cacheService) {
 
         TestingMessage testingMessage = executeContext.getTestingMessage();
         int matchedCount = 0;
@@ -40,11 +40,18 @@ public class RuleCalc {
                     // 从缓存中取对应ID的规则脚本开始执行				     //流程的工步ID
                     //从ScriptCacheMapping中匹配与当前工步相匹配的脚本
                     Script script = CacheService.getScriptCache().get(rule.getStepId()).getRight();
-                    ruleIsMatched = scriptExecutor.execute(script);
-//					最大量程
+
+                    //					最大量程
                     script.setProperty("IMaxRange", testingMessage.getSvIcRange());
 //					 电流
                     script.setProperty("I", testingMessage.getPvCurrent());
+                    MDStepInfo mdStepInfo = new MDStepInfo();
+                    //截止电流
+                    script.setProperty("IEnd", mdStepInfo.getSvStepEndCurrent());
+                    script.setProperty("P", mdStepInfo.getSvPower());
+                    script.setProperty("UEnd", mdStepInfo.getSvStepEndVoltage());
+
+                    ruleIsMatched = scriptExecutor.execute(script);
                     script.setBinding(shellContext);
                 } catch (Exception e) {
                     executeUsedTime = System.currentTimeMillis() - executeBeginTime;
@@ -62,6 +69,7 @@ public class RuleCalc {
         }
 
         // TODO 将结果集写入Redis缓存
+
 
     }
 

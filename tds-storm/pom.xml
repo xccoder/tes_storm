@@ -4,7 +4,7 @@
   <artifactId>tds-storm</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>storm projects for TDS</name>
+  <name>storm projects for TES</name>
   <modules>
   	<module>tds-storm-service</module>
   	<module>tds-storm-common</module>

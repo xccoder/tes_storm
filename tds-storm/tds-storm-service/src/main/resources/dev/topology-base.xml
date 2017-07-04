@@ -13,7 +13,9 @@
 				<entry key="kafka.brokerZkPath" value="/brokers" />
 				<entry key="kafka.offset.zkServers">
 					<list>
-						<value>hdp-demo.org</value>
+						<value>hadoop02.catl.com</value>
+						<value>hadoop03.catl.com</value>
+						<value>hadoop04.catl.com</value>
 					</list>
 				</entry>
 				<entry key="kafka.offset.zkPort" value="2181" />

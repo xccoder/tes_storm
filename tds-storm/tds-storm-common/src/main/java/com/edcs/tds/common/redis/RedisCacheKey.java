@@ -9,7 +9,7 @@ public class RedisCacheKey {
 
 	private static Joiner joiner = Joiner.on(":").skipNulls();
 
-	public static final String ROOT = "TDS";
+	public static final String ROOT = "TES";
 	public static final String CONFIG = "CONFIG";
 
 	public static byte[] getRuleConfig() {
