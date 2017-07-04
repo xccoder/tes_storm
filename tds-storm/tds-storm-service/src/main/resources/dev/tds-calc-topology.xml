@@ -6,8 +6,16 @@
 	default-lazy-init="true" default-init-method="init">
 
 	<import resource="classpath:topology-base.xml" />
+
+	<bean id="proxyJedisPoolFactory" class="com.edcs.tds.common.redis.JedisFactory">
+
+	</bean>
+
+	<bean id="proxyJedisPool" factory-bean="proxyJedisPoolFactory" factory-method="createProxyJedisPool"/>
+
 	<bean id="cacheService" class="com.edcs.tds.storm.service.CacheService">
 		<!--<property name="hbaseHelper" ref="hbaseHelper" />-->
+		<property name="proxyJedisPool" ref="proxyJedisPool"/>
 	</bean>
 
 </beans>

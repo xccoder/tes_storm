@@ -2,6 +2,5 @@ tds-storm/
 *.stackdump
 *.xml
 *.iml
-*.classpath
 *.prefs
 *.class

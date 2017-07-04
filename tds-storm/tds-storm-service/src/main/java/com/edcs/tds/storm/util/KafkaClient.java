@@ -43,7 +43,7 @@ public class KafkaClient<K, V> {
 	public void syncSend(V value) {
 		ProducerRecord<K, V> producerRecord = new ProducerRecord<K, V>(defaultTopic, value);
 		try {
-			producer.send(producerRecord).get(10, TimeUnit.SECONDS);
+			producer.send(producerRecord).get(100, TimeUnit.SECONDS);
 		} catch (TimeoutException e) {
 			logger.error("Sent message times out, topic name: {}, try sending the message again, error: " + e,
 					defaultTopic);

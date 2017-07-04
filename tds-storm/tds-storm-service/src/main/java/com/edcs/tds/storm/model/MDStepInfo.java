@@ -32,6 +32,12 @@ public class MDStepInfo implements Serializable {
     private Double svStepEndVoltage;//工步截止电压
     private Double svStepEndCurrent;//工步截止电流
     private Double svStepEndTemperature;//工步截止温度
+    private String scriptCurrenthash;//电流脚本hash
+    private String scriptVoltagehash;//电压脚本hash
+    private String scriptTemperaturehash;//温度脚本hash;
+    private String scriptTimehash;//时间脚本hash
+    private String scriptCapacityhash;//容量脚本Hash
+    private String scriptEnergyhash;//能量脚本hash
     private String startStep;//起始工步
     private Date createDateTime;//创建日期
     private String createUser;//创建用户
@@ -39,6 +45,54 @@ public class MDStepInfo implements Serializable {
     private String modifeidUser;//最后修改用户
     private List<MDSubRule> mdSubRuleList;//抽取规则列表
     public MDStepInfo() {
+    }
+
+    public String getScriptCurrenthash() {
+        return scriptCurrenthash;
+    }
+
+    public void setScriptCurrenthash(String scriptCurrenthash) {
+        this.scriptCurrenthash = scriptCurrenthash;
+    }
+
+    public String getScriptVoltagehash() {
+        return scriptVoltagehash;
+    }
+
+    public void setScriptVoltagehash(String scriptVoltagehash) {
+        this.scriptVoltagehash = scriptVoltagehash;
+    }
+
+    public String getScriptTemperaturehash() {
+        return scriptTemperaturehash;
+    }
+
+    public void setScriptTemperaturehash(String scriptTemperaturehash) {
+        this.scriptTemperaturehash = scriptTemperaturehash;
+    }
+
+    public String getScriptTimehash() {
+        return scriptTimehash;
+    }
+
+    public void setScriptTimehash(String scriptTimehash) {
+        this.scriptTimehash = scriptTimehash;
+    }
+
+    public String getScriptCapacityhash() {
+        return scriptCapacityhash;
+    }
+
+    public void setScriptCapacityhash(String scriptCapacityhash) {
+        this.scriptCapacityhash = scriptCapacityhash;
+    }
+
+    public String getScriptEnergyhash() {
+        return scriptEnergyhash;
+    }
+
+    public void setScriptEnergyhash(String scriptEnergyhash) {
+        this.scriptEnergyhash = scriptEnergyhash;
     }
 
     public String getHandle() {

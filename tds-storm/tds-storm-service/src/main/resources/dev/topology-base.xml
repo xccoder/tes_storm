@@ -9,7 +9,7 @@
 	<bean id="stormConfig" class="org.springframework.beans.factory.config.MapFactoryBean">
 		<property name="sourceMap">
 			<map>
-				<entry key="kafka.brokerZkStr" value="hdp-demo.org:2181" />
+				<entry key="kafka.brokerZkStr" value="172.26.66.32:2181,172.26.66.33:2181,172.26.66.34:2181" />
 				<entry key="kafka.brokerZkPath" value="/brokers" />
 				<entry key="kafka.offset.zkServers">
 					<list>
