@@ -123,7 +123,8 @@ public class CalcBolt extends BaseRichBolt {
             // 开始规则计算匹配
             ConcurrentMap<String, List<RuleConfig>> ruleConfig = CacheService.getRuleConfig();
             // 核心计算
-            calc.TestingRuleCalc(scriptExecutor, executeContext, shellContext, ruleConfig);
+            calc.TestingRuleCalc(scriptExecutor, executeContext, shellContext, ruleConfig,cacheService);
+            // 告知redis此流程已经结束
             String workType = testingMessage.getPvWorkType();
             if (StringUtils.isNotBlank(workType) && workType.equals("已完成")) {
                 //TODO 调用redis接口去通知此流程已经结束

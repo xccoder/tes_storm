@@ -23,7 +23,7 @@ public class RuleCalc {
     protected final Logger logger = LoggerFactory.getLogger(RuleCalc.class);
 
     public void TestingRuleCalc(ScriptExecutor scriptExecutor, ExecuteContext executeContext, Binding shellContext,
-                                ConcurrentMap<String, List<RuleConfig>> ruleConfig) {
+                                ConcurrentMap<String, List<RuleConfig>> ruleConfig,CacheService cacheService) {
 
         TestingMessage testingMessage = executeContext.getTestingMessage();
         int matchedCount = 0;
@@ -69,6 +69,7 @@ public class RuleCalc {
         }
 
         // TODO 将结果集写入Redis缓存
+
 
     }
 
