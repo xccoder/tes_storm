@@ -183,22 +183,22 @@ public class CacheService {
      * 初始化规则配置
      */
     public void initRuleConfig() {
-        Jedis jedis = null;
-
+        Jedis jedis =  new Jedis("172.26.66.31",6379);
+        System.out.println("开始》》》》》》》》》》》》");
         try {
-            jedis = proxyJedisPool.getResource();
+            //jedis = proxyJedisPool.getResource();
 
-            String newMdProcessjosn = jedis.get(RedisCacheKey.getMDProcessKey());
+            String newMdProcessjosn = jedis.get("TES");
             if (!StringUtils.equals(newMdProcessjosn, processInfoJson)) {
                 //Preconditions.checkNotNull(data);
                 ruleConfig.clear();
                 ruleIds.clear();
                 List<MDprocessInfo> mDprocessInfos = JsonUtils.toArray(newMdProcessjosn, MDprocessInfo.class);
-
+                System.out.println("mDprocessInfos的长度"+mDprocessInfos.size());
                 for (MDprocessInfo mDprocessInfo : mDprocessInfos) {
 
                     List<MDStepInfo> mdStepInfos = mDprocessInfo.getMdStepInfoList();
-
+                    System.out.println("mdStepInfos的长度"+mdStepInfos.size());
                     List<RuleConfig> ruleConfigCurrlist = new ArrayList<>();//电流场景
                     List<RuleConfig> ruleConfigTemplist = new ArrayList<>();//温度场景
                     List<RuleConfig> ruleConfigCapalist = new ArrayList<>();//容量场景
