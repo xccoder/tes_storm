@@ -59,7 +59,7 @@ public class CacheService {
     private String ruleConfigVersion;
 
     private String processInfoJson;//存流程信息
-    
+
     private DBHelperUtils dbUtils;//连接hana的工具类
 
     public String getProcessInfoJson() {
@@ -96,7 +96,7 @@ public class CacheService {
     public static ConcurrentMap<String, List<RuleConfig>> getRuleConfig() {
         return ruleConfig;
     }
-    
+
     public DBHelperUtils getDbUtils() {
 		return dbUtils;
 	}

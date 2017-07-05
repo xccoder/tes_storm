@@ -1,5 +1,7 @@
 package com.edcs.tes.storm.model;
 
+import com.edcs.tds.storm.model.MDStepInfo;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;

@@ -3,8 +3,8 @@ package com.edcs.tes.storm.sync;
 import com.edcs.tds.common.model.TestingResultData;
 import com.edcs.tds.common.util.DBHelperUtils;
 import com.edcs.tds.common.util.JsonUtils;
-import com.edcs.tes.storm.sync.dao.IResultData;
-import com.edcs.tes.storm.sync.dao.impl.ResultDataImpl;
+import com.edcs.tes.storm.dao.IResultData;
+import com.edcs.tes.storm.dao.impl.ResultDataImpl;
 
 import java.util.List;
 
@@ -25,5 +25,7 @@ public class DataSyncService implements Runnable {
             List<TestingResultData> testingResultDatas = JsonUtils.toArray(processJson,TestingResultData.class);
             iResultData.insertResultData(testingResultDatas);
         }
+
+
 
 }

@@ -185,7 +185,6 @@ public class ResultDataImpl implements IResultData {
         } catch (Exception e) {
             //
         }
-
         return false;
     }
 }
