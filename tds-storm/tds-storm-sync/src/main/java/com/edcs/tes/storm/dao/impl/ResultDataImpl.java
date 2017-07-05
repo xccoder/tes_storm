@@ -184,16 +184,22 @@ public class ResultDataImpl implements IResultData {
                 switch (testingSubChannel.getSubChannelName()) {
                     case "pvSubChannelData1":
                         subchannel1 = JsonUtils.toJson(testingSubChannel);
+                        break;
                     case "pvSubChannelData2":
                         subchannel1 = JsonUtils.toJson(testingSubChannel);
+                        break;
                     case "pvSubChannelData3":
                         subchannel1 = JsonUtils.toJson(testingSubChannel);
+                        break;
                     case "pvSubChannelData4":
                         subchannel1 = JsonUtils.toJson(testingSubChannel);
+                        break;
                     case "pvSubChannelData5":
                         subchannel1 = JsonUtils.toJson(testingSubChannel);
+                        break;
                     case "pvSubChannelData6":
                         subchannel1 = JsonUtils.toJson(testingSubChannel);
+                        break;
                 }
             }
         }
