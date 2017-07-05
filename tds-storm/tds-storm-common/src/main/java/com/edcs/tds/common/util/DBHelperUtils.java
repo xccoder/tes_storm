@@ -53,7 +53,7 @@ public class DBHelperUtils {
 		return rs;
 	}*/
 	
-	/*public boolean insert(String sql){
+	public boolean insert(String sql){
 		PreparedStatement pst = null;
 		boolean boo = false;
 		try {
@@ -64,7 +64,7 @@ public class DBHelperUtils {
 			e.printStackTrace();
 		}
 		return boo;
-	}*/
+	}
 	public void close(Connection conn,PreparedStatement pst,ResultSet result){
 		try {
 			if(result!=null) result.close();
