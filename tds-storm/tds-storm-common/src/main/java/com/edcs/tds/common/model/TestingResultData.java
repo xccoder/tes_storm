@@ -37,7 +37,7 @@ public class TestingResultData implements Serializable{
 	private BigDecimal upLimit;//报警上限
 	private BigDecimal lowLimit;//报警下限
 	private String originalProcessDataBO;//TX_ORIGINAL_PROCESS_DATA.HANDLE   TxOriginalProcessDataBO:<SITE>,<REMARK>,<SFC> ,<RESOURCE_ID>,<CHANNEL_ID>,<SEQUENCE_ID>
-	private Timestamp createdDateTime;//创建时间
+	private Date createdDateTime;//创建时间
 	private String createdUser;//创建用户
 	private Date modifiedDateTime;//最后修改日期
 	private String modifiedUser;//最后修改用户
@@ -183,10 +183,10 @@ public class TestingResultData implements Serializable{
 	public void setOriginalProcessDataBO(String originalProcessDataBO) {
 		this.originalProcessDataBO = originalProcessDataBO;
 	}
-	public Timestamp getCreatedDateTime() {
+	public Date getCreatedDateTime() {
 		return createdDateTime;
 	}
-	public void setCreatedDateTime(Timestamp createdDateTime) {
+	public void setCreatedDateTime(Date createdDateTime) {
 		this.createdDateTime = createdDateTime;
 	}
 	public String getCreatedUser() {

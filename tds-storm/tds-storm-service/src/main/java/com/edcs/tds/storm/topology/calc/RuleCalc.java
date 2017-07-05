@@ -1,28 +1,29 @@
 package com.edcs.tds.storm.topology.calc;
 
-import java.sql.Timestamp;
-import java.util.Date;
+import com.edcs.tds.common.engine.groovy.ScriptExecutor;
+import com.edcs.tds.common.model.RuleConfig;
+import com.edcs.tds.common.model.TestingResultData;
+import com.edcs.tds.common.util.JsonUtils;
+import com.edcs.tds.storm.model.ExecuteContext;
+import com.edcs.tds.storm.model.MDStepInfo;
+import com.edcs.tds.storm.model.MDprocessInfo;
+import com.edcs.tds.storm.model.TestingMessage;
+import com.edcs.tds.storm.service.CacheService;
+import groovy.lang.Binding;
+import groovy.lang.Script;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import redis.clients.jedis.Jedis;
+
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentMap;
 
-import com.edcs.tds.storm.model.*;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.edcs.tds.common.engine.groovy.ScriptExecutor;
-import com.edcs.tds.common.model.RuleConfig;
-import com.edcs.tds.storm.service.CacheService;
-
-import groovy.lang.Binding;
-import groovy.lang.Script;
-import redis.clients.jedis.Jedis;
-
 public class RuleCalc {
 
-
-    protected final Logger logger = LoggerFactory.getLogger(RuleCalc.class);
+    private static final Logger logger = LoggerFactory.getLogger(RuleCalc.class);
 
     public void TestingRuleCalc(ScriptExecutor scriptExecutor, ExecuteContext executeContext, Binding shellContext,
                                 ConcurrentMap<String, List<RuleConfig>> ruleConfig, CacheService cacheService) {
@@ -41,7 +42,6 @@ public class RuleCalc {
                 //遍历一个场景下工步的规则组
                 long executeUsedTime = 0;
                 long executeBeginTime = System.currentTimeMillis();
-
                 try {
                     // 从缓存中取对应ID的规则脚本开始执行				     //流程的工步ID
                     //从ScriptCacheMapping中匹配与当前工步相匹配的脚本
@@ -69,12 +69,15 @@ public class RuleCalc {
                     executeContext.addMatchedRule(rule.getId(), 0d, executeUsedTime);
                     // TODO 将结果集写入Redis缓存
                     Jedis jedis = cacheService.getProxyJedisPool().getResource();
+
+                    BigDecimal upLimit = BigDecimal.valueOf(Long.valueOf(alterLevel.split("_")[1]));//报警上限
+                    BigDecimal lowLimit = BigDecimal.valueOf(Long.valueOf(alterLevel.split("_")[2]));//报警下限
 //      key = 流程号+工步号+序号+业务循环号
-                    String key = mdStepInfo.getRemark() + mdStepInfo.getStepId() + testingMessage.getSequenceId() + testingMessage.getBusinessCycle();
+                    String key = mdStepInfo.getRemark() + testingMessage.getSequenceId();
                     String handle = "TxAlertInfoBO:" + mdStepInfo.getSite() + "," + mdStepInfo.getRemark() + "," + testingMessage.getSfc() + "," + categoty;
                     testingResultData.setHandle(handle);
                     testingResultData.setSite(mdStepInfo.getSite());
-                    testingResultData.setRemark(mdStepInfo.getRemark( ));
+                    testingResultData.setRemark(mdStepInfo.getRemark());
                     testingResultData.setStepId(mdStepInfo.getStepId());
                     testingResultData.setBusinessCycle(testingMessage.getBusinessCycle());
                     testingResultData.setCycle(testingMessage.getCycle());
@@ -82,26 +85,36 @@ public class RuleCalc {
                     testingResultData.setCategory(categoty);
                     testingResultData.setAltetSequenceNumber(0);
 //                    TxAlertInfoBO:<SITE>,<REMARK>,<SFC>,<CATEGORY>
-                    testingResultData.setTxAlertListInfoBO("TxAlertInfoBO:"+mdStepInfo.getSite()+","+mdStepInfo.getRemark()+","+mDprocessInfo.getSfc()+","+categoty);
+                    testingResultData.setTxAlertListInfoBO("TxAlertInfoBO:" + mdStepInfo.getSite() + "," + mdStepInfo.getRemark() + "," + mDprocessInfo.getSfc() + "," + categoty);
                     testingResultData.setStatus("new");
 //                    MdProcessInfoBO:<SITE>,<PROCESS_ID>,<REMARK>
                     testingResultData.setProcessDataBO("MdProcessInfoBO:" + mdStepInfo.getSite() + "," + mDprocessInfo.getProcessID() + "," + mDprocessInfo.getRemark());
                     testingResultData.setTimestamp(testingMessage.getTimestamp());
 //ErpResourceBO:<SITE>,<RESOURCE_ID>
-                    testingResultData.setErpResourceBO("ErpResourceBO:"+","+mdStepInfo.getSite()+","+testingMessage.getResourceId());
+                    testingResultData.setErpResourceBO("ErpResourceBO:" + mdStepInfo.getSite() + "," + testingMessage.getResourceId());
                     testingResultData.setChannelId(testingMessage.getChannelId());
                     testingResultData.setAlertLevel(alterLevel);
                     testingResultData.setDescription("异常数据");
-//                    testingResultData.setUpLimit();
-//                    testingResultData.setLowLimit();
+                    testingResultData.setUpLimit(upLimit);
+                    testingResultData.setLowLimit(lowLimit);
 //                    TxOriginalProcessDataBO:<SITE>,<REMARK>,<SFC> ,<RESOURCE_ID>,<CHANNEL_ID>,<SEQUENCE_ID>
-                    testingResultData.setOriginalProcessDataBO("TxOriginalProcessDataBO:"+mdStepInfo.getSite()+","+mdStepInfo.getRemark()+","+mDprocessInfo.getSfc()+","+testingMessage.getResourceId()+","+testingMessage.getChannelId()+"，"+testingMessage.getSequenceId());
-                    testingResultData.setCreatedDateTime(new Timestamp(System.currentTimeMillis()));
-                    testingResultData.setCreatedUser("");
-                    testingResultData.setModifiedDateTime(new Date());
-                    testingResultData.setModifiedUser("");
+                    testingResultData.setOriginalProcessDataBO("TxOriginalProcessDataBO:" + mdStepInfo.getSite() + "," + mdStepInfo.getRemark() + "," + mDprocessInfo.getSfc() + "," + testingMessage.getResourceId() + "," + testingMessage.getChannelId() + "，" + testingMessage.getSequenceId());
+                    testingResultData.setCreatedDateTime(mDprocessInfo.getCreateDateTime());
+                    testingResultData.setCreatedUser(mDprocessInfo.getCreateUser());
+                    testingResultData.setModifiedDateTime(mDprocessInfo.getModifiedDateTime());
+                    testingResultData.setModifiedUser(mDprocessInfo.getCreateUser());
                     testingResultData.setSequenceId(String.valueOf(testingMessage.getSequenceId()));
-                    jedis.set(key, "");
+                    testingResultData.setTestTimeDuration(testingMessage.getTestTimeDuration());//测试相对时长
+                    testingResultData.setPvVoltage();//电压
+                    testingResultData.setPvCurrent();//电流
+                    testingResultData.setPvTemperature();//温度
+                    testingResultData.setPvChargeCapacity();
+                    testingResultData.getPvDischargeCapacity();
+                    testingResultData.getPvChargeEnergy();
+                    testingResultData.getPvDischargeEnergy();
+
+                    String result = JsonUtils.toJson(testingResultData);
+                    jedis.set(key, result);
 
                 }
             }

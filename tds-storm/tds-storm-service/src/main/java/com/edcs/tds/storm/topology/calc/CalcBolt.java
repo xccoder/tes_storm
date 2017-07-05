@@ -42,7 +42,7 @@ public class CalcBolt extends BaseRichBolt {
     protected BeanSerializer beanSerializer;
     protected MessageRepeatFilter messageRepeatFilter;
     protected ScriptExecutor scriptExecutor;
-    protected EngineCommonService enginecommonservice;
+    protected EngineCommonService engineCommonService;
     protected DataService dataService;
 
     @SuppressWarnings({"rawtypes"})
@@ -56,7 +56,7 @@ public class CalcBolt extends BaseRichBolt {
         this.cacheService = beanFactory.getBean(CacheService.class);
         this.messageRepeatFilter = beanFactory.getBean(MessageRepeatFilter.class);
         this.scriptExecutor = beanFactory.getBean(ScriptExecutor.class);
-        this.enginecommonservice = beanFactory.getBean(EngineCommonService.class);
+        this.engineCommonService = beanFactory.getBean(EngineCommonService.class);
         this.dataService = beanFactory.getBean(DataService.class);
         this.cacheService = beanFactory.getBean(CacheService.class);
         this.cacheService.start();
@@ -118,7 +118,7 @@ public class CalcBolt extends BaseRichBolt {
             // TODO 加载主数据  CacheService.getDataXxxx();
             //
             // 初始化 ShellContext
-            DataInit.initShellContext(testingMessage, enginecommonservice, executeContext, shellContext);
+            DataInit.initShellContext(testingMessage, engineCommonService, executeContext, shellContext);
 
             // 开始规则计算匹配
             ConcurrentMap<String, List<RuleConfig>> ruleConfig = CacheService.getRuleConfig();
