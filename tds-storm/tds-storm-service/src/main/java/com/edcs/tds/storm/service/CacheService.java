@@ -210,7 +210,7 @@ public class CacheService {
                         if (mDstepInfo.getScriptCapacity() != null) {
                             RuleConfig ruleConfCapacity = new RuleConfig();
                             ruleConfCapacity.setRuleScript(mDstepInfo.getScriptCapacity());
-                            ruleConfCapacity.setHashcode(mDstepInfo.getScriptCapacityhash());
+                            ruleConfCapacity.setHashcode(mDstepInfo.getScriptCapacityHash());
                             ruleConfCapacity.setRuleGroup(1L);
                             ruleConfCapacity.setStepId(mDstepInfo.getRemark() + String.valueOf(mDstepInfo.getStepId()));
                             ruleConfigCapalist.add(ruleConfCapacity);
@@ -221,7 +221,7 @@ public class CacheService {
                         if (mDstepInfo.getScriptCurrent() != null) {
                             RuleConfig ruleConfCurrent = new RuleConfig();
                             ruleConfCurrent.setRuleScript(mDstepInfo.getScriptCurrent());
-                            ruleConfCurrent.setHashcode(mDstepInfo.getScriptCurrenthash());
+                            ruleConfCurrent.setHashcode(mDstepInfo.getScriptCurrentHash());
                             ruleConfCurrent.setRuleGroup(1L);
                             ruleConfCurrent.setStepId(mDstepInfo.getRemark() + String.valueOf(mDstepInfo.getStepId()));
                             ruleConfigCurrlist.add(ruleConfCurrent);
@@ -231,7 +231,7 @@ public class CacheService {
                         if (mDstepInfo.getScriptTemperature() != null) {
                             RuleConfig ruleConfTemperature = new RuleConfig();
                             ruleConfTemperature.setRuleScript(mDstepInfo.getScriptTemperature());
-                            ruleConfTemperature.setHashcode(mDstepInfo.getScriptTemperaturehash());
+                            ruleConfTemperature.setHashcode(mDstepInfo.getScriptTemperatureHash());
                             ruleConfTemperature.setRuleGroup(1L);
                             ruleConfTemperature.setStepId(mDstepInfo.getRemark() + String.valueOf(mDstepInfo.getStepId()));
                             ruleConfigTemplist.add(ruleConfTemperature);
@@ -241,7 +241,7 @@ public class CacheService {
                         if (mDstepInfo.getScriptTime() != null) {
                             RuleConfig ruleConfTime = new RuleConfig();
                             ruleConfTime.setRuleScript(mDstepInfo.getScriptTime());
-                            ruleConfTime.setHashcode(mDstepInfo.getScriptTimehash());
+                            ruleConfTime.setHashcode(mDstepInfo.getScriptTimeHash());
                             ruleConfTime.setRuleGroup(1L);
                             ruleConfTime.setStepId(mDstepInfo.getRemark() + String.valueOf(mDstepInfo.getStepId()));
                             ruleConfigTimelist.add(ruleConfTime);
@@ -251,7 +251,7 @@ public class CacheService {
                         if (mDstepInfo.getScriptVoltage() != null) {
                             RuleConfig ruleConfVoltage = new RuleConfig();
                             ruleConfVoltage.setRuleScript(mDstepInfo.getScriptVoltage());
-                            ruleConfVoltage.setHashcode(mDstepInfo.getScriptVoltagehash());
+                            ruleConfVoltage.setHashcode(mDstepInfo.getScriptVoltageHash());
                             ruleConfVoltage.setStepId(mDstepInfo.getRemark() + String.valueOf(mDstepInfo.getStepId()));
                             ruleConfVoltage.setRuleGroup(1L);
                             ruleConfigVoltlist.add(ruleConfVoltage);
@@ -261,7 +261,7 @@ public class CacheService {
                         if (mDstepInfo.getScriptEnergy() != null && mDstepInfo.getScriptEnergy().equals("")) {
                             RuleConfig ruleConfEnergy = new RuleConfig();
                             ruleConfEnergy.setRuleScript(mDstepInfo.getScriptEnergy());
-                            ruleConfEnergy.setHashcode(mDstepInfo.getScriptEnergyhash());
+                            ruleConfEnergy.setHashcode(mDstepInfo.getScriptEnergyHash());
                             ruleConfEnergy.setRuleGroup(1L);
                             ruleConfEnergy.setStepId(mDstepInfo.getRemark() + String.valueOf(mDstepInfo.getStepId()));
                             ruleConfigEnerlist.add(ruleConfEnergy);
@@ -270,12 +270,12 @@ public class CacheService {
                         }
                         /***将每个流程的各种场景放入scriptcachemapping*/
                     }
-                    ruleConfig.put(mDprocessInfo.getProcessID()+"curr", ruleConfigCurrlist);
-                    ruleConfig.put(mDprocessInfo.getProcessID()+"capa", ruleConfigCapalist);
-                    ruleConfig.put(mDprocessInfo.getProcessID()+"enger", ruleConfigEnerlist);
-                    ruleConfig.put(mDprocessInfo.getProcessID()+"temp", ruleConfigTemplist);
-                    ruleConfig.put(mDprocessInfo.getProcessID()+"time", ruleConfigTimelist);
-                    ruleConfig.put(mDprocessInfo.getProcessID()+"volt", ruleConfigVoltlist);
+                    ruleConfig.put(mDprocessInfo.getProcessId()+"curr", ruleConfigCurrlist);
+                    ruleConfig.put(mDprocessInfo.getProcessId()+"capa", ruleConfigCapalist);
+                    ruleConfig.put(mDprocessInfo.getProcessId()+"enger", ruleConfigEnerlist);
+                    ruleConfig.put(mDprocessInfo.getProcessId()+"temp", ruleConfigTemplist);
+                    ruleConfig.put(mDprocessInfo.getProcessId()+"time", ruleConfigTimelist);
+                    ruleConfig.put(mDprocessInfo.getProcessId()+"volt", ruleConfigVoltlist);
 
                 }
             }

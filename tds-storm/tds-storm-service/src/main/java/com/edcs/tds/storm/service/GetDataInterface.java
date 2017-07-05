@@ -97,6 +97,20 @@ public class GetDataInterface {
 		}
 		return testingMsg;
 	}
+	
+	/**
+	 * 获取一个流程中的上一个工步的最后一条数据（先到redis中获取，如果获取不到就到hana中获取）
+	 * @param testingMessage
+	 * @param i（表明上几个工步）
+	 * @param cacheService
+	 * @return
+	 */
+	public static TestingMessage getUpStepTestingMsg(TestingMessage testingMessage, int i, CacheService cacheService){
+		TestingMessage testingMsg = new TestingMessage();
+		
+		return testingMsg; 
+	}
+	
 
 	/**
 	 * 根据rootRemark先去redis中查询这条和rootRemark对应的remark的流程数据，如果找不到则再去HANA中找。

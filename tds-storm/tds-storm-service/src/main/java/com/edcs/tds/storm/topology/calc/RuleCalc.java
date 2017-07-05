@@ -86,7 +86,7 @@ public class RuleCalc {
                     testingResultData.setTxAlertListInfoBO("TxAlertInfoBO:" + mdStepInfo.getSite() + "," + mdStepInfo.getRemark() + "," + mDprocessInfo.getSfc() + "," + categoty);
                     testingResultData.setStatus("new");
 //                    MdProcessInfoBO:<SITE>,<PROCESS_ID>,<REMARK>
-                    testingResultData.setProcessDataBO("MdProcessInfoBO:" + mdStepInfo.getSite() + "," + mDprocessInfo.getProcessID() + "," + mDprocessInfo.getRemark());
+                    testingResultData.setProcessDataBO("MdProcessInfoBO:" + mdStepInfo.getSite() + "," + mDprocessInfo.getProcessId() + "," + mDprocessInfo.getRemark());
                     testingResultData.setTimestamp(testingMessage.getTimestamp());
 //ErpResourceBO:<SITE>,<RESOURCE_ID>
                     testingResultData.setErpResourceBO("ErpResourceBO:" + mdStepInfo.getSite() + "," + testingMessage.getResourceId());
