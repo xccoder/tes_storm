@@ -19,6 +19,7 @@ public class TestingResultData implements Serializable{
 	
 	private String handle;//TxAlertInfoBO:<SITE>,<REMARK>,<SFC>,<CATEGORY>,<ALERT_SEQUENCE_NUMBER>
 	private String site;
+	private String rootRemark;
 //	private String remark;//流程编号
 //	private int stepId;//工步序号
 //	private String stepName;//公布名称
@@ -60,6 +61,13 @@ public class TestingResultData implements Serializable{
 	}
 	public void setSite(String site) {
 		this.site = site;
+	}
+	
+	public String getRootRemark() {
+		return rootRemark;
+	}
+	public void setRootRemark(String rootRemark) {
+		this.rootRemark = rootRemark;
 	}
 	public String getCategory() {
 		return category;
