@@ -1,9 +1,5 @@
 package com.edcs.tds.storm.topology;
 
-import backtype.storm.tuple.Tuple;
-import com.edcs.tds.storm.model.TestingMessage;
-import com.edcs.tds.storm.service.DataInit;
-
 public class DataInitTest {
 	
 	public static void main(String[] args) {

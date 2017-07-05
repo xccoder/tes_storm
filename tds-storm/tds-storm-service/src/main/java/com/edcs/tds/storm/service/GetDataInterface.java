@@ -2,9 +2,17 @@ package com.edcs.tds.storm.service;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.edcs.tds.common.model.TestingMessage;
+import com.edcs.tds.common.model.TestingResultData;
+import com.edcs.tds.common.redis.ProxyJedisPool;
 import com.edcs.tds.common.util.DBHelperUtils;
-import com.edcs.tds.storm.model.TestingMessage;
+import com.edcs.tds.common.util.JsonUtils;
+
+import redis.clients.jedis.Jedis;
 
 /**
  * 获取数据的接口
@@ -21,7 +29,27 @@ public class GetDataInterface {
 	 * @return
 	 */
 	public static TestingMessage getUpTestingMsg(TestingMessage testingMessage,int i,CacheService cacheService){
-		
+		TestingMessage testingMsg = new TestingMessage();//用于返回值
+		ProxyJedisPool jedisPool = cacheService.getProxyJedisPool();//获取连接池
+		Jedis jedis = jedisPool.getResource();
+		String json = jedis.get(testingMessage.getRemark()+(testingMessage.getSequenceId()-i));
+		if(StringUtils.isNotBlank(json)){
+			List<TestingResultData> testingResultData = JsonUtils.toArray(json, TestingResultData.class);
+			for (TestingResultData testingResultData2 : testingResultData) {
+//				testingMsg.setSfc(testingResultData2.getSfc());//电芯号。
+//				testingMsg.setRemark(testingResultData2.getRemark());
+//				testingMsg.setChannelId(testingResultData2.getChannelId());//通道号
+//			    testingMsg.setSequenceId(testingResultData2.getSequenceId());//记录序号
+//				testingMsg.setCycle(testingResultData2.getCycle());
+//				testingMsg.setStepId(testingResultData2.getStepId());//工步序号
+//				testingMsg.setStepName(testingResultData2.getStepName());//公布名称
+//				testingMsg.setTestTimeDuration(testingResultData2.getTestTimeDuration());//测试相对时常
+				      
+			}
+			
+		}else{//到hana中查询
+			
+		}
 		return null;
 	}
 	

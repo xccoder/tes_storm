@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSON;
 import com.edcs.tds.common.model.RuleConfig;
+import com.edcs.tds.common.model.TestingMessage;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 

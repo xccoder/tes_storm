@@ -1,16 +1,13 @@
 package com.edcs.tds.storm.service;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.edcs.tds.common.util.DBHelperUtils;
+import com.edcs.tds.common.model.TestingMessage;
 import com.edcs.tds.common.util.JsonUtils;
 import com.edcs.tds.storm.model.MDStepInfo;
 import com.edcs.tds.storm.model.MDprocessInfo;
-import com.edcs.tds.storm.model.TestingMessage;
 
 import redis.clients.jedis.Jedis;
 

@@ -19,11 +19,12 @@ public class TestingResultData implements Serializable{
 	
 	private String handle;//TxAlertInfoBO:<SITE>,<REMARK>,<SFC>,<CATEGORY>,<ALERT_SEQUENCE_NUMBER>
 	private String site;
-	private String remark;//流程编号
-	private int stepId;//工步序号
-	private int businessCycle;//业务循环号。
-	private int cycle;//设备循环号
-	private String sfc;//电芯号
+//	private String remark;//流程编号
+//	private int stepId;//工步序号
+//	private String stepName;//公布名称
+//	private int businessCycle;//业务循环号。
+//	private int cycle;//设备循环号
+//	private String sfc;//电芯号
 	private String category;//类别（电压，电流，温度，相对时间，容量和能量）
 	private int altetSequenceNumber;//序列值（同一个工步之间报警的序号）
 	private String txAlertListInfoBO;//TX_ALERT_LIST_INFO.HANDLE  TxAlertListInfoBO:<SITE>,<ALERT_LIST_ID>
@@ -31,34 +32,20 @@ public class TestingResultData implements Serializable{
 	private String processDataBO;//MD_PROCESS_DATA.HANDLE  MdProcessInfoBO:<SITE>,<PROCESS_ID>,<REMARK>
 	private Date timestamp;//记录报警时间（什么时候报警的）
 	private String erpResourceBO;//ERP_RESOURCE.HANDLE   ErpResourceBO:<SITE>,<RESOURCE_ID>
-	private int channelId;//通道号
+//	private int channelId;//通道号
 	private String alertLevel;//报警级别
 	private String description;//报警信息描述
 	private BigDecimal upLimit;//报警上限
 	private BigDecimal lowLimit;//报警下限
 	private String originalProcessDataBO;//TX_ORIGINAL_PROCESS_DATA.HANDLE   TxOriginalProcessDataBO:<SITE>,<REMARK>,<SFC> ,<RESOURCE_ID>,<CHANNEL_ID>,<SEQUENCE_ID>
-	private Timestamp createdDateTime;//创建时间
+	private Date createdDateTime;//创建时间
 	private String createdUser;//创建用户
 	private Date modifiedDateTime;//最后修改日期
 	private String modifiedUser;//最后修改用户
-	private int sequenceId;  //记录序号
+//	private int sequenceId;  //记录序号
 	
-	private BigDecimal testTimeDuration;//测试相对时长
-	private BigDecimal pvVoltage;//电压
-	private BigDecimal pvCurrent;//电流
-	private BigDecimal pvTemperature;//温度  temperature
-	private BigDecimal pvChargeCapacity;//充电容量  充电容量和放电容量一定有一个为0   ccap
-	private BigDecimal pvDischargeCapacity;//放电容量 dccap
-	private BigDecimal pvChargeEnergy;//充电能量
-	private BigDecimal pvDischargeEnergy;//放电能量 dceng
-
-	public int getSequenceId() {
-		return sequenceId;
-	}
-
-	public void setSequenceId(int sequenceId) {
-		this.sequenceId = sequenceId;
-	}
+	private TestingMessage testingMessage;//测试原始数据
+    
 
 	public String getHandle() {
 		return handle;
@@ -73,37 +60,6 @@ public class TestingResultData implements Serializable{
 	}
 	public void setSite(String site) {
 		this.site = site;
-	}
-	public String getRemark() {
-		return remark;
-	}
-	public void setRemark(String remark) {
-		this.remark = remark;
-	}
-	
-	public int getStepId() {
-		return stepId;
-	}
-	public void setStepId(int stepId) {
-		this.stepId = stepId;
-	}
-	public int getBusinessCycle() {
-		return businessCycle;
-	}
-	public void setBusinessCycle(int businessCycle) {
-		this.businessCycle = businessCycle;
-	}
-	public int getCycle() {
-		return cycle;
-	}
-	public void setCycle(int cycle) {
-		this.cycle = cycle;
-	}
-	public String getSfc() {
-		return sfc;
-	}
-	public void setSfc(String sfc) {
-		this.sfc = sfc;
 	}
 	public String getCategory() {
 		return category;
@@ -147,12 +103,6 @@ public class TestingResultData implements Serializable{
 	public void setErpResourceBO(String erpResourceBO) {
 		this.erpResourceBO = erpResourceBO;
 	}
-	public int getChannelId() {
-		return channelId;
-	}
-	public void setChannelId(int channelId) {
-		this.channelId = channelId;
-	}
 	public String getAlertLevel() {
 		return alertLevel;
 	}
@@ -183,10 +133,10 @@ public class TestingResultData implements Serializable{
 	public void setOriginalProcessDataBO(String originalProcessDataBO) {
 		this.originalProcessDataBO = originalProcessDataBO;
 	}
-	public Timestamp getCreatedDateTime() {
+	public Date getCreatedDateTime() {
 		return createdDateTime;
 	}
-	public void setCreatedDateTime(Timestamp createdDateTime) {
+	public void setCreatedDateTime(Date createdDateTime) {
 		this.createdDateTime = createdDateTime;
 	}
 	public String getCreatedUser() {
@@ -208,67 +158,12 @@ public class TestingResultData implements Serializable{
 		this.modifiedUser = modifiedUser;
 	}
 
-	public BigDecimal getTestTimeDuration() {
-		return testTimeDuration;
+	public TestingMessage getTestingMessage() {
+		return testingMessage;
 	}
 
-	public void setTestTimeDuration(BigDecimal testTimeDuration) {
-		this.testTimeDuration = testTimeDuration;
+	public void setTestingMessage(TestingMessage testingMessage) {
+		this.testingMessage = testingMessage;
 	}
-
-	public BigDecimal getPvVoltage() {
-		return pvVoltage;
-	}
-
-	public void setPvVoltage(BigDecimal pvVoltage) {
-		this.pvVoltage = pvVoltage;
-	}
-
-	public BigDecimal getPvCurrent() {
-		return pvCurrent;
-	}
-
-	public void setPvCurrent(BigDecimal pvCurrent) {
-		this.pvCurrent = pvCurrent;
-	}
-
-	public BigDecimal getPvTemperature() {
-		return pvTemperature;
-	}
-
-	public void setPvTemperature(BigDecimal pvTemperature) {
-		this.pvTemperature = pvTemperature;
-	}
-
-	public BigDecimal getPvChargeCapacity() {
-		return pvChargeCapacity;
-	}
-
-	public void setPvChargeCapacity(BigDecimal pvChargeCapacity) {
-		this.pvChargeCapacity = pvChargeCapacity;
-	}
-
-	public BigDecimal getPvDischargeCapacity() {
-		return pvDischargeCapacity;
-	}
-
-	public void setPvDischargeCapacity(BigDecimal pvDischargeCapacity) {
-		this.pvDischargeCapacity = pvDischargeCapacity;
-	}
-
-	public BigDecimal getPvChargeEnergy() {
-		return pvChargeEnergy;
-	}
-
-	public void setPvChargeEnergy(BigDecimal pvChargeEnergy) {
-		this.pvChargeEnergy = pvChargeEnergy;
-	}
-
-	public BigDecimal getPvDischargeEnergy() {
-		return pvDischargeEnergy;
-	}
-
-	public void setPvDischargeEnergy(BigDecimal pvDischargeEnergy) {
-		this.pvDischargeEnergy = pvDischargeEnergy;
-	}
+	
 }
