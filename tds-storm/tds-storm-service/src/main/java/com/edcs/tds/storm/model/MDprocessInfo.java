@@ -1,6 +1,7 @@
 package com.edcs.tds.storm.model;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -12,7 +13,7 @@ public class MDprocessInfo implements Serializable {
 
     private static final long serialVersionUID = -8747661550591511712L;
     private String handle;
-    private String processID;//流程号
+    private String processId;//流程号
     private String site;//1000表示测试的是电芯
     private String remark;//流程文件标识号
     private String testRequestId;//测试申请单号
@@ -25,37 +26,37 @@ public class MDprocessInfo implements Serializable {
     private String svModel;//model
     private String svCapacityValue;//标称容量
     private String fixtureType;//夹具模型
-    private Double svInitFixtureForce;//初始夹具力
-    private Double svInitWeight;//初始重量
-    private Double svInitVolume;//初始体积
-    private Double svInitIR;//初始电阻
-    private Double svInitOCV;//初始ocv
-    private Double svInitThickness;//初始厚度
+    private BigDecimal svInitFixtureForce;//初始夹具力
+    private BigDecimal svInitWeight;//初始重量
+    private BigDecimal svInitVolume;//初始体积
+    private BigDecimal svInitIr;//初始电阻
+    private BigDecimal svInitOcv;//初始ocv
+    private BigDecimal svInitThickness;//初始厚度
     private String daysOrCycle;//天数/循环
-    private Double svLowerU;//电压下线
-    private Double svUpperU;//电压上线
-    private Double svTemperature;//温度
-    private Double svTimeDuration;//测试时间
-    private Double svChangeCurrent;//充电电流
-    private Double svDischargeVoltage;//放电电流
-    private Double svDischargeCUrrent;//放电电压
-    private Double svChangeVoltage;//充电电压
-    private Double svChangrPower;//充电功率
-    private Double svDischargePower;//放电功率
-    private int cycleNumIber;//循环数
-    private Double soc;//soc
+    private BigDecimal svLowerU;//电压下线
+    private BigDecimal svUpperU;//电压上线
+    private BigDecimal svTemperature;//温度
+    private BigDecimal svTimeDuration;//测试时间
+    private BigDecimal svChargeCurrent;//充电电流
+    private BigDecimal svDischargeVoltage;//放电电流
+    private BigDecimal svDischargeCurrent;//放电电压
+    private BigDecimal svChargeVoltage;//充电电压
+    private BigDecimal svChargePower;//充电功率
+    private BigDecimal svDischargePower;//放电功率
+    private int cycleNumber;//循环数
+    private BigDecimal soc;//soc
     private int pluseTimes;//脉冲次数
-    private Double chargeMulti;//充电倍率
-    private Double disChargeMutil;//放电倍率
-    private String storeEndCOndition;//存储结束条件
+    private BigDecimal chargeMulti;//充电倍率
+    private BigDecimal disChargeMutil;//放电倍率
+    private String storeEndCondition;//存储结束条件
     private String storeCrossCondition;//存储交叉条件
     private String cycleEndCondition;//循环结束条件
     private String cycleCrossCondition;//循环交叉条件
     private String simEndCondition;//工况结束条件
     private String simCrossCondition;//工况交叉条件
-    private boolean isISODischarge;//是否恒压放电
+    private boolean isIsoDischarge;//是否恒压放电
     private String isoDischargeDuration;//恒压放电时长
-    private String constantIRValue;//横阻值
+    private String constantIrValue;//横阻值
     private String cycleTemperature;//循环温度
     private String storeTemperature;//存储温度
     private String txStatus;//流程状态
@@ -64,7 +65,11 @@ public class MDprocessInfo implements Serializable {
     private Date modifiedDateTime;//最后修改时间
     private String modifiedUser;//最后修改用户
     private List<MDStepInfo> mdStepInfoList;//流程下所有工步
+
     private String rootRemark;
+
+    public MDprocessInfo() {
+    }
 
     public String getHandle() {
         return handle;
@@ -74,76 +79,12 @@ public class MDprocessInfo implements Serializable {
         this.handle = handle;
     }
 
-    public String getPackageId() {
-        return packageId;
+    public String getProcessId() {
+        return processId;
     }
 
-    public void setPackageId(String packageId) {
-        this.packageId = packageId;
-    }
-
-    public String getTxStatus() {
-        return txStatus;
-    }
-
-    public void setTxStatus(String txStatus) {
-        this.txStatus = txStatus;
-    }
-
-    public String getCreateUser() {
-        return createUser;
-    }
-
-    public void setCreateUser(String createUser) {
-        this.createUser = createUser;
-    }
-
-    public Date getModifiedDateTime() {
-        return modifiedDateTime;
-    }
-
-    public void setModifiedDateTime(Date modifiedDateTime) {
-        this.modifiedDateTime = modifiedDateTime;
-    }
-
-    public String getModifiedUser() {
-        return modifiedUser;
-    }
-
-    public void setModifiedUser(String modifiedUser) {
-        this.modifiedUser = modifiedUser;
-    }
-
-    public String getRootRemark() {
-        return rootRemark;
-    }
-
-    public void setRootRemark(String rootRemark) {
-        this.rootRemark = rootRemark;
-    }
-
-    public List<MDStepInfo> getMdStepInfoList() {
-        return mdStepInfoList;
-    }
-
-    public void setMdStepInfoList(List<MDStepInfo> mdStepInfoList) {
-        this.mdStepInfoList = mdStepInfoList;
-    }
-
-
-    public MDprocessInfo() {
-    }
-
-    public static long getSerialVersionUID() {
-        return serialVersionUID;
-    }
-
-    public String getProcessID() {
-        return processID;
-    }
-
-    public void setProcessID(String processID) {
-        this.processID = processID;
+    public void setProcessId(String processId) {
+        this.processId = processId;
     }
 
     public String getSite() {
@@ -194,6 +135,14 @@ public class MDprocessInfo implements Serializable {
         this.engineer = engineer;
     }
 
+    public String getPackageId() {
+        return packageId;
+    }
+
+    public void setPackageId(String packageId) {
+        this.packageId = packageId;
+    }
+
     public String getProject() {
         return project;
     }
@@ -234,51 +183,51 @@ public class MDprocessInfo implements Serializable {
         this.fixtureType = fixtureType;
     }
 
-    public Double getSvInitFixtureForce() {
+    public BigDecimal getSvInitFixtureForce() {
         return svInitFixtureForce;
     }
 
-    public void setSvInitFixtureForce(Double svInitFixtureForce) {
+    public void setSvInitFixtureForce(BigDecimal svInitFixtureForce) {
         this.svInitFixtureForce = svInitFixtureForce;
     }
 
-    public Double getSvInitWeight() {
+    public BigDecimal getSvInitWeight() {
         return svInitWeight;
     }
 
-    public void setSvInitWeight(Double svInitWeight) {
+    public void setSvInitWeight(BigDecimal svInitWeight) {
         this.svInitWeight = svInitWeight;
     }
 
-    public Double getSvInitVolume() {
+    public BigDecimal getSvInitVolume() {
         return svInitVolume;
     }
 
-    public void setSvInitVolume(Double svInitVolume) {
+    public void setSvInitVolume(BigDecimal svInitVolume) {
         this.svInitVolume = svInitVolume;
     }
 
-    public Double getSvInitIR() {
-        return svInitIR;
+    public BigDecimal getSvInitIr() {
+        return svInitIr;
     }
 
-    public void setSvInitIR(Double svInitIR) {
-        this.svInitIR = svInitIR;
+    public void setSvInitIr(BigDecimal svInitIr) {
+        this.svInitIr = svInitIr;
     }
 
-    public Double getSvInitOCV() {
-        return svInitOCV;
+    public BigDecimal getSvInitOcv() {
+        return svInitOcv;
     }
 
-    public void setSvInitOCV(Double svInitOCV) {
-        this.svInitOCV = svInitOCV;
+    public void setSvInitOcv(BigDecimal svInitOcv) {
+        this.svInitOcv = svInitOcv;
     }
 
-    public Double getSvInitThickness() {
+    public BigDecimal getSvInitThickness() {
         return svInitThickness;
     }
 
-    public void setSvInitThickness(Double svInitThickness) {
+    public void setSvInitThickness(BigDecimal svInitThickness) {
         this.svInitThickness = svInitThickness;
     }
 
@@ -290,99 +239,99 @@ public class MDprocessInfo implements Serializable {
         this.daysOrCycle = daysOrCycle;
     }
 
-    public Double getSvLowerU() {
+    public BigDecimal getSvLowerU() {
         return svLowerU;
     }
 
-    public void setSvLowerU(Double svLowerU) {
+    public void setSvLowerU(BigDecimal svLowerU) {
         this.svLowerU = svLowerU;
     }
 
-    public Double getSvUpperU() {
+    public BigDecimal getSvUpperU() {
         return svUpperU;
     }
 
-    public void setSvUpperU(Double svUpperU) {
+    public void setSvUpperU(BigDecimal svUpperU) {
         this.svUpperU = svUpperU;
     }
 
-    public Double getSvTemperature() {
+    public BigDecimal getSvTemperature() {
         return svTemperature;
     }
 
-    public void setSvTemperature(Double svTemperature) {
+    public void setSvTemperature(BigDecimal svTemperature) {
         this.svTemperature = svTemperature;
     }
 
-    public Double getSvTimeDuration() {
+    public BigDecimal getSvTimeDuration() {
         return svTimeDuration;
     }
 
-    public void setSvTimeDuration(Double svTimeDuration) {
+    public void setSvTimeDuration(BigDecimal svTimeDuration) {
         this.svTimeDuration = svTimeDuration;
     }
 
-    public Double getSvChangeCurrent() {
-        return svChangeCurrent;
+    public BigDecimal getSvChargeCurrent() {
+        return svChargeCurrent;
     }
 
-    public void setSvChangeCurrent(Double svChangeCurrent) {
-        this.svChangeCurrent = svChangeCurrent;
+    public void setSvChargeCurrent(BigDecimal svChargeCurrent) {
+        this.svChargeCurrent = svChargeCurrent;
     }
 
-    public Double getSvDischargeVoltage() {
+    public BigDecimal getSvDischargeVoltage() {
         return svDischargeVoltage;
     }
 
-    public void setSvDischargeVoltage(Double svDischargeVoltage) {
+    public void setSvDischargeVoltage(BigDecimal svDischargeVoltage) {
         this.svDischargeVoltage = svDischargeVoltage;
     }
 
-    public Double getSvDischargeCUrrent() {
-        return svDischargeCUrrent;
+    public BigDecimal getSvDischargeCurrent() {
+        return svDischargeCurrent;
     }
 
-    public void setSvDischargeCUrrent(Double svDischargeCUrrent) {
-        this.svDischargeCUrrent = svDischargeCUrrent;
+    public void setSvDischargeCurrent(BigDecimal svDischargeCurrent) {
+        this.svDischargeCurrent = svDischargeCurrent;
     }
 
-    public Double getSvChangeVoltage() {
-        return svChangeVoltage;
+    public BigDecimal getSvChargeVoltage() {
+        return svChargeVoltage;
     }
 
-    public void setSvChangeVoltage(Double svChangeVoltage) {
-        this.svChangeVoltage = svChangeVoltage;
+    public void setSvChargeVoltage(BigDecimal svChargeVoltage) {
+        this.svChargeVoltage = svChargeVoltage;
     }
 
-    public Double getSvChangrPower() {
-        return svChangrPower;
+    public BigDecimal getSvChargePower() {
+        return svChargePower;
     }
 
-    public void setSvChangrPower(Double svChangrPower) {
-        this.svChangrPower = svChangrPower;
+    public void setSvChargePower(BigDecimal svChargePower) {
+        this.svChargePower = svChargePower;
     }
 
-    public Double getSvDischargePower() {
+    public BigDecimal getSvDischargePower() {
         return svDischargePower;
     }
 
-    public void setSvDischargePower(Double svDischargePower) {
+    public void setSvDischargePower(BigDecimal svDischargePower) {
         this.svDischargePower = svDischargePower;
     }
 
-    public int getCycleNumIber() {
-        return cycleNumIber;
+    public int getCycleNumber() {
+        return cycleNumber;
     }
 
-    public void setCycleNumIber(int cycleNumIber) {
-        this.cycleNumIber = cycleNumIber;
+    public void setCycleNumber(int cycleNumber) {
+        this.cycleNumber = cycleNumber;
     }
 
-    public Double getSoc() {
+    public BigDecimal getSoc() {
         return soc;
     }
 
-    public void setSoc(Double soc) {
+    public void setSoc(BigDecimal soc) {
         this.soc = soc;
     }
 
@@ -394,28 +343,28 @@ public class MDprocessInfo implements Serializable {
         this.pluseTimes = pluseTimes;
     }
 
-    public Double getChargeMulti() {
+    public BigDecimal getChargeMulti() {
         return chargeMulti;
     }
 
-    public void setChargeMulti(Double chargeMulti) {
+    public void setChargeMulti(BigDecimal chargeMulti) {
         this.chargeMulti = chargeMulti;
     }
 
-    public Double getDisChargeMutil() {
+    public BigDecimal getDisChargeMutil() {
         return disChargeMutil;
     }
 
-    public void setDisChargeMutil(Double disChargeMutil) {
+    public void setDisChargeMutil(BigDecimal disChargeMutil) {
         this.disChargeMutil = disChargeMutil;
     }
 
-    public String getStoreEndCOndition() {
-        return storeEndCOndition;
+    public String getStoreEndCondition() {
+        return storeEndCondition;
     }
 
-    public void setStoreEndCOndition(String storeEndCOndition) {
-        this.storeEndCOndition = storeEndCOndition;
+    public void setStoreEndCondition(String storeEndCondition) {
+        this.storeEndCondition = storeEndCondition;
     }
 
     public String getStoreCrossCondition() {
@@ -458,12 +407,12 @@ public class MDprocessInfo implements Serializable {
         this.simCrossCondition = simCrossCondition;
     }
 
-    public boolean ISODischarge() {
-        return isISODischarge;
+    public boolean isoDischarge() {
+        return isIsoDischarge;
     }
 
-    public void setISODischarge(boolean ISODischarge) {
-        isISODischarge = ISODischarge;
+    public void setIsoDischarge(boolean isoDischarge) {
+        isIsoDischarge = isoDischarge;
     }
 
     public String getIsoDischargeDuration() {
@@ -474,12 +423,12 @@ public class MDprocessInfo implements Serializable {
         this.isoDischargeDuration = isoDischargeDuration;
     }
 
-    public String getConstantIRValue() {
-        return constantIRValue;
+    public String getConstantIrValue() {
+        return constantIrValue;
     }
 
-    public void setConstantIRValue(String constantIRValue) {
-        this.constantIRValue = constantIRValue;
+    public void setConstantIrValue(String constantIrValue) {
+        this.constantIrValue = constantIrValue;
     }
 
     public String getCycleTemperature() {
@@ -498,6 +447,14 @@ public class MDprocessInfo implements Serializable {
         this.storeTemperature = storeTemperature;
     }
 
+    public String getTxStatus() {
+        return txStatus;
+    }
+
+    public void setTxStatus(String txStatus) {
+        this.txStatus = txStatus;
+    }
+
     public Date getCreateDateTime() {
         return createDateTime;
     }
@@ -506,4 +463,43 @@ public class MDprocessInfo implements Serializable {
         this.createDateTime = createDateTime;
     }
 
+    public String getCreateUser() {
+        return createUser;
+    }
+
+    public void setCreateUser(String createUser) {
+        this.createUser = createUser;
+    }
+
+    public Date getModifiedDateTime() {
+        return modifiedDateTime;
+    }
+
+    public void setModifiedDateTime(Date modifiedDateTime) {
+        this.modifiedDateTime = modifiedDateTime;
+    }
+
+    public String getModifiedUser() {
+        return modifiedUser;
+    }
+
+    public void setModifiedUser(String modifiedUser) {
+        this.modifiedUser = modifiedUser;
+    }
+
+    public List<MDStepInfo> getMdStepInfoList() {
+        return mdStepInfoList;
+    }
+
+    public void setMdStepInfoList(List<MDStepInfo> mdStepInfoList) {
+        this.mdStepInfoList = mdStepInfoList;
+    }
+
+    public String getRootRemark() {
+        return rootRemark;
+    }
+
+    public void setRootRemark(String rootRemark) {
+        this.rootRemark = rootRemark;
+    }
 }

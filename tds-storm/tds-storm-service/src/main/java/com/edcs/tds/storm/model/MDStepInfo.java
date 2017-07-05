@@ -1,6 +1,7 @@
 package com.edcs.tds.storm.model;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -22,77 +23,41 @@ public class MDStepInfo implements Serializable {
     private String scriptCapacity;//容量判异脚本
     private String scriptEnergy;//能量判异脚本
     private boolean isCycleSignalStep;//是否循环标识
-    private Double deltaVoltage;//电压差
-    private Double svPower;//功率
-    private Double svIR;//内阻
-    private Double svVoltage;//电压
-    private Double svCapacity;//容量
-    private Double svCurrent;//电流
-    private Double svStepEndCapacity;//工步截止容量
-    private Double svStepEndVoltage;//工步截止电压
-    private Double svStepEndCurrent;//工步截止电流
-    private Double svStepEndTemperature;//工步截止温度
-    private String scriptCurrenthash;//电流脚本hash
-    private String scriptVoltagehash;//电压脚本hash
-    private String scriptTemperaturehash;//温度脚本hash;
-    private String scriptTimehash;//时间脚本hash
-    private String scriptCapacityhash;//容量脚本Hash
-    private String scriptEnergyhash;//能量脚本hash
+    private BigDecimal deltaVoltage;//电压差
+    private BigDecimal svPower;//功率
+    private BigDecimal svIr;//内阻
+    private BigDecimal svVoltage;//电压
+    private BigDecimal svCapacity;//容量
+    private BigDecimal svCurrent;//电流
+    private BigDecimal svEnergy;//能量
+    private BigDecimal svTemperature;//温度
+    private int cycleCount;//循环数
+    private String conditionType;//循环条件
+    private String conditionOperationalCharacter;//条件操作符
+    private String conditionValue;//条件值
+    private String gotoStep;//跳转工步
+    private BigDecimal startSoc;//开始SOC
+    private BigDecimal socIncrement;//SOC增量
+    private BigDecimal endSoc;//结束SOC
+
+    private BigDecimal svStepEndCapacity;//工步截止容量
+    private BigDecimal svStepEndVoltage;//工步截止电压
+    private BigDecimal svStepEndCurrent;//工步截止电流
+    private BigDecimal svStepEndTemperature;//工步截止温度
+    private String scriptCurrentHash;//电流脚本hash
+    private String scriptVoltageHash;//电压脚本hash
+    private String scriptTemperatureHash;//温度脚本hash;
+    private String scriptTimeHash;//时间脚本hash
+    private String scriptCapacityHash;//容量脚本Hash
+    private String scriptEnergyHash;//能量脚本hash
     private String startStep;//起始工步
     private Date createDateTime;//创建日期
     private String createUser;//创建用户
     private Date modifiedDateTime;//最后修改日期
     private String modifeidUser;//最后修改用户
     private List<MDSubRule> mdSubRuleList;//抽取规则列表
+
     public MDStepInfo() {
-    }
-
-    public String getScriptCurrenthash() {
-        return scriptCurrenthash;
-    }
-
-    public void setScriptCurrenthash(String scriptCurrenthash) {
-        this.scriptCurrenthash = scriptCurrenthash;
-    }
-
-    public String getScriptVoltagehash() {
-        return scriptVoltagehash;
-    }
-
-    public void setScriptVoltagehash(String scriptVoltagehash) {
-        this.scriptVoltagehash = scriptVoltagehash;
-    }
-
-    public String getScriptTemperaturehash() {
-        return scriptTemperaturehash;
-    }
-
-    public void setScriptTemperaturehash(String scriptTemperaturehash) {
-        this.scriptTemperaturehash = scriptTemperaturehash;
-    }
-
-    public String getScriptTimehash() {
-        return scriptTimehash;
-    }
-
-    public void setScriptTimehash(String scriptTimehash) {
-        this.scriptTimehash = scriptTimehash;
-    }
-
-    public String getScriptCapacityhash() {
-        return scriptCapacityhash;
-    }
-
-    public void setScriptCapacityhash(String scriptCapacityhash) {
-        this.scriptCapacityhash = scriptCapacityhash;
-    }
-
-    public String getScriptEnergyhash() {
-        return scriptEnergyhash;
-    }
-
-    public void setScriptEnergyhash(String scriptEnergyhash) {
-        this.scriptEnergyhash = scriptEnergyhash;
     }
 
     public String getHandle() {
@@ -109,66 +74,6 @@ public class MDStepInfo implements Serializable {
 
     public void setSite(String site) {
         this.site = site;
-    }
-
-    public String getCreateUser() {
-        return createUser;
-    }
-
-    public void setCreateUser(String createUser) {
-        this.createUser = createUser;
-    }
-
-    public Date getModifiedDateTime() {
-        return modifiedDateTime;
-    }
-
-    public void setModifiedDateTime(Date modifiedDateTime) {
-        this.modifiedDateTime = modifiedDateTime;
-    }
-
-    public String getModifeidUser() {
-        return modifeidUser;
-    }
-
-    public void setModifeidUser(String modifeidUser) {
-        this.modifeidUser = modifeidUser;
-    }
-
-    public Double getSvStepEndVoltage() {
-        return svStepEndVoltage;
-    }
-
-    public void setSvStepEndVoltage(Double svStepEndVoltage) {
-        this.svStepEndVoltage = svStepEndVoltage;
-    }
-
-    public Double getSvStepEndCurrent() {
-        return svStepEndCurrent;
-    }
-
-    public void setSvStepEndCurrent(Double svStepEndCurrent) {
-        this.svStepEndCurrent = svStepEndCurrent;
-    }
-
-    public List<MDSubRule> getMdSubRuleList() {
-        return mdSubRuleList;
-    }
-
-    public void setMdSubRuleList(List<MDSubRule> mdSubRuleList) {
-        this.mdSubRuleList = mdSubRuleList;
-    }
-
-    public String getScriptEnergy() {
-        return scriptEnergy;
-    }
-
-    public void setScriptEnergy(String scriptEnergy) {
-        this.scriptEnergy = scriptEnergy;
-    }
-
-    public static long getSerialVersionUID() {
-        return serialVersionUID;
     }
 
     public String getRemark() {
@@ -235,6 +140,14 @@ public class MDStepInfo implements Serializable {
         this.scriptCapacity = scriptCapacity;
     }
 
+    public String getScriptEnergy() {
+        return scriptEnergy;
+    }
+
+    public void setScriptEnergy(String scriptEnergy) {
+        this.scriptEnergy = scriptEnergy;
+    }
+
     public boolean isCycleSignalStep() {
         return isCycleSignalStep;
     }
@@ -243,68 +156,212 @@ public class MDStepInfo implements Serializable {
         isCycleSignalStep = cycleSignalStep;
     }
 
-    public Double getDeltaVoltage() {
+    public BigDecimal getDeltaVoltage() {
         return deltaVoltage;
     }
 
-    public void setDeltaVoltage(Double deltaVoltage) {
+    public void setDeltaVoltage(BigDecimal deltaVoltage) {
         this.deltaVoltage = deltaVoltage;
     }
 
-    public Double getSvPower() {
+    public BigDecimal getSvPower() {
         return svPower;
     }
 
-    public void setSvPower(Double svPower) {
+    public void setSvPower(BigDecimal svPower) {
         this.svPower = svPower;
     }
 
-    public Double getSvIR() {
-        return svIR;
+    public BigDecimal getSvIr() {
+        return svIr;
     }
 
-    public void setSvIR(Double svIR) {
-        this.svIR = svIR;
+    public void setSvIr(BigDecimal svIr) {
+        this.svIr = svIr;
     }
 
-    public Double getSvVoltage() {
+    public BigDecimal getSvVoltage() {
         return svVoltage;
     }
 
-    public void setSvVoltage(Double svVoltage) {
+    public void setSvVoltage(BigDecimal svVoltage) {
         this.svVoltage = svVoltage;
     }
 
-    public Double getSvCapacity() {
+    public BigDecimal getSvCapacity() {
         return svCapacity;
     }
 
-    public void setSvCapacity(Double svCapacity) {
+    public void setSvCapacity(BigDecimal svCapacity) {
         this.svCapacity = svCapacity;
     }
 
-    public Double getSvCurrent() {
+    public BigDecimal getSvCurrent() {
         return svCurrent;
     }
 
-    public void setSvCurrent(Double svCurrent) {
+    public void setSvCurrent(BigDecimal svCurrent) {
         this.svCurrent = svCurrent;
     }
 
-    public Double getSvStepEndCapacity() {
+    public BigDecimal getSvEnergy() {
+        return svEnergy;
+    }
+
+    public void setSvEnergy(BigDecimal svEnergy) {
+        this.svEnergy = svEnergy;
+    }
+
+    public BigDecimal getSvTemperature() {
+        return svTemperature;
+    }
+
+    public void setSvTemperature(BigDecimal svTemperature) {
+        this.svTemperature = svTemperature;
+    }
+
+    public int getCycleCount() {
+        return cycleCount;
+    }
+
+    public void setCycleCount(int cycleCount) {
+        this.cycleCount = cycleCount;
+    }
+
+    public String getConditionType() {
+        return conditionType;
+    }
+
+    public void setConditionType(String conditionType) {
+        this.conditionType = conditionType;
+    }
+
+    public String getConditionOperationalCharacter() {
+        return conditionOperationalCharacter;
+    }
+
+    public void setConditionOperationalCharacter(String conditionOperationalCharacter) {
+        this.conditionOperationalCharacter = conditionOperationalCharacter;
+    }
+
+    public String getConditionValue() {
+        return conditionValue;
+    }
+
+    public void setConditionValue(String conditionValue) {
+        this.conditionValue = conditionValue;
+    }
+
+    public String getGotoStep() {
+        return gotoStep;
+    }
+
+    public void setGotoStep(String gotoStep) {
+        this.gotoStep = gotoStep;
+    }
+
+    public BigDecimal getStartSoc() {
+        return startSoc;
+    }
+
+    public void setStartSoc(BigDecimal startSoc) {
+        this.startSoc = startSoc;
+    }
+
+    public BigDecimal getSocIncrement() {
+        return socIncrement;
+    }
+
+    public void setSocIncrement(BigDecimal socIncrement) {
+        this.socIncrement = socIncrement;
+    }
+
+    public BigDecimal getEndSoc() {
+        return endSoc;
+    }
+
+    public void setEndSoc(BigDecimal endSoc) {
+        this.endSoc = endSoc;
+    }
+
+    public BigDecimal getSvStepEndCapacity() {
         return svStepEndCapacity;
     }
 
-    public void setSvStepEndCapacity(Double svStepEndCapacity) {
+    public void setSvStepEndCapacity(BigDecimal svStepEndCapacity) {
         this.svStepEndCapacity = svStepEndCapacity;
     }
 
-    public Double getSvStepEndTemperature() {
+    public BigDecimal getSvStepEndVoltage() {
+        return svStepEndVoltage;
+    }
+
+    public void setSvStepEndVoltage(BigDecimal svStepEndVoltage) {
+        this.svStepEndVoltage = svStepEndVoltage;
+    }
+
+    public BigDecimal getSvStepEndCurrent() {
+        return svStepEndCurrent;
+    }
+
+    public void setSvStepEndCurrent(BigDecimal svStepEndCurrent) {
+        this.svStepEndCurrent = svStepEndCurrent;
+    }
+
+    public BigDecimal getSvStepEndTemperature() {
         return svStepEndTemperature;
     }
 
-    public void setSvStepEndTemperature(Double svStepEndTemperature) {
+    public void setSvStepEndTemperature(BigDecimal svStepEndTemperature) {
         this.svStepEndTemperature = svStepEndTemperature;
+    }
+
+    public String getScriptCurrentHash() {
+        return scriptCurrentHash;
+    }
+
+    public void setScriptCurrentHash(String scriptCurrentHash) {
+        this.scriptCurrentHash = scriptCurrentHash;
+    }
+
+    public String getScriptVoltageHash() {
+        return scriptVoltageHash;
+    }
+
+    public void setScriptVoltageHash(String scriptVoltageHash) {
+        this.scriptVoltageHash = scriptVoltageHash;
+    }
+
+    public String getScriptTemperatureHash() {
+        return scriptTemperatureHash;
+    }
+
+    public void setScriptTemperatureHash(String scriptTemperatureHash) {
+        this.scriptTemperatureHash = scriptTemperatureHash;
+    }
+
+    public String getScriptTimeHash() {
+        return scriptTimeHash;
+    }
+
+    public void setScriptTimeHash(String scriptTimeHash) {
+        this.scriptTimeHash = scriptTimeHash;
+    }
+
+    public String getScriptCapacityHash() {
+        return scriptCapacityHash;
+    }
+
+    public void setScriptCapacityHash(String scriptCapacityHash) {
+        this.scriptCapacityHash = scriptCapacityHash;
+    }
+
+    public String getScriptEnergyHash() {
+        return scriptEnergyHash;
+    }
+
+    public void setScriptEnergyhash(String scriptEnergyHash) {
+        this.scriptEnergyHash = scriptEnergyHash;
     }
 
     public String getStartStep() {
@@ -321,5 +378,37 @@ public class MDStepInfo implements Serializable {
 
     public void setCreateDateTime(Date createDateTime) {
         this.createDateTime = createDateTime;
+    }
+
+    public String getCreateUser() {
+        return createUser;
+    }
+
+    public void setCreateUser(String createUser) {
+        this.createUser = createUser;
+    }
+
+    public Date getModifiedDateTime() {
+        return modifiedDateTime;
+    }
+
+    public void setModifiedDateTime(Date modifiedDateTime) {
+        this.modifiedDateTime = modifiedDateTime;
+    }
+
+    public String getModifeidUser() {
+        return modifeidUser;
+    }
+
+    public void setModifeidUser(String modifeidUser) {
+        this.modifeidUser = modifeidUser;
+    }
+
+    public List<MDSubRule> getMdSubRuleList() {
+        return mdSubRuleList;
+    }
+
+    public void setMdSubRuleList(List<MDSubRule> mdSubRuleList) {
+        this.mdSubRuleList = mdSubRuleList;
     }
 }
