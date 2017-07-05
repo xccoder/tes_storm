@@ -1,4 +1,4 @@
-package com.edcs.tds.storm.model;
+package com.edcs.tds.common.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
