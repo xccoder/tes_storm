@@ -48,7 +48,7 @@ public class ResultDataImpl implements IResultData {
     private BigDecimal pvIr;
     private BigDecimal pvTemperature ;
     private BigDecimal pvVoltage ;
-    private String pvWorkType = null;
+    private int pvWorkType ;
     private String resourceId = null;
     private int stepId ;
     private String stepName  = null;
