@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -106,9 +107,75 @@ public class GetDataInterface {
 	 * @return
 	 */
 	public static TestingMessage getUpStepTestingMsg(TestingMessage testingMessage, int i, CacheService cacheService){
-		TestingMessage testingMsg = new TestingMessage();
-		
-		return testingMsg; 
+		TestingMessage testingMsgReturn = null;
+		ProxyJedisPool jedisPool = cacheService.getProxyJedisPool();// 获取连接池
+		Jedis jedis = jedisPool.getResource();
+		Set<String> keys = jedis.keys(testingMessage.getRemark()+"*");
+		for (String string : keys) {
+			String json = jedis.get(string);
+			TestingResultData testingResultData = JsonUtils.toObject(json, TestingResultData.class);
+			TestingMessage testingMsg = testingResultData.getTestingMessage();
+			int stepLogicNumber = testingMsg.getStepLogicNumber();
+			//如果这条测试数据是当前测试数据的上i个工步中的测试数据，且是上i个工步中的最后一条数据，则取出。
+			if(stepLogicNumber == testingMessage.getStepLogicNumber()-i && testingMsg.getPvDataFlag() == 2 ){
+				testingMsgReturn = testingMsg;
+				break;
+			}
+		}
+		if(testingMsgReturn == null){//redis 中没有找到，则到hana中找
+			String sql = "select REMARK,SFC,RESOURCE_ID,CHANNEL_ID,SEQUENCE_ID,"
+					+ "CYCLE,STEP_ID,STEP_NAME,TEST_TIME_DURATION,TIMESTAMP,SV_IC_RANGE,"
+					+ "SV_IV_RANGE,PV_VOLTAGE,PV_CURRENT,PV_IR,PV_TEMPERATURE,PV_CHARGE_CAPACITY,"
+					+ "PV_DISCHARGE_CAPACITY,PV_CHARGE_ENERGY,PV_DISCHARGE_ENERGY,ST_BUSINESS_CYCLE "
+					+ "from tx_original_process_data where REMARK= '" + testingMessage.getRemark()
+					+ "' and step_logic_number =" + (testingMessage.getStepLogicNumber() - i)+" and PV_DATA_FLAG = 2";
+			DBHelperUtils dbUtils = cacheService.getDbUtils();
+			Connection conn = dbUtils.getConnection();
+			PreparedStatement pst = null;
+			ResultSet results = null;
+			try {
+				pst = conn.prepareStatement(sql);
+				results = pst.executeQuery();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			try {
+				if (results != null) {
+					while (results.next()) {
+						testingMsgReturn = new TestingMessage();
+						testingMsgReturn.setRemark(results.getString(1));
+						testingMsgReturn.setSfc(results.getString(2));
+						testingMsgReturn.setResourceId(results.getString(3));
+						testingMsgReturn.setChannelId(results.getInt(4));
+						testingMsgReturn.setSequenceId(results.getInt(5));
+						testingMsgReturn.setCycle(results.getInt(6));
+						testingMsgReturn.setStepId(results.getInt(7));
+						testingMsgReturn.setStepName(results.getString(8));
+						testingMsgReturn.setTestTimeDuration(results.getBigDecimal(9));
+						testingMsgReturn.setTimestamp(results.getDate(10));
+						testingMsgReturn.setSvIcRange(results.getBigDecimal(11));
+						testingMsgReturn.setSvIvRange(results.getBigDecimal(12));
+						testingMsgReturn.setPvVoltage(results.getBigDecimal(13));
+						testingMsgReturn.setPvCurrent(results.getBigDecimal(14));
+						testingMsgReturn.setPvIr(results.getBigDecimal(15));
+						testingMsgReturn.setPvTemperature(results.getBigDecimal(16));
+						testingMsgReturn.setPvChargeCapacity(results.getBigDecimal(17));
+						testingMsgReturn.setPvDischargeCapacity(results.getBigDecimal(18));
+						testingMsgReturn.setPvChargeEnergy(results.getBigDecimal(19));
+						testingMsgReturn.setPvDischargeEnergy(results.getBigDecimal(20));
+						testingMsgReturn.setBusinessCycle(results.getInt(21));
+					}
+
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				dbUtils.close(conn, pst, results);
+			} finally {
+				dbUtils.close(conn, pst, results);
+			}
+			
+		}
+		return testingMsgReturn; 
 	}
 	
 

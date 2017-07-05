@@ -40,6 +40,7 @@ public class DataService {
 		 * 到CacheService中获取这个测试数据对应的流程信息
 		 * （也可以从redis里面获取，但是考虑到性能问题，就让CacheService中缓存一份redis所有流程的信息。这样就是牺牲内存换性能）
 		 */
+		Jedis jedis = cacheService.getProxyJedisPool().getResource();
 		List<MDprocessInfo> mDprocessInfos = JsonUtils.toArray(cacheService.getProcessInfoJson(), MDprocessInfo.class);
 		if(testingMessage.getSequenceId()==1){//表明这个测试数据是某个流程的起始数据（第一条数据）
 			for (MDprocessInfo mDprocessInfo : mDprocessInfos) {
@@ -52,9 +53,13 @@ public class DataService {
 						 */
 						int cycleNum = GetDataInterface.getCycleNum(rootRemark,cacheService);
 						testingMessage.setBusinessCycle(cycleNum+1);
+						//写到redis中
+						jedis.set("businessCycle"+testingMessage.getRemark(), cycleNum+1+"");
 						break;
 					}else{
 						testingMessage.setBusinessCycle(1);
+						//写到redis中
+						jedis.set("businessCycle"+testingMessage.getRemark(), 1+"");
 						break;
 					}
 				}
@@ -76,7 +81,15 @@ public class DataService {
 								}
 								if(upTestingMessage.getStepId()!=testingMessage.getStepId()){
 									//如果当前测试数据的工步类型不等于它上一条数据的工步类型则businessCycle+1
-									testingMessage.setBusinessCycle(testingMessage.getBusinessCycle()+1);
+									String businessCycle = jedis.get("businessCycle"+testingMessage.getRemark());
+									if(!StringUtils.isNotBlank(businessCycle)){
+										testingMessage.setBusinessCycle(1);
+										jedis.set("businessCycle"+testingMessage.getRemark(), 1+"");
+									}else{
+										int a = Integer.parseInt(businessCycle);
+										testingMessage.setBusinessCycle(a+1);
+										jedis.set("businessCycle"+testingMessage.getRemark(), a+1+"");
+									}
 //									break;
 									break bre;
 								}
@@ -94,7 +107,18 @@ public class DataService {
      * @param cacheService
      */
 	public void updateStepLogicNumber(TestingMessage testingMessage, CacheService cacheService) {
-		// TODO Auto-generated method stub
-		
+		Jedis jedis = cacheService.getProxyJedisPool().getResource();
+		int dataFlag = testingMessage.getPvDataFlag();//数据类型标识,能够表示工步起始点，工步终结点等信息（1代表起始，2 代表终节点）
+		if(dataFlag==1){
+			String oldStepLogicNumber = jedis.get("stepLogicNumber"+testingMessage.getRemark());
+			if(!StringUtils.isNotBlank(oldStepLogicNumber)){
+				testingMessage.setStepLogicNumber(1);
+				jedis.set("stepLogicNumber"+testingMessage.getRemark(), 1+"");
+			}else{
+				int a = Integer.parseInt(oldStepLogicNumber);
+				testingMessage.setStepLogicNumber(a+1);
+				jedis.set("stepLogicNumber"+testingMessage.getRemark(), a+1+"");
+			}
+		}
 	}
 }
