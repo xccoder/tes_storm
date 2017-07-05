@@ -13,6 +13,7 @@ public class TestingSubChannel implements Serializable {
 	private static final long serialVersionUID = 4863558373163111458L;
 
 	// TODO 补充实际的字段
+	private String subChannelName;//辅助通道的名称
 	private int sequenceId;//记录序号(每一条数据的序号，一个流程这个记录序号一直在累加)
 	private int cycle;//循环序号（一个流程中工步与工步之间的循环序号。这个序号是有可能出现问题的，需要处理）(后期可能不用这个字段，因为strom系统上线之后可能机器已经在运行了。)
 	private int stepId;//工步序号
@@ -29,7 +30,12 @@ public class TestingSubChannel implements Serializable {
     private int dataFlag;//数据类型标识,能够表示工步起始点，工步终结点等信息
     private String workType;//工作状态。正常情况下标识为正常测试状态。能够标识测试的停止，完成，保护等状态
 	
-    
+    public String getSubChannelName() {
+		return subChannelName;
+	}
+    public void setSubChannelName(String subChannelName) {
+		this.subChannelName = subChannelName;
+	}
     public int getSequenceId() {
 		return sequenceId;
 	}

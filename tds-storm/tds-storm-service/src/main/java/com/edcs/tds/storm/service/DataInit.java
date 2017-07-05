@@ -51,6 +51,7 @@ public class DataInit {
 			}else{
 				String strJson = JSONObject.toJSONString(subJson);//获取子通道信息
 				TestingSubChannel testingSubChannel = JsonUtils.toObject(strJson, TestingSubChannel.class);//转化为子通道的对象
+				testingSubChannel.setSubChannelName(SUBCHANNEL_NAME+i);
 				lists.add(testingSubChannel);
 			}
 		}
