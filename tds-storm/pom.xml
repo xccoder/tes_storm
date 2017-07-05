@@ -9,7 +9,7 @@
   <modules>
   	<module>tds-storm-service</module>
   	<module>tds-storm-common</module>
-    <module>sync</module>
+    <module>tds-storm-sync</module>
   </modules>
   
   <properties>

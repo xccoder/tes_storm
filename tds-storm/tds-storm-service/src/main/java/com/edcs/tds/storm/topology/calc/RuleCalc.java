@@ -2,12 +2,12 @@ package com.edcs.tds.storm.topology.calc;
 
 import com.edcs.tds.common.engine.groovy.ScriptExecutor;
 import com.edcs.tds.common.model.RuleConfig;
+import com.edcs.tds.common.model.TestingMessage;
 import com.edcs.tds.common.model.TestingResultData;
 import com.edcs.tds.common.util.JsonUtils;
 import com.edcs.tds.storm.model.ExecuteContext;
 import com.edcs.tds.storm.model.MDStepInfo;
 import com.edcs.tds.storm.model.MDprocessInfo;
-import com.edcs.tds.storm.model.TestingMessage;
 import com.edcs.tds.storm.service.CacheService;
 import groovy.lang.Binding;
 import groovy.lang.Script;
@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentMap;
@@ -29,12 +30,14 @@ public class RuleCalc {
                                 ConcurrentMap<String, List<RuleConfig>> ruleConfig, CacheService cacheService) {
 
         TestingMessage testingMessage = executeContext.getTestingMessage();
-        int matchedCount = 0;
         MDStepInfo mdStepInfo = new MDStepInfo();
         MDprocessInfo mDprocessInfo = new MDprocessInfo();
-        TestingResultData testingResultData = new TestingResultData();
+        Jedis jedis = cacheService.getProxyJedisPool().getResource();
+        List<TestingResultData> listResult = new ArrayList();
+        int matchedCount = 0;
         String categoty = null;
         String alterLevel = null;
+        String key = null;
         //遍历每一个场景
         for (Entry<String, List<RuleConfig>> entry : ruleConfig.entrySet()) {
             categoty = entry.getKey().split("_")[1];
@@ -44,7 +47,7 @@ public class RuleCalc {
                 long executeBeginTime = System.currentTimeMillis();
                 try {
                     // 从缓存中取对应ID的规则脚本开始执行				     //流程的工步ID
-                    //从ScriptCacheMapping中匹配与当前工步相匹配的脚本
+                    //从ScriptCacheMapping中查找与当前工步相匹配的脚本
                     Script script = CacheService.getScriptCache().get(rule.getStepId()).getRight();
                     //					最大量程
                     script.setProperty("IMaxRange", testingMessage.getSvIcRange());
@@ -54,6 +57,7 @@ public class RuleCalc {
                     script.setProperty("IEnd", mdStepInfo.getSvStepEndCurrent());
                     script.setProperty("P", mdStepInfo.getSvPower());
                     script.setProperty("UEnd", mdStepInfo.getSvStepEndVoltage());
+
                     script.setBinding(shellContext);
                     alterLevel = scriptExecutor.execute(script);
                 } catch (Exception e) {
@@ -63,25 +67,19 @@ public class RuleCalc {
                 } finally {
                     executeUsedTime = System.currentTimeMillis() - executeBeginTime;
                 }
-                if (StringUtils.isNotBlank(alterLevel) && alterLevel.equals("null")) {
+                if (StringUtils.isNotBlank(alterLevel) && !alterLevel.equals("null")) {
                     matchedCount++;
                     // TODO 记录匹配的规则和相关数据
                     executeContext.addMatchedRule(rule.getId(), 0d, executeUsedTime);
                     // TODO 将结果集写入Redis缓存
-                    Jedis jedis = cacheService.getProxyJedisPool().getResource();
-
                     BigDecimal upLimit = BigDecimal.valueOf(Long.valueOf(alterLevel.split("_")[1]));//报警上限
                     BigDecimal lowLimit = BigDecimal.valueOf(Long.valueOf(alterLevel.split("_")[2]));//报警下限
 //      key = 流程号+工步号+序号+业务循环号
-                    String key = mdStepInfo.getRemark() + testingMessage.getSequenceId();
+                    key = mdStepInfo.getRemark() + testingMessage.getSequenceId();
                     String handle = "TxAlertInfoBO:" + mdStepInfo.getSite() + "," + mdStepInfo.getRemark() + "," + testingMessage.getSfc() + "," + categoty;
+                    TestingResultData testingResultData = new TestingResultData();
                     testingResultData.setHandle(handle);
                     testingResultData.setSite(mdStepInfo.getSite());
-                    testingResultData.setRemark(mdStepInfo.getRemark());
-                    testingResultData.setStepId(mdStepInfo.getStepId());
-                    testingResultData.setBusinessCycle(testingMessage.getBusinessCycle());
-                    testingResultData.setCycle(testingMessage.getCycle());
-                    testingResultData.setSfc(testingMessage.getSfc());
                     testingResultData.setCategory(categoty);
                     testingResultData.setAltetSequenceNumber(0);
 //                    TxAlertInfoBO:<SITE>,<REMARK>,<SFC>,<CATEGORY>
@@ -92,7 +90,6 @@ public class RuleCalc {
                     testingResultData.setTimestamp(testingMessage.getTimestamp());
 //ErpResourceBO:<SITE>,<RESOURCE_ID>
                     testingResultData.setErpResourceBO("ErpResourceBO:" + mdStepInfo.getSite() + "," + testingMessage.getResourceId());
-                    testingResultData.setChannelId(testingMessage.getChannelId());
                     testingResultData.setAlertLevel(alterLevel);
                     testingResultData.setDescription("异常数据");
                     testingResultData.setUpLimit(upLimit);
@@ -103,21 +100,14 @@ public class RuleCalc {
                     testingResultData.setCreatedUser(mDprocessInfo.getCreateUser());
                     testingResultData.setModifiedDateTime(mDprocessInfo.getModifiedDateTime());
                     testingResultData.setModifiedUser(mDprocessInfo.getCreateUser());
-                    testingResultData.setSequenceId(String.valueOf(testingMessage.getSequenceId()));
-                    testingResultData.setTestTimeDuration(testingMessage.getTestTimeDuration());//测试相对时长
-                    testingResultData.setPvVoltage();//电压
-                    testingResultData.setPvCurrent();//电流
-                    testingResultData.setPvTemperature();//温度
-                    testingResultData.setPvChargeCapacity();
-                    testingResultData.getPvDischargeCapacity();
-                    testingResultData.getPvChargeEnergy();
-                    testingResultData.getPvDischargeEnergy();
+                    testingResultData.setRootRemark(mDprocessInfo.getRootRemark());
+                    testingResultData.setTestingMessage(testingMessage);
 
-                    String result = JsonUtils.toJson(testingResultData);
-                    jedis.set(key, result);
-
+                    listResult.add(testingResultData);
                 }
             }
         }
+        String result = JsonUtils.toJson(listResult);
+        jedis.set(key, result);
     }
 }
