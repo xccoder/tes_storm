@@ -41,7 +41,7 @@ public class TestingResultData implements Serializable{
 	private String createdUser;//创建用户
 	private Date modifiedDateTime;//最后修改日期
 	private String modifiedUser;//最后修改用户
-	private String sequenceId;  //记录序号
+	private int sequenceId;  //记录序号
 	
 	private BigDecimal testTimeDuration;//测试相对时长
 	private BigDecimal pvVoltage;//电压
@@ -52,11 +52,11 @@ public class TestingResultData implements Serializable{
 	private BigDecimal pvChargeEnergy;//充电能量
 	private BigDecimal pvDischargeEnergy;//放电能量 dceng
 
-	public String getSequenceId() {
+	public int getSequenceId() {
 		return sequenceId;
 	}
 
-	public void setSequenceId(String sequenceId) {
+	public void setSequenceId(int sequenceId) {
 		this.sequenceId = sequenceId;
 	}
 
