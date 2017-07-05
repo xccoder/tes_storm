@@ -21,6 +21,7 @@ import com.edcs.tds.common.model.RuleConfig;
 import com.edcs.tds.common.redis.JedisFactory;
 import com.edcs.tds.common.redis.ProxyJedisPool;
 import com.edcs.tds.common.redis.RedisCacheKey;
+import com.edcs.tds.common.util.DBHelperUtils;
 import com.edcs.tds.common.util.JsonUtils;
 import com.edcs.tds.storm.model.MDStepInfo;
 import com.edcs.tds.storm.model.MDprocessInfo;
@@ -58,6 +59,8 @@ public class CacheService {
     private String ruleConfigVersion;
 
     private String processInfoJson;//存流程信息
+    
+    private DBHelperUtils dbUtils;//连接hana的工具类
 
     public String getProcessInfoJson() {
         return processInfoJson;
@@ -93,6 +96,13 @@ public class CacheService {
     public static ConcurrentMap<String, List<RuleConfig>> getRuleConfig() {
         return ruleConfig;
     }
+    
+    public DBHelperUtils getDbUtils() {
+		return dbUtils;
+	}
+    public void setDbUtils(DBHelperUtils dbUtils) {
+		this.dbUtils = dbUtils;
+	}
 
     public static int getRuleConfigLength() {
         int count = 0;
