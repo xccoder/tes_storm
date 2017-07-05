@@ -35,10 +35,7 @@ public class DataService {
 	 * 反之则不需要+1.  如果 IS_CYCLE_SIGNAL_STEP 为false 则直接跳过，业务循环号不需要+1.
      * @param testingMessage
      */
-	public TestingMessage updateBusinessCycle(TestingMessage testingMessage,CacheService cacheService) {
-		if(testingMessage==null || cacheService==null){
-			return null;
-		}
+	public void updateBusinessCycle(TestingMessage testingMessage,CacheService cacheService) {
 		/*
 		 * 到CacheService中获取这个测试数据对应的流程信息
 		 * （也可以从redis里面获取，但是考虑到性能问题，就让CacheService中缓存一份redis所有流程的信息。这样就是牺牲内存换性能）
@@ -89,6 +86,15 @@ public class DataService {
 				}
 			}
 		}
-		return testingMessage;
+	}
+	
+    /**
+     * 维护工步的逻辑序号
+     * @param testingMessage
+     * @param cacheService
+     */
+	public void updateStepLogicNumber(TestingMessage testingMessage, CacheService cacheService) {
+		// TODO Auto-generated method stub
+		
 	}
 }

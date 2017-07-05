@@ -24,6 +24,7 @@ public class TestingMessage implements Serializable {
 	private int sequenceId;//记录序号(每一条数据的序号，一个流程这个记录序号一直在累加)
 	private int cycle;//循环序号（一个流程中工步与工步之间的循环序号。这个序号是有可能出现问题的，需要处理）(后期可能不用这个字段，因为strom系统上线之后可能机器已经在运行了。可能使用  businessCycle)
 	private int stepId;//工步序号
+	private int stepLogicNumber;//工步的逻辑序号
 	private String stepName;//工步名称
 	private BigDecimal testTimeDuration;//测试相对时长
 	private BigDecimal pvVoltage;//电压
@@ -37,8 +38,8 @@ public class TestingMessage implements Serializable {
 	private Date timestamp;//测试绝对时间 absTime
 	private List<TestingSubChannel> subChannel;//辅助通道
 	private String resourceId;//设备号
-	private int pvDataFlag;//数据类型标识,能够表示工步起始点，工步终结点等信息
-	private String pvWorkType;//工作状态。正常情况下标识为正常测试状态。能够标识测试的停止，完成，保护等状态
+	private int pvDataFlag;//数据类型标识,能够表示工步起始点，工步终结点等信息（1代表起始，2 代表终节点）
+	private String pvWorkType;//工作状态。正常情况下标识为正常测试状态。能够标识测试的停止，完成，保护等状态(数字)
 	private int businessCycle;//业务循环号。
 	
 	
@@ -102,6 +103,12 @@ public class TestingMessage implements Serializable {
 	}
 	public void setStepId(int stepId) {
 		this.stepId = stepId;
+	}
+	public int getStepLogicNumber() {
+		return stepLogicNumber;
+	}
+	public void setStepLogicNumber(int stepLogicNumber) {
+		this.stepLogicNumber = stepLogicNumber;
 	}
 	public String getStepName() {
 		return stepName;

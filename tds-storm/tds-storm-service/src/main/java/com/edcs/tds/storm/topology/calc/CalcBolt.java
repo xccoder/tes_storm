@@ -91,11 +91,6 @@ public class CalcBolt extends BaseRichBolt {
             if (isRepeated) {
                 return;
             }
-            //修改测试数据中的业务循环号（businessCycle）
-            testingMessage = dataService.updateBusinessCycle(testingMessage, cacheService);
-
-            executeContext.setDebug(testingMessage.isDebug());
-            executeContext.setTestingMessage(testingMessage);
             // TODO 实现对异常的循环次数校验、处理
             int currentCycle = dataService.getCurrentCycleCount(testingMessage.getRemark(), cacheService); // TODO 从Redis读取
             int newCycle = currentCycle + 1;
@@ -114,7 +109,15 @@ public class CalcBolt extends BaseRichBolt {
                 //TODO 更新business_cycle
 //				testingMessage.setBusinessCycle(currentCycle);
             }
-
+            //修改测试数据中的业务循环号（businessCycle）
+            dataService.updateBusinessCycle(testingMessage, cacheService);
+            //维护工步的逻辑序号
+            dataService.updateStepLogicNumber(testingMessage,cacheService);
+            
+            executeContext.setDebug(testingMessage.isDebug());
+            executeContext.setTestingMessage(testingMessage);
+            
+            
             // TODO 加载主数据  CacheService.getDataXxxx();
             //
             // 初始化 ShellContext
