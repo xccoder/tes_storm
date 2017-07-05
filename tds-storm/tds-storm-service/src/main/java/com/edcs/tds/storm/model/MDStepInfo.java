@@ -55,7 +55,7 @@ public class MDStepInfo implements Serializable {
     private String createUser;//创建用户
     private Date modifiedDateTime;//最后修改日期
     private String modifeidUser;//最后修改用户
-    private List<MDSubRule> mdSubRuleList;//抽取规则列表
+
 
     public MDStepInfo() {
     }
@@ -402,13 +402,5 @@ public class MDStepInfo implements Serializable {
 
     public void setModifeidUser(String modifeidUser) {
         this.modifeidUser = modifeidUser;
-    }
-
-    public List<MDSubRule> getMdSubRuleList() {
-        return mdSubRuleList;
-    }
-
-    public void setMdSubRuleList(List<MDSubRule> mdSubRuleList) {
-        this.mdSubRuleList = mdSubRuleList;
     }
 }

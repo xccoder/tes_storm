@@ -65,10 +65,18 @@ public class MDprocessInfo implements Serializable {
     private Date modifiedDateTime;//最后修改时间
     private String modifiedUser;//最后修改用户
     private List<MDStepInfo> mdStepInfoList;//流程下所有工步
-
+    private List<MDSubRule> mdSubRuleList;
     private String rootRemark;
 
     public MDprocessInfo() {
+    }
+
+    public List<MDSubRule> getMdSubRuleList() {
+        return mdSubRuleList;
+    }
+
+    public void setMdSubRuleList(List<MDSubRule> mdSubRuleList) {
+        this.mdSubRuleList = mdSubRuleList;
     }
 
     public String getHandle() {
