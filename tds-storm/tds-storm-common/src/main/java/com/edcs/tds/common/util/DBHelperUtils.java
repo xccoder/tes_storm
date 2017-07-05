@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import com.edcs.tds.common.model.TestingResultData;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 
@@ -51,6 +52,23 @@ public class DBHelperUtils {
 		}
 		return rs;
 	}
+	/*public boolean addResult(TestingResultData testingResultData){
+		PreparedStatement pst = null;
+		boolean flag = false;
+		if (testingResultData != null){
+
+		}
+		String sql = null;
+
+		try {
+			conn = dataSource.getConnection();
+			pst = conn.prepareStatement(sql);
+			flag = pst.execute();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return flag;
+	}*/
 	
 	public boolean insert(String sql){
 		PreparedStatement pst = null;
@@ -64,7 +82,6 @@ public class DBHelperUtils {
 		}
 		return boo;
 	}
-
 	public void close() {
 		try {
 			this.conn.close();
