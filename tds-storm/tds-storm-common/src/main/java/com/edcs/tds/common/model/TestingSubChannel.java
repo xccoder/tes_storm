@@ -28,7 +28,7 @@ public class TestingSubChannel implements Serializable {
     private BigDecimal dischargeEnergy;//放电能量
     private Date timestamp;// "2017-03-21 18:07:43";绝对时间
     private int dataFlag;//数据类型标识,能够表示工步起始点，工步终结点等信息
-    private String workType;//工作状态。正常情况下标识为正常测试状态。能够标识测试的停止，完成，保护等状态
+    private int workType;//工作状态。正常情况下标识为正常测试状态。能够标识测试的停止，完成，保护等状态
 	
     public String getSubChannelName() {
 		return subChannelName;
@@ -120,10 +120,10 @@ public class TestingSubChannel implements Serializable {
 	public void setDataFlag(int dataFlag) {
 		this.dataFlag = dataFlag;
 	}
-	public String getWorkType() {
+	public int getWorkType() {
 		return workType;
 	}
-	public void setWorkType(String workType) {
+	public void setWorkType(int workType) {
 		this.workType = workType;
 	}
     

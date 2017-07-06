@@ -16,6 +16,7 @@ import java.util.List;
 
 /**
  * Created by CaiSL2 on 2017/7/4.
+ *
  */
 public class ResultDataImpl implements IResultData {
     private DBHelperUtils db = new DBHelperUtils();
@@ -84,6 +85,27 @@ public class ResultDataImpl implements IResultData {
         String originalProBo;
         String handle;//每一个场景报警数据的handle
 
+        //辅助通道
+        String subHandle = null;
+        int subChannelId;//辅助通道id，从辅助通道name上截取
+        int subSequenceId;
+        int subCycle;
+        int subStepId;
+        BigDecimal subTestTimeDuration;
+        BigDecimal subVolt;
+        BigDecimal subCurr;
+        BigDecimal subIr;
+        BigDecimal subTemp;
+        BigDecimal subChargeCapacity;
+        BigDecimal subDisChargeCapacity;
+        BigDecimal subChargeEnergy;
+        BigDecimal subDisChargeEnergy;
+        Date subTimestamp;
+        int subDataFlag;
+        int subWorkType;
+
+
+
         Connection conn = null;
         PreparedStatement pst = null;
         try {
@@ -127,17 +149,17 @@ public class ResultDataImpl implements IResultData {
                 pvTemperature = testingResultData.getTestingMessage().getPvTemperature();
                 pvVoltage = testingResultData.getTestingMessage().getPvVoltage();
                 pvWorkType = testingResultData.getTestingMessage().getPvWorkType();
-                resourceId = testingResultData.getTestingMessage().getResourceId();
+                resourceId = testingResultData.getTestingMessage().getResourceId();//设备号
                 stepId = testingResultData.getTestingMessage().getStepId();
                 stepName = testingResultData.getTestingMessage().getStepName();
                 subChannels = testingResultData.getTestingMessage().getSubChannel();
-
 
                 svIcRange = testingResultData.getTestingMessage().getSvIcRange();
                 svIvRange = testingResultData.getTestingMessage().getSvIvRange();
                 testTimeDuration = testingResultData.getTestingMessage().getTestTimeDuration();
                 testingmesstimestamp = testingResultData.getTestingMessage().getTimestamp();
 
+                subHandle = testingResultData.getTestingMessage().getMessageId();//辅助通道handle前半段
 
                 if (!alertLevel.equals("null") && category != null) {
                     switch (category) {
@@ -181,35 +203,63 @@ public class ResultDataImpl implements IResultData {
                             subchannel1 = JsonUtils.toJson(testingSubChannel);
                             break;
                         case "pvSubChannelData2":
-                            subchannel1 = JsonUtils.toJson(testingSubChannel);
+                            subchannel2 = JsonUtils.toJson(testingSubChannel);
                             break;
                         case "pvSubChannelData3":
-                            subchannel1 = JsonUtils.toJson(testingSubChannel);
+                            subchannel3 = JsonUtils.toJson(testingSubChannel);
                             break;
                         case "pvSubChannelData4":
-                            subchannel1 = JsonUtils.toJson(testingSubChannel);
+                            subchannel4 = JsonUtils.toJson(testingSubChannel);
                             break;
                         case "pvSubChannelData5":
-                            subchannel1 = JsonUtils.toJson(testingSubChannel);
+                            subchannel5 = JsonUtils.toJson(testingSubChannel);
                             break;
                         case "pvSubChannelData6":
-                            subchannel1 = JsonUtils.toJson(testingSubChannel);
+                            subchannel6 = JsonUtils.toJson(testingSubChannel);
                             break;
                     }
+
+                    subHandle = subHandle + testingSubChannel.getSubChannelName();
+                    subChannelId = Integer.valueOf(testingSubChannel.getSubChannelName().substring(testingSubChannel.getSubChannelName().length()-1));
+                    subSequenceId = testingSubChannel.getSequenceId();
+                    subCycle = testingSubChannel.getCycle();
+                    subStepId = testingSubChannel.getStepId();
+                    subTestTimeDuration = testingSubChannel.getTestTimeDuration();
+                    subVolt = testingSubChannel.getVoltage();
+                    subCurr = testingSubChannel.getCurrent();
+                    subIr = testingSubChannel.getIr();
+                    subTemp = testingSubChannel.getTemperature();
+                    subChargeCapacity = testingSubChannel.getChargeCapacity();
+                    subDisChargeCapacity = testingSubChannel.getDischargeCapacity();
+                    subChargeEnergy = testingSubChannel.getChargeEnergy();
+                    subDisChargeEnergy = testingSubChannel.getDischargeEnergy();
+                    subTimestamp = testingSubChannel.getTimestamp();
+                    subDataFlag = testingSubChannel.getDataFlag();
+                    subWorkType = testingSubChannel.getWorkType();
+
+                    String subsql = "insert into TX_ORIGINAL_SUB_CHANNEL_DATA values('"+subHandle+"','"+procehandle+"',"+subChannelId+",'"+site+"','"+remark+"','"+sfc+"','"+resourceId+"',"+channelId+","+sequenceId+","+subCycle+","+subStepId+","+subTestTimeDuration+","+subVolt+","+subCurr+","+subIr+","+subTemp+","+subChargeCapacity+","+subDisChargeCapacity+","+subChargeEnergy+","+subDisChargeEnergy+",'"+subTimestamp+"',"+subDataFlag+","+subWorkType+"','"+" "+"','"+" "+"','"+" "+"','"+" "+"','"+")";
+                    pst = conn.prepareStatement(subsql);//插入子通道表
+                    pst.addBatch();//待定
+                }
+                if (pst != null) {
+                    pst.executeBatch();
+                    conn.commit();
                 }
             }
+
             String procesql = "insert into TX_ORIGINAL_PROCESS_DATA(`handle`,`site`,`remark`,`sfc`,`resource_id`,`channel_id`,`sequence_id`,`cycle`,`step_id`,`step_name`,`test_time_duration`,`timestamp`,`sv_ic_range`,`sv_iv_range`,`pv_voltage`,`pv_current`,`pv_ir`,`pv_temperature`,`pv_charge_capacity`,`pv_discharge_capacity`,`pv_charge_energy`,`pv_discharge_energy`,`pv_sub_channel_1`,`pv_sub_channel_2`,`pv_sub_channel_3`,`pv_sub_channel_4`,`pv_sub_channel_5`,`pv_sub_channel_6`,`pv_data_flag`,`pv_work_type`,`tx_is_exceptional`,`tx_alert_current`,`tx_alert_voltage`,`tx_alert_temperature`,`tx_alert_capacity`,`tx_alert_duration`,`tx_alert_category1`,`tx_alert_category2`,`tx_root_remark`,`st_business_cycle`,`created_data_time`,`created_user`,`modified_date_time`,`modified_user`) " +
                     "values ('" + procehandle + "','" + site + "','" + remark + "','" + sfc + "','" + resourceId + "'," + channelId + "," + sequenceId + "," + cycle + "," + stepId + ",'" + stepName + "'," + testTimeDuration + ",'" + testingmesstimestamp + "'," + svIcRange + "," + svIvRange + "," + pvVoltage + "," + pvCurrent + "," + pvIr + "," + pvTemperature + "," + pvChargeCapacity + "," + pvDischargeCapacity + "," + pvChargeEnergy + "," + pvDischargeEnergy + ",'" + subchannel1 + "','" + subchannel2 + "','" + subchannel3 + "','" + subchannel4 + "','" + subchannel5 + "','" + subchannel6 + "'," + pvDataFlag + "," + pvWorkType + ",'" + processDataAlert + "','" + curr + "','" + volt + "','" + temp + "','" + capa + "','" + time + "','" + "预留字段" + "','" + "预留字段" + "','" + "rootremark" + "'," + businessCycle + ",'" + createDateTime + "','" + createUser + "','" + modifiedDateTime + "','" + modifiedUser + "')";
 
-            pst = conn.prepareStatement(procesql);
+            pst = conn.prepareStatement(procesql);//插入流程结果表
             pst.execute();//待定
             //插入第三张表
             String alertListId = remark+sequenceId;
             String alertListsql = "insert into TX_ALERT_LIST_INFO values('"+procehandle+"','"+site+"','"+alertListId+"','NEW','"+""+"','"+"'"+"','"+"'"+"',''"+"'"+"',''"+"'"+"',''"+"'"+"','"+createDateTime + "','" + createUser + "','" + modifiedDateTime + "','" + modifiedUser +"')";
-            pst = conn.prepareStatement(alertListsql);
+            pst = conn.prepareStatement(alertListsql);//插入报警列表
             pst.execute();//待定
 
             //插入第四张子通道表
+
 
         } catch (SQLException e) {
             conn.rollback();            //回滚

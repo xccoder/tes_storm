@@ -6,6 +6,7 @@ import com.edcs.tds.common.util.JsonUtils;
 import com.edcs.tes.storm.dao.IResultData;
 import com.edcs.tes.storm.dao.impl.ResultDataImpl;
 
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -23,9 +24,11 @@ public class DataSyncService implements Runnable {
     public void run() {
         String processJson = redisSync.getProcessJson();
             List<TestingResultData> testingResultDatas = JsonUtils.toArray(processJson,TestingResultData.class);
+        try {
             iResultData.insertResultData(testingResultDatas);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-
-
+    }
 
 }
