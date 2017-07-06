@@ -74,4 +74,12 @@ public class DBHelperUtils {
 			e.printStackTrace();
 		}
 	}
+	public void close(Connection conn,PreparedStatement pst){
+		try {
+			if(pst!=null) pst.close();
+			if(conn!=null) conn.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }

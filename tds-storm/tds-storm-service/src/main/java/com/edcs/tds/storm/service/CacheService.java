@@ -207,6 +207,7 @@ public class CacheService {
                     List<RuleConfig> ruleConfigEnerlist = new ArrayList<>();//能量场景
                     //将每一条工步数据的每个脚本给ruleconfig对象;
                     for (MDStepInfo mDstepInfo : mdStepInfos) {
+                        System.out.println(mDstepInfo.getRemark());
                         if (mDstepInfo.getScriptCapacity() != null) {
                             RuleConfig ruleConfCapacity = new RuleConfig();
                             ruleConfCapacity.setRuleScript(mDstepInfo.getScriptCapacity());
@@ -276,10 +277,12 @@ public class CacheService {
                     ruleConfig.put(mDprocessInfo.getProcessId()+"temp", ruleConfigTemplist);
                     ruleConfig.put(mDprocessInfo.getProcessId()+"time", ruleConfigTimelist);
                     ruleConfig.put(mDprocessInfo.getProcessId()+"volt", ruleConfigVoltlist);
-
+                    System.out.println("ruleConfig长度："+ruleConfig.size());
+                    System.out.println("ruleIds长度："+ruleIds.size());
                 }
             }
             processInfoJson = newMdProcessjosn ;
+            //System.out.println(processInfoJson.length());
         } finally {
             JedisFactory.closeQuietly(jedis);
         }
