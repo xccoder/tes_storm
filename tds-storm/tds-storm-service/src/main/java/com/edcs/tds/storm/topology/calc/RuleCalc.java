@@ -61,6 +61,7 @@ public class RuleCalc {
 					Script script = CacheService.getScriptCache().get(ruleConfig2.getStepId()).getRight();
 					script.setBinding(shellContext);
                     try {
+                    	// 返回值为 ： 报警上限_报警下限_比较值_报警级别
 						alterLevel = scriptExecutor.execute(script);
 					} catch (GroovyException e) {
 						executeUsedTime = System.currentTimeMillis() - executeBeginTime;
@@ -74,8 +75,10 @@ public class RuleCalc {
                     	// TODO 记录匹配的规则和相关数据
                     	executeContext.addMatchedRule(ruleConfig2.getId(), 0d, executeUsedTime);
                     	// TODO 将结果集写入Redis缓存
-                    	BigDecimal upLimit = BigDecimal.valueOf(Long.valueOf(alterLevel.split("_")[1]));//报警上限
-                    	BigDecimal lowLimit = BigDecimal.valueOf(Long.valueOf(alterLevel.split("_")[2]));//报警下限
+                    	String[] alters = alterLevel.split("_");
+                    	BigDecimal upLimit = BigDecimal.valueOf(Long.valueOf(alters[1]));//报警上限
+                    	BigDecimal lowLimit = BigDecimal.valueOf(Long.valueOf(alters[2]));//报警下限
+                    	int alterLe = Integer.parseInt(alters[4]);//报警级别
                     	// key = 流程号+序号
                     	key = mDprocessInfo.getRemark() + testingMessage.getSequenceId();
                     	String handle = "TxAlertInfoBO:" + mDprocessInfo.getSite() + "," + mDprocessInfo.getRemark() + "," + testingMessage.getSfc() + "," + sceneName;
@@ -92,7 +95,7 @@ public class RuleCalc {
                     	testingResultData.setTimestamp(new Date());
                     	//ErpResourceBO:<SITE>,<RESOURCE_ID>
                     	testingResultData.setErpResourceBO("ErpResourceBO:" + mDprocessInfo.getSite() + "," + testingMessage.getResourceId());
-                    	testingResultData.setAlertLevel(alterLevel);
+                    	testingResultData.setAlertLevel(alterLe);
                     	testingResultData.setDescription("异常数据");
                     	testingResultData.setUpLimit(upLimit);
                     	testingResultData.setLowLimit(lowLimit);

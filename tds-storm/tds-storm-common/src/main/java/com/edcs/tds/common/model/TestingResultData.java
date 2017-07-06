@@ -34,7 +34,7 @@ public class TestingResultData implements Serializable{
 	private Date timestamp;//记录报警时间（什么时候报警的）
 	private String erpResourceBO;//ERP_RESOURCE.HANDLE   ErpResourceBO:<SITE>,<RESOURCE_ID>
 //	private int channelId;//通道号
-	private String alertLevel;//报警级别
+	private int alertLevel;//报警级别
 	private String description;//报警信息描述
 	private BigDecimal upLimit;//报警上限
 	private BigDecimal lowLimit;//报警下限
@@ -111,10 +111,10 @@ public class TestingResultData implements Serializable{
 	public void setErpResourceBO(String erpResourceBO) {
 		this.erpResourceBO = erpResourceBO;
 	}
-	public String getAlertLevel() {
+	public int getAlertLevel() {
 		return alertLevel;
 	}
-	public void setAlertLevel(String alertLevel) {
+	public void setAlertLevel(int alertLevel) {
 		this.alertLevel = alertLevel;
 	}
 	public String getDescription() {
