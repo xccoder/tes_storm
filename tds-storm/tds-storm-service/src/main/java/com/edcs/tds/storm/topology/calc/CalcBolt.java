@@ -121,8 +121,8 @@ public class CalcBolt extends BaseRichBolt {
             // TODO 加载主数据  CacheService.getDataXxxx();
             //
             // 初始化 ShellContext
-            DataInit.initShellContext(testingMessage, engineCommonService, executeContext, shellContext);
-
+//          DataInit.initShellContext(testingMessage, engineCommonService, executeContext, shellContext);
+            DataInit.initShellContext(executeContext, cacheService, shellContext);
             // 开始规则计算匹配
             ConcurrentMap<String, List<RuleConfig>> ruleConfig = CacheService.getRuleConfig();
             // 核心计算
