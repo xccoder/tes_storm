@@ -50,14 +50,15 @@ public class GetDataInterface {
 					+ "CYCLE,STEP_ID,STEP_NAME,TEST_TIME_DURATION,TIMESTAMP,SV_IC_RANGE,"
 					+ "SV_IV_RANGE,PV_VOLTAGE,PV_CURRENT,PV_IR,PV_TEMPERATURE,PV_CHARGE_CAPACITY,"
 					+ "PV_DISCHARGE_CAPACITY,PV_CHARGE_ENERGY,PV_DISCHARGE_ENERGY,ST_BUSINESS_CYCLE "
-					+ "from tx_original_process_data where REMARK= '" + testingMessage.getRemark()
-					+ "' and SEQUENCE_ID=" + (testingMessage.getSequenceId() - i);
+					+ "from tx_original_process_data where REMARK= ? and SEQUENCE_ID = ?";
 			DBHelperUtils dbUtils = cacheService.getDbUtils();
 			Connection conn = dbUtils.getConnection();
 			PreparedStatement pst = null;
 			ResultSet results = null;
 			try {
 				pst = conn.prepareStatement(sql);
+				pst.setString(1, testingMessage.getRemark());
+				pst.setInt(2, testingMessage.getSequenceId() - i);
 				results = pst.executeQuery();
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -127,14 +128,15 @@ public class GetDataInterface {
 					+ "CYCLE,STEP_ID,STEP_NAME,TEST_TIME_DURATION,TIMESTAMP,SV_IC_RANGE,"
 					+ "SV_IV_RANGE,PV_VOLTAGE,PV_CURRENT,PV_IR,PV_TEMPERATURE,PV_CHARGE_CAPACITY,"
 					+ "PV_DISCHARGE_CAPACITY,PV_CHARGE_ENERGY,PV_DISCHARGE_ENERGY,ST_BUSINESS_CYCLE "
-					+ "from tx_original_process_data where REMARK= '" + testingMessage.getRemark()
-					+ "' and step_logic_number =" + (testingMessage.getStepLogicNumber() - i)+" and PV_DATA_FLAG = 2";
+					+ "from tx_original_process_data where REMARK= ? and step_logic_number = ? and PV_DATA_FLAG = 2";
 			DBHelperUtils dbUtils = cacheService.getDbUtils();
 			Connection conn = dbUtils.getConnection();
 			PreparedStatement pst = null;
 			ResultSet results = null;
 			try {
 				pst = conn.prepareStatement(sql);
+				pst.setString(1, testingMessage.getRemark());
+				pst.setInt(2, testingMessage.getStepLogicNumber() - i);
 				results = pst.executeQuery();
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -188,13 +190,14 @@ public class GetDataInterface {
 	 */
 	public static int getCycleNum(String rootRemark, CacheService cacheService) {
 		int cycleNum = 0;
-		String sql = "select total_cycle_num from MD_PROCESS_INFO where remark = " + rootRemark;
+		String sql = "select total_cycle_num from MD_PROCESS_INFO where remark = ?";
 		DBHelperUtils dbUtils = cacheService.getDbUtils();
 		Connection conn = dbUtils.getConnection();
 		PreparedStatement pst = null;
 		ResultSet results = null;
 		try {
 			pst = conn.prepareStatement(sql);
+			pst.setString(1, rootRemark);
 			results = pst.executeQuery();
 		} catch (Exception e) {
 			e.printStackTrace();
