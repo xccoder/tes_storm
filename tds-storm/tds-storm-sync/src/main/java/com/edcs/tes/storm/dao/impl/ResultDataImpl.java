@@ -38,7 +38,6 @@ public class ResultDataImpl implements IResultData {
     private String modifiedUser = null;
 
     private int sequenceId;
-
     private int businessCycle;
     private int cycle;
     private String procehandle = null; //整条测试数据的handle
@@ -78,7 +77,7 @@ public class ResultDataImpl implements IResultData {
         String processInfoBo;
         Date timestamp;
         String erpResourceBo;
-        String alertLevel;
+        int alertLevel;
         String description;
         BigDecimal upLimit;
         BigDecimal lowLimit;
@@ -105,9 +104,9 @@ public class ResultDataImpl implements IResultData {
         int subWorkType;
 
 
-
         Connection conn = null;
         PreparedStatement pst = null;
+
         try {
             conn = db.getConnection();
             conn.setAutoCommit(false);
@@ -161,7 +160,7 @@ public class ResultDataImpl implements IResultData {
 
                 subHandle = testingResultData.getTestingMessage().getMessageId();//辅助通道handle前半段
 
-                if (!alertLevel.equals("null") && category != null) {
+                if (alertLevel !=0 && category != null) {
                     switch (category) {
                         case "curr":
                             curr = true;
@@ -185,15 +184,40 @@ public class ResultDataImpl implements IResultData {
                             break;
                     }
 
-                    String sql = "insert into tx_alert_info(`handle`,`site`,`remark`,`sfc`,`category`,`alert_sequence_number`,`tx_alert_list_info_bo`,`status`,`process_info_bo`,`timestamp`,`erp_resource_bo`,`channel_id`,`alert_level`,`description`,`up_limit`,`low_limit`,`original_process_data_bo`,`created_data_time`,`created_user`,`modified_date_time`,`modified_user`) " +
+                    /*String sql = "insert into tx_alert_info(`handle`,`site`,`remark`,`sfc`,`category`,`alert_sequence_number`,`tx_alert_list_info_bo`,`status`,`process_info_bo`,`timestamp`,`erp_resource_bo`,`channel_id`,`alert_level`,`description`,`up_limit`,`low_limit`,`original_process_data_bo`,`created_data_time`,`created_user`,`modified_date_time`,`modified_user`) " +
                             "values ('"+handle +"','" + site + "','" + remark + "','" + sfc + "','" + category + "'," + alertSquenceNumber + ",'" + txAlertListInfoBo + "','" + status + "','" + processInfoBo + "','" + timestamp + "','" + erpResourceBo + "'," + channelId + "," + alertLevel + ",'" + description + "'," + upLimit + "," + lowLimit + ",'" + originalProBo + "','" + createDateTime + "','" + createUser + "','" + modifiedDateTime + "','" + modifiedUser + "')";
+                    */
+                    String sql ="insert into TX_ALERT_INFO(HANDLE,SITE,REMARK,SFC,CATEGORY,ALERT_SEQUENCE_NUMBER,TX_ALERT_LIST_INFO_BO,STATUS,PROCESS_INFO_BO,TIMESTAMP,ERP_RESOURCE_BO,CHANNEL_ID,ALERT_LEVEL,DESCRIPTION,UP_LIMIT,LOW_LIMIT,ORIGINAL_PROCESS_DATA_BO,CREATED_DATE_TIME,CREATED_USER,MODIFIED_DATE_TIME,MODIFIED_USER) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+
                     pst = conn.prepareStatement(sql);
+                    pst.setString(1,handle);
+                    pst.setString(2,site);
+                    pst.setString(3,remark);
+                    pst.setString(4,sfc);
+                    pst.setString(5,category);
+                    pst.setInt(6,alertSquenceNumber);
+                    pst.setString(7,txAlertListInfoBo);
+                    pst.setString(8,status);
+                    pst.setString(9,processInfoBo);
+                    pst.setString(10,timestamp.toString());             //注意
+                    pst.setString(11,erpResourceBo);
+                    pst.setInt(12,channelId);
+                    pst.setInt(13,alertLevel);                         //更改类型
+                    pst.setString(14,description);
+                    pst.setBigDecimal(15,upLimit);
+                    pst.setBigDecimal(16,lowLimit);
+                    pst.setString(17,originalProBo);
+                    pst.setString(18,timestamp.toString());             //注意
+                    pst.setString(19,"HJHJ");
+                    pst.setString(20,timestamp.toString());                //注意
+                    pst.setString(21,"NMCX");
                     pst.addBatch();
                 }
             }
             if (pst != null) {
                 pst.executeBatch();
                 conn.commit();
+                pst.clearBatch();        //待定
             }
 
             if (subChannels != null) {
@@ -236,9 +260,39 @@ public class ResultDataImpl implements IResultData {
                     subTimestamp = testingSubChannel.getTimestamp();
                     subDataFlag = testingSubChannel.getDataFlag();
                     subWorkType = testingSubChannel.getWorkType();
-
-                    String subsql = "insert into TX_ORIGINAL_SUB_CHANNEL_DATA values('"+subHandle+"','"+procehandle+"',"+subChannelId+",'"+site+"','"+remark+"','"+sfc+"','"+resourceId+"',"+channelId+","+sequenceId+","+subCycle+","+subStepId+","+subTestTimeDuration+","+subVolt+","+subCurr+","+subIr+","+subTemp+","+subChargeCapacity+","+subDisChargeCapacity+","+subChargeEnergy+","+subDisChargeEnergy+",'"+subTimestamp+"',"+subDataFlag+","+subWorkType+"','"+" "+"','"+" "+"','"+" "+"','"+" "+"','"+")";
+                    //第二张表
+                    //String subsql = "insert into TX_ORIGINAL_SUB_CHANNEL_DATA values('"+subHandle+"','"+procehandle+"',"+subChannelId+",'"+site+"','"+remark+"','"+sfc+"','"+resourceId+"',"+channelId+","+subSequenceId+","+subCycle+","+subStepId+","+subTestTimeDuration+","+subVolt+","+subCurr+","+subIr+","+subTemp+","+subChargeCapacity+","+subDisChargeCapacity+","+subChargeEnergy+","+subDisChargeEnergy+",'"+subTimestamp+"',"+subDataFlag+","+subWorkType+"','"+" "+"','"+" "+"','"+" "+"','"+" "+"','"+")";
+                    String subsql = "insert into TX_ORIGINAL_SUB_CHANNEL_DATA(HANDLE,TX_ORIGINAL_PROCESS_DATA_BO,SUB_CHANNEL_ID,SITE,REMARK,SFC,RESOURCE_ID,CHANNEL_ID,SEQUENCE_ID,CYCLE,STEP_ID,TEST_TIME_DURATION,PV_VOLTAGE,PV_CURRENT,PV_IR,PV_TEMPERATURE,PV_CHARGE_CAPACITY,PV_DISCHARGE_CAPACITY,PV_CHARGE_ENERGY,PV_DISCHARGE_ENERGY,TIMESTAMP,DATA_FLAG,WORK_TYPE,CREATED_DATE_TIME,CREATED_USER,MODIFIED_DATE_TIME,MODIFIED_USER) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
                     pst = conn.prepareStatement(subsql);//插入子通道表
+                    pst = conn.prepareStatement(subsql);//插入子通道表
+                    pst.setString(1,subHandle);
+                    pst.setString(2,procehandle);
+                    pst.setInt(3,subChannelId);
+                    pst.setString(4,site);
+                    pst.setString(5,remark);
+                    pst.setString(6,sfc);
+                    pst.setString(7,resourceId);
+                    pst.setInt(8,channelId);
+                    pst.setInt(9,subSequenceId);
+                    pst.setInt(10,subCycle);
+                    pst.setInt(11,subStepId);
+                    pst.setBigDecimal(12,subTestTimeDuration);
+                    pst.setBigDecimal(13,subVolt);
+                    pst.setBigDecimal(14,subCurr);
+                    pst.setBigDecimal(15,subIr);
+                    pst.setBigDecimal(16,subTemp);
+                    pst.setBigDecimal(17,subChargeCapacity);
+                    pst.setBigDecimal(18,subDisChargeCapacity);
+                    pst.setBigDecimal(19,subChargeEnergy);
+                    pst.setBigDecimal(20,subDisChargeEnergy);
+                    pst.setString(21,subTimestamp.toString());
+                    pst.setInt(22,subDataFlag);
+                    pst.setInt(23,subWorkType);
+                    pst.setString(24,subTimestamp.toString());
+                    pst.setString(25,"qqq");
+                    pst.setString(26,subTimestamp.toString());
+                    pst.setString(27,"www");
+
                     pst.addBatch();//待定
                 }
                 if (pst != null) {
@@ -246,19 +300,19 @@ public class ResultDataImpl implements IResultData {
                     conn.commit();
                 }
             }
-
+            //第三张表
             String procesql = "insert into TX_ORIGINAL_PROCESS_DATA(`handle`,`site`,`remark`,`sfc`,`resource_id`,`channel_id`,`sequence_id`,`cycle`,`step_id`,`step_name`,`test_time_duration`,`timestamp`,`sv_ic_range`,`sv_iv_range`,`pv_voltage`,`pv_current`,`pv_ir`,`pv_temperature`,`pv_charge_capacity`,`pv_discharge_capacity`,`pv_charge_energy`,`pv_discharge_energy`,`pv_sub_channel_1`,`pv_sub_channel_2`,`pv_sub_channel_3`,`pv_sub_channel_4`,`pv_sub_channel_5`,`pv_sub_channel_6`,`pv_data_flag`,`pv_work_type`,`tx_is_exceptional`,`tx_alert_current`,`tx_alert_voltage`,`tx_alert_temperature`,`tx_alert_capacity`,`tx_alert_duration`,`tx_alert_category1`,`tx_alert_category2`,`tx_root_remark`,`st_business_cycle`,`created_data_time`,`created_user`,`modified_date_time`,`modified_user`) " +
                     "values ('" + procehandle + "','" + site + "','" + remark + "','" + sfc + "','" + resourceId + "'," + channelId + "," + sequenceId + "," + cycle + "," + stepId + ",'" + stepName + "'," + testTimeDuration + ",'" + testingmesstimestamp + "'," + svIcRange + "," + svIvRange + "," + pvVoltage + "," + pvCurrent + "," + pvIr + "," + pvTemperature + "," + pvChargeCapacity + "," + pvDischargeCapacity + "," + pvChargeEnergy + "," + pvDischargeEnergy + ",'" + subchannel1 + "','" + subchannel2 + "','" + subchannel3 + "','" + subchannel4 + "','" + subchannel5 + "','" + subchannel6 + "'," + pvDataFlag + "," + pvWorkType + ",'" + processDataAlert + "','" + curr + "','" + volt + "','" + temp + "','" + capa + "','" + time + "','" + "预留字段" + "','" + "预留字段" + "','" + "rootremark" + "'," + businessCycle + ",'" + createDateTime + "','" + createUser + "','" + modifiedDateTime + "','" + modifiedUser + "')";
 
             pst = conn.prepareStatement(procesql);//插入流程结果表
             pst.execute();//待定
-            //插入第三张表
+            //插入第四张表
             String alertListId = remark+sequenceId;
             String alertListsql = "insert into TX_ALERT_LIST_INFO values('"+procehandle+"','"+site+"','"+alertListId+"','NEW','"+""+"','"+"'"+"','"+"'"+"',''"+"'"+"',''"+"'"+"',''"+"'"+"','"+createDateTime + "','" + createUser + "','" + modifiedDateTime + "','" + modifiedUser +"')";
             pst = conn.prepareStatement(alertListsql);//插入报警列表
+
             pst.execute();//待定
 
-            //插入第四张子通道表
 
 
         } catch (SQLException e) {
