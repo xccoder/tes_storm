@@ -35,7 +35,7 @@ public class DataService {
 	 * 反之则不需要+1.  如果 IS_CYCLE_SIGNAL_STEP 为false 则直接跳过，业务循环号不需要+1.
      * @param testingMessage
      */
-	public void updateBusinessCycle(TestingMessage testingMessage,CacheService cacheService) {
+	public TestingMessage updateBusinessCycle(TestingMessage testingMessage,CacheService cacheService) {
 		/*
 		 * 到CacheService中获取这个测试数据对应的流程信息
 		 * （也可以从redis里面获取，但是考虑到性能问题，就让CacheService中缓存一份redis所有流程的信息。这样就是牺牲内存换性能）
@@ -99,6 +99,7 @@ public class DataService {
 				}
 			}
 		}
+		return testingMessage;
 	}
 	
     /**
@@ -106,7 +107,7 @@ public class DataService {
      * @param testingMessage
      * @param cacheService
      */
-	public void updateStepLogicNumber(TestingMessage testingMessage, CacheService cacheService) {
+	public TestingMessage updateStepLogicNumber(TestingMessage testingMessage, CacheService cacheService) {
 		Jedis jedis = cacheService.getProxyJedisPool().getResource();
 		int dataFlag = testingMessage.getPvDataFlag();//数据类型标识,能够表示工步起始点，工步终结点等信息（1代表起始，2 代表终节点）
 		if(dataFlag==1){
@@ -120,5 +121,6 @@ public class DataService {
 				jedis.set("stepLogicNumber"+testingMessage.getRemark(), a+1+"");
 			}
 		}
+		return testingMessage;
 	}
 }

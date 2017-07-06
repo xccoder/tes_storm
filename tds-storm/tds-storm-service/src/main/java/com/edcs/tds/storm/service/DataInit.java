@@ -12,6 +12,7 @@ import com.edcs.tds.common.model.TestingMessage;
 import com.edcs.tds.common.model.TestingSubChannel;
 import com.edcs.tds.common.util.JsonUtils;
 import com.edcs.tds.storm.model.ExecuteContext;
+import com.edcs.tds.storm.model.MDprocessInfo;
 
 import backtype.storm.tuple.Tuple;
 import groovy.lang.Binding;
@@ -62,5 +63,34 @@ public class DataInit {
 	public static void initShellContext(TestingMessage testingMessage, EngineCommonService engineCommonService,
 			ExecuteContext executeContext, Binding shellContext) {
 		shellContext.setVariable(ContextConfig.ENGINE_COMMON_SERVICE, engineCommonService);
+	}
+    /**
+     * 数据初始化
+     * @param executeContext
+     * @param cacheService
+     * @param shellContext
+     * @return 
+     */
+	public static Binding initShellContext(ExecuteContext executeContext, CacheService cacheService,
+			Binding shellContext) {
+		// TODO 取测试数据和主数据中的数据来初始化 shellContext
+		TestingMessage testingMsg = executeContext.getTestingMessage();//获取测试数据
+		String processInfoJson = cacheService.getProcessInfoJson();//获取流程主数据json
+		
+		MDprocessInfo mDprocessInfo = null;
+		if(StringUtils.isNotBlank(processInfoJson)){
+			List<MDprocessInfo> mDprocessInfos = JsonUtils.toArray(processInfoJson, MDprocessInfo.class);//转化为流程主数据的model
+			for (MDprocessInfo mDprocessInfo2 : mDprocessInfos) {
+				if(mDprocessInfo2.getRemark().equals(testingMsg.getRemark())){//获取当前测试数据对应的流程主数据。
+					mDprocessInfo = mDprocessInfo2;
+					break;
+				}
+			}
+		}
+		if(mDprocessInfo!=null){
+			shellContext.setProperty("", 0);
+			
+		}
+		return shellContext;
 	}
 }
