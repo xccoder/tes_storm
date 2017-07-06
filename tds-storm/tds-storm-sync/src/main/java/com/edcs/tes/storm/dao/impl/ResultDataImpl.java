@@ -40,7 +40,7 @@ public class ResultDataImpl implements IResultData {
 
     private int businessCycle;
     private int cycle;
-    private String procehandle = null;
+    private String procehandle = null; //整条测试数据的handle
     private BigDecimal pvChargeCapacity;
     private BigDecimal pvChargeEnergy;
     private BigDecimal pvCurrent;
@@ -67,8 +67,9 @@ public class ResultDataImpl implements IResultData {
     private BigDecimal testTimeDuration;
     private Date testingmesstimestamp;
 
+
     @Override
-    public boolean insertResultData(List<TestingResultData> testingResultDatas) {
+    public boolean insertResultData(List<TestingResultData> testingResultDatas) throws SQLException {
         String category;//场景
         int alertSquenceNumber;
         String txAlertListInfoBo;
@@ -81,11 +82,13 @@ public class ResultDataImpl implements IResultData {
         BigDecimal upLimit;
         BigDecimal lowLimit;
         String originalProBo;
-        String handle;
+        String handle;//每一个场景报警数据的handle
 
         Connection conn = null;
         PreparedStatement pst = null;
         try {
+            conn = db.getConnection();
+            conn.setAutoCommit(false);
             for (TestingResultData testingResultData : testingResultDatas) {
 
                 handle = testingResultData.getHandle();
@@ -161,61 +164,66 @@ public class ResultDataImpl implements IResultData {
                     }
 
                     String sql = "insert into tx_alert_info(`handle`,`site`,`remark`,`sfc`,`category`,`alert_sequence_number`,`tx_alert_list_info_bo`,`status`,`process_info_bo`,`timestamp`,`erp_resource_bo`,`channel_id`,`alert_level`,`description`,`up_limit`,`low_limit`,`original_process_data_bo`,`created_data_time`,`created_user`,`modified_date_time`,`modified_user`) " +
-                            "values (" + handle + "," + site + "," + remark + "," + sfc + "," + category + "," + alertSquenceNumber + "," + txAlertListInfoBo + "," + status + "," + processInfoBo + "," + timestamp + "," + erpResourceBo + "," + channelId + "," + alertLevel + "," + description + "," + upLimit + "," + lowLimit + "," + originalProBo + "," + createDateTime + "," + createUser + "," + modifiedDateTime + "," + modifiedUser + ")";
-
-                    conn = db.getConnection();
+                            "values ('"+handle +"','" + site + "','" + remark + "','" + sfc + "','" + category + "'," + alertSquenceNumber + ",'" + txAlertListInfoBo + "','" + status + "','" + processInfoBo + "','" + timestamp + "','" + erpResourceBo + "'," + channelId + "," + alertLevel + ",'" + description + "'," + upLimit + "," + lowLimit + ",'" + originalProBo + "','" + createDateTime + "','" + createUser + "','" + modifiedDateTime + "','" + modifiedUser + "')";
                     pst = conn.prepareStatement(sql);
-                    conn.setAutoCommit(false);
                     pst.addBatch();
-
                 }
             }
             if (pst != null) {
                 pst.executeBatch();
                 conn.commit();
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("插入告警数据错误");
-        }finally {
-            db.close(conn,pst);
-        }
 
-        if (subChannels != null) {
-            for (TestingSubChannel testingSubChannel : subChannels) {
-                switch (testingSubChannel.getSubChannelName()) {
-                    case "pvSubChannelData1":
-                        subchannel1 = JsonUtils.toJson(testingSubChannel);
-                        break;
-                    case "pvSubChannelData2":
-                        subchannel1 = JsonUtils.toJson(testingSubChannel);
-                        break;
-                    case "pvSubChannelData3":
-                        subchannel1 = JsonUtils.toJson(testingSubChannel);
-                        break;
-                    case "pvSubChannelData4":
-                        subchannel1 = JsonUtils.toJson(testingSubChannel);
-                        break;
-                    case "pvSubChannelData5":
-                        subchannel1 = JsonUtils.toJson(testingSubChannel);
-                        break;
-                    case "pvSubChannelData6":
-                        subchannel1 = JsonUtils.toJson(testingSubChannel);
-                        break;
+            if (subChannels != null) {
+                for (TestingSubChannel testingSubChannel : subChannels) {
+                    switch (testingSubChannel.getSubChannelName()) {
+                        case "pvSubChannelData1":
+                            subchannel1 = JsonUtils.toJson(testingSubChannel);
+                            break;
+                        case "pvSubChannelData2":
+                            subchannel1 = JsonUtils.toJson(testingSubChannel);
+                            break;
+                        case "pvSubChannelData3":
+                            subchannel1 = JsonUtils.toJson(testingSubChannel);
+                            break;
+                        case "pvSubChannelData4":
+                            subchannel1 = JsonUtils.toJson(testingSubChannel);
+                            break;
+                        case "pvSubChannelData5":
+                            subchannel1 = JsonUtils.toJson(testingSubChannel);
+                            break;
+                        case "pvSubChannelData6":
+                            subchannel1 = JsonUtils.toJson(testingSubChannel);
+                            break;
+                    }
                 }
             }
-        }
-        String procesql = "insert into TX_ORIGINAL_PROCESS_DATA(`handle`,`site`,`remark`,`sfc`,`resource_id`,`channel_id`,`sequence_id`,`cycle`,`step_id`,`step_name`,`test_time_duration`,`timestamp`,`sv_ic_range`,`sv_iv_range`,`pv_voltage`,`pv_current`,`pv_ir`,`pv_temperature`,`pv_charge_capacity`,`pv_discharge_capacity`,`pv_charge_energy`,`pv_discharge_energy`,`pv_sub_channel_1`,`pv_sub_channel_2`,`pv_sub_channel_3`,`pv_sub_channel_4`,`pv_sub_channel_5`,`pv_sub_channel_6`,`pv_data_flag`,`pv_work_type`,`tx_is_exceptional`,`tx_alert_current`,`tx_alert_voltage`,`tx_alert_temperature`,`tx_alert_capacity`,`tx_alert_duration`,`tx_alert_category1`,`tx_alert_category2`,`tx_root_remark`,`st_business_cycle`,`created_data_time`,`created_user`,`modified_date_time`,`modified_user`) " +
-                "values (" + procehandle + "," + site + "," + remark + "," + sfc + "," + resourceId + "," + channelId + "," + sequenceId + "," + cycle + "," + stepId + "," + stepName + "," + testTimeDuration + "," + testingmesstimestamp + "," + svIcRange + "," + svIvRange + "," + pvVoltage + "," + pvCurrent + "," + pvIr + "," + pvTemperature + "," + pvChargeCapacity + "," + pvDischargeCapacity + "," + pvChargeEnergy + "," + pvDischargeEnergy + "," + subchannel1 + "," + subchannel2 + "," + subchannel3 + "," + subchannel4 + "," + subchannel5 + "," + subchannel6 + "," + pvDataFlag + "," + pvWorkType + "," + processDataAlert + "," + curr + "," + volt + "," + temp + "," + capa + "," + time + "," + "预留字段" + "," + "预留字段" + "," + "rootremark" + "," + businessCycle + "," + createDateTime + "," + createUser + "," + modifiedDateTime + "," + modifiedUser + ")";
-        try {
-            conn = db.getConnection();
+            String procesql = "insert into TX_ORIGINAL_PROCESS_DATA(`handle`,`site`,`remark`,`sfc`,`resource_id`,`channel_id`,`sequence_id`,`cycle`,`step_id`,`step_name`,`test_time_duration`,`timestamp`,`sv_ic_range`,`sv_iv_range`,`pv_voltage`,`pv_current`,`pv_ir`,`pv_temperature`,`pv_charge_capacity`,`pv_discharge_capacity`,`pv_charge_energy`,`pv_discharge_energy`,`pv_sub_channel_1`,`pv_sub_channel_2`,`pv_sub_channel_3`,`pv_sub_channel_4`,`pv_sub_channel_5`,`pv_sub_channel_6`,`pv_data_flag`,`pv_work_type`,`tx_is_exceptional`,`tx_alert_current`,`tx_alert_voltage`,`tx_alert_temperature`,`tx_alert_capacity`,`tx_alert_duration`,`tx_alert_category1`,`tx_alert_category2`,`tx_root_remark`,`st_business_cycle`,`created_data_time`,`created_user`,`modified_date_time`,`modified_user`) " +
+                    "values ('" + procehandle + "','" + site + "','" + remark + "','" + sfc + "','" + resourceId + "'," + channelId + "," + sequenceId + "," + cycle + "," + stepId + ",'" + stepName + "'," + testTimeDuration + ",'" + testingmesstimestamp + "'," + svIcRange + "," + svIvRange + "," + pvVoltage + "," + pvCurrent + "," + pvIr + "," + pvTemperature + "," + pvChargeCapacity + "," + pvDischargeCapacity + "," + pvChargeEnergy + "," + pvDischargeEnergy + ",'" + subchannel1 + "','" + subchannel2 + "','" + subchannel3 + "','" + subchannel4 + "','" + subchannel5 + "','" + subchannel6 + "'," + pvDataFlag + "," + pvWorkType + ",'" + processDataAlert + "','" + curr + "','" + volt + "','" + temp + "','" + capa + "','" + time + "','" + "预留字段" + "','" + "预留字段" + "','" + "rootremark" + "'," + businessCycle + ",'" + createDateTime + "','" + createUser + "','" + modifiedDateTime + "','" + modifiedUser + "')";
+
             pst = conn.prepareStatement(procesql);
             pst.execute();//待定
-        } catch (Exception e) {
-            db.close(conn,pst);
+            //插入第三张表
+            String alertListId = remark+sequenceId;
+            String alertListsql = "insert into TX_ALERT_LIST_INFO values('"+procehandle+"','"+site+"','"+alertListId+"','NEW','"+""+"','"+"'"+"','"+"'"+"',''"+"'"+"',''"+"'"+"',''"+"'"+"','"+createDateTime + "','" + createUser + "','" + modifiedDateTime + "','" + modifiedUser +"')";
+            pst = conn.prepareStatement(alertListsql);
+            pst.execute();//待定
+
+            //插入第四张子通道表
+
+        } catch (SQLException e) {
+            conn.rollback();            //回滚
+            e.printStackTrace();
+            System.out.println("插入告警数据错误");
+        } finally {
+            db.close(conn, pst);
         }
 
-
         return false;
+    }
+
+    public static void main(String[] args) {
+        IResultData iResultData = new ResultDataImpl();
+
     }
 }
