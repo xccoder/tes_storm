@@ -12,6 +12,7 @@ import com.edcs.tds.common.model.TestingMessage;
 import com.edcs.tds.common.model.TestingSubChannel;
 import com.edcs.tds.common.util.JsonUtils;
 import com.edcs.tds.storm.model.ExecuteContext;
+import com.edcs.tds.storm.model.MDStepInfo;
 import com.edcs.tds.storm.model.MDprocessInfo;
 
 import backtype.storm.tuple.Tuple;
@@ -88,8 +89,135 @@ public class DataInit {
 			}
 		}
 		if(mDprocessInfo!=null){
-			shellContext.setProperty("", 0);
+			/*
+			 * 电流测试场景需要的参数
+			 */
+			shellContext.setProperty("pvCurrent", testingMsg.getPvCurrent());//需要用来比较的电流
 			
+			shellContext.setProperty("svIcRange", testingMsg.getSvIcRange());//电流通道最大流程
+			shellContext.setProperty("svDischargeVoltage", mDprocessInfo.getSvDischargeVoltage());//放电电流
+			//获取这个流程的所有工 步信息
+			List<MDStepInfo> mdStepInfos = mDprocessInfo.getMdStepInfoList();
+			for (MDStepInfo mdStepInfo : mdStepInfos) {
+                 
+				if(("恒压充电".equals(mdStepInfo.getStepName()) && "恒压充电".equals(testingMsg.getStepName()))
+						|| ("恒流恒压充电".equals(mdStepInfo.getStepName()) && "恒流恒压充电".equals(testingMsg.getStepName()))
+						|| ("恒功率充电".equals(mdStepInfo.getStepName()) && "恒功率充电".equals(testingMsg.getStepName()))
+						|| ("恒功率放电".equals(mdStepInfo.getStepName()) && "恒功率放电".equals(testingMsg.getStepName()))
+						|| ("恒阻放电".equals(mdStepInfo.getStepName()) && "恒阻放电".equals(testingMsg.getStepName()))){
+					shellContext.setProperty("svStepEndCurrent", mdStepInfo.getSvStepEndCurrent());//恒压充电工步的 截止电流 （I截止）
+				}
+				if(("恒功率充电".equals(mdStepInfo.getStepName()) && "恒功率充电".equals(testingMsg.getStepName()))
+						|| ("恒功率放电".equals(mdStepInfo.getStepName()) && "恒功率放电".equals(testingMsg.getStepName()))
+						|| ("恒阻放电".equals(mdStepInfo.getStepName()) && "恒阻放电".equals(testingMsg.getStepName()))
+						|| ("恒流放电".equals(mdStepInfo.getStepName()) && "恒流放电".equals(testingMsg.getStepName()))){
+					shellContext.setProperty("svStepEndVoltage", mdStepInfo.getSvStepEndVoltage());//U截止 为恒功率充电截止电压 (U截止)
+				}
+				if("模拟工步（电流模式）".equals(mdStepInfo.getStepName()) && "模拟工步（电流模式）".equals(testingMsg.getStepName())){
+					shellContext.setProperty("svCurrent", mdStepInfo.getSvCurrent());//I为工况附录文件中规定的电流
+					shellContext.setProperty("svPower", mdStepInfo.getSvPower());//模拟工步（电流模式）中的（P恒）
+				}
+			}
+			//充电功率（P恒 冲） 用在恒功率充电 工步中的电流场景
+			shellContext.setProperty("svChargePower", mDprocessInfo.getSvChargePower());
+			//放电功率 （P恒 放）用在恒功率放电  工步中的电流场景
+			shellContext.setProperty("svDischargePower", mDprocessInfo.getSvDischargePower());
+			//R恒 为流程设置恒阻值
+			shellContext.setProperty("constantIrValue", mDprocessInfo.getConstantIrValue());
+			
+			/*
+			 * 电压测试场景需要的参数
+			 */
+			shellContext.setProperty("pvVoltage", testingMsg.getPvVoltage());//需要用来比较的电流
+			shellContext.setProperty("svUpperU", mDprocessInfo.getSvUpperU());//U上限 为测试流程中规定的上限电压
+			shellContext.setProperty("svLowerU", mDprocessInfo.getSvLowerU());//U下限为测试流程中规定的上限电压
+			for (MDStepInfo mdStepInfo : mdStepInfos) {
+				if("恒流恒压充电".equals(mdStepInfo.getStepName()) && "恒流恒压充电".equals(testingMsg.getStepName())){
+					shellContext.setProperty("svVoltage", mdStepInfo.getSvVoltage());//U恒压 为恒压阶段设定电压值
+				}
+			}
+			
+			/*
+			 * 容量测试场景需要的参数
+			 */
+			shellContext.setProperty("pvChargeCapacity", testingMsg.getPvChargeCapacity());//需要用来比较的充电容量（充电工步中使用）
+			shellContext.setProperty("pvDischargeCapacity", testingMsg.getPvDischargeCapacity());//需要用来比较的放电容量（放电工步中使用）
+			for (MDStepInfo mdStepInfo : mdStepInfos) {
+				if(("恒流放电".equals(mdStepInfo.getStepName()) && "恒流放电".equals(testingMsg.getStepName())) 
+						||("恒流充电".equals(mdStepInfo.getStepName()) && "恒流充电".equals(testingMsg.getStepName())) 
+						||("恒压充电".equals(mdStepInfo.getStepName()) && "恒压充电".equals(testingMsg.getStepName()))
+						||("恒流恒压充电".equals(mdStepInfo.getStepName()) && "恒流恒压充电".equals(testingMsg.getStepName()))
+						||("恒功率充电".equals(mdStepInfo.getStepName()) && "恒功率充电".equals(testingMsg.getStepName()))
+						||("恒功率放电".equals(mdStepInfo.getStepName()) && "恒功率放电".equals(testingMsg.getStepName()))
+						||("恒阻放电".equals(mdStepInfo.getStepName()) && "恒阻放电".equals(testingMsg.getStepName()))
+						||("模拟工步（电流模式）".equals(mdStepInfo.getStepName()) && "模拟工步（电流模式）".equals(testingMsg.getStepName()))
+						||("模拟工步（功率模式）".equals(mdStepInfo.getStepName()) && "模拟工步（功率模式）".equals(testingMsg.getStepName()))){
+					shellContext.setProperty("svStepEndCapacity", mdStepInfo.getSvStepEndCapacity());//C设定 为工步设定截止容量
+				}
+			}
+			shellContext.setProperty("svCapacityValue", mDprocessInfo.getSvCapacityValue());//C为电芯标称容量
+			
+			/*
+			 * 能量
+			 */
+			for (MDStepInfo mdStepInfo : mdStepInfos) {
+				if(("恒流放电".equals(mdStepInfo.getStepName()) && "恒流放电".equals(testingMsg.getStepName())) 
+						||("恒流充电".equals(mdStepInfo.getStepName()) && "恒流充电".equals(testingMsg.getStepName())) 
+						||("恒压充电".equals(mdStepInfo.getStepName()) && "恒压充电".equals(testingMsg.getStepName()))
+						||("恒流恒压充电".equals(mdStepInfo.getStepName()) && "恒流恒压充电".equals(testingMsg.getStepName()))
+						||("恒功率充电".equals(mdStepInfo.getStepName()) && "恒功率充电".equals(testingMsg.getStepName()))
+						||("恒功率放电".equals(mdStepInfo.getStepName()) && "恒功率放电".equals(testingMsg.getStepName()))
+						||("恒阻放电".equals(mdStepInfo.getStepName()) && "恒阻放电".equals(testingMsg.getStepName()))
+						||("模拟工步（电流模式）".equals(mdStepInfo.getStepName()) && "模拟工步（电流模式）".equals(testingMsg.getStepName()))
+						||("模拟工步（功率模式）".equals(mdStepInfo.getStepName()) && "模拟工步（功率模式）".equals(testingMsg.getStepName()))){
+					shellContext.setProperty("svEnergy", mdStepInfo.getSvEnergy());//E为电芯额定能量
+					
+				}
+			}
+			
+			/*
+			 * 温度
+			 */
+			for (MDStepInfo mdStepInfo : mdStepInfos) {
+				if(("搁置（Start）".equals(mdStepInfo.getStepName()) && "搁置（Start）".equals(testingMsg.getStepName()))
+						||("搁置（A-DC）".equals(mdStepInfo.getStepName()) && "搁置（A-DC）".equals(testingMsg.getStepName()))
+						||("搁置（A-CC）".equals(mdStepInfo.getStepName()) && "搁置（A-CC）".equals(testingMsg.getStepName()))
+						
+						||("恒流放电".equals(mdStepInfo.getStepName()) && "恒流放电".equals(testingMsg.getStepName())) 
+						||("恒流充电".equals(mdStepInfo.getStepName()) && "恒流充电".equals(testingMsg.getStepName())) 
+						||("恒压充电".equals(mdStepInfo.getStepName()) && "恒压充电".equals(testingMsg.getStepName()))
+						||("恒流恒压充电".equals(mdStepInfo.getStepName()) && "恒流恒压充电".equals(testingMsg.getStepName()))
+						||("恒功率充电".equals(mdStepInfo.getStepName()) && "恒功率充电".equals(testingMsg.getStepName()))
+						||("恒功率放电".equals(mdStepInfo.getStepName()) && "恒功率放电".equals(testingMsg.getStepName()))
+						||("恒阻放电".equals(mdStepInfo.getStepName()) && "恒阻放电".equals(testingMsg.getStepName()))
+						||("模拟工步（电流模式）".equals(mdStepInfo.getStepName()) && "模拟工步（电流模式）".equals(testingMsg.getStepName()))
+						||("模拟工步（功率模式）".equals(mdStepInfo.getStepName()) && "模拟工步（功率模式）".equals(testingMsg.getStepName()))){
+					shellContext.setProperty("svTemperature", mdStepInfo.getSvTemperature());//工步设定温度由测试申请单导入TDP系统
+					
+				}
+			}
+			
+			/**
+			 * 相对时间
+			 */
+			for (MDStepInfo mdStepInfo : mdStepInfos) {
+				if(("搁置（Start）".equals(mdStepInfo.getStepName()) && "搁置（Start）".equals(testingMsg.getStepName()))
+						||("搁置（A-DC）".equals(mdStepInfo.getStepName()) && "搁置（A-DC）".equals(testingMsg.getStepName()))
+						||("搁置（A-CC）".equals(mdStepInfo.getStepName()) && "搁置（A-CC）".equals(testingMsg.getStepName()))
+						
+						||("恒流放电".equals(mdStepInfo.getStepName()) && "恒流放电".equals(testingMsg.getStepName())) 
+						||("恒流充电".equals(mdStepInfo.getStepName()) && "恒流充电".equals(testingMsg.getStepName())) 
+						||("恒压充电".equals(mdStepInfo.getStepName()) && "恒压充电".equals(testingMsg.getStepName()))
+						||("恒流恒压充电".equals(mdStepInfo.getStepName()) && "恒流恒压充电".equals(testingMsg.getStepName()))
+						||("恒功率充电".equals(mdStepInfo.getStepName()) && "恒功率充电".equals(testingMsg.getStepName()))
+						||("恒功率放电".equals(mdStepInfo.getStepName()) && "恒功率放电".equals(testingMsg.getStepName()))
+						||("恒阻放电".equals(mdStepInfo.getStepName()) && "恒阻放电".equals(testingMsg.getStepName()))
+						||("模拟工步（电流模式）".equals(mdStepInfo.getStepName()) && "模拟工步（电流模式）".equals(testingMsg.getStepName()))
+						||("模拟工步（功率模式）".equals(mdStepInfo.getStepName()) && "模拟工步（功率模式）".equals(testingMsg.getStepName()))){
+//					shellContext.setProperty("svTemperature", mdStepInfo.getSvTemperature());//工步设定温度由测试申请单导入TDP系统
+					
+				}
+			}
 		}
 		return shellContext;
 	}
