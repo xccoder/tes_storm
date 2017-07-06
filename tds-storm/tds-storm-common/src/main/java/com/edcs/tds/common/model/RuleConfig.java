@@ -10,6 +10,7 @@ public class RuleConfig implements Serializable {
 	private Long id;
 	private String ruleName;
 	private String stepId;
+	private String stepName;
 	private Long ruleGroup;
 	private String ruleDesc;
 	private Integer ruleState;
@@ -25,6 +26,12 @@ public class RuleConfig implements Serializable {
 
 	public void setStepId(String stepId) {
 		this.stepId = stepId;
+	}
+	public String getStepName() {
+		return stepName;
+	}
+	public void setStepName(String stepName) {
+		this.stepName = stepName;
 	}
 
 	public Long getId() {
