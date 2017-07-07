@@ -26,7 +26,7 @@ public class RedisSync {
         String resultJson = null;
         try {
             jedis = proxyJedisPool.getResource();
-            resultJson = jedis.spop("");
+            resultJson = jedis.spop("TES-RESULT");
         }catch (Exception e){
            ///
         }

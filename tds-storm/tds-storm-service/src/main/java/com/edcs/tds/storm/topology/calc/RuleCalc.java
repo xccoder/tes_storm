@@ -115,6 +115,8 @@ public class RuleCalc {
 			}
 		}
         String result = JsonUtils.toJson(listResult);
-        jedis.set(key, result);
+        jedis.set(key, result);//用于计算过程中查询历史数据
+		jedis.expire(key,60*60);
+		jedis.sadd("TES-RESULT",result);//用于同步服务写入hana
     }
 }
