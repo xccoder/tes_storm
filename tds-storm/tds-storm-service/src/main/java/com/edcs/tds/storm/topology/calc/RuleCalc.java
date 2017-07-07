@@ -58,7 +58,7 @@ public class RuleCalc {
 				if(testingMessage.getStepName().equals(ruleConfig2.getStepName())){
 					long executeUsedTime = 0;
 	                long executeBeginTime = System.currentTimeMillis();
-					Script script = CacheService.getScriptCache().get(ruleConfig2.getStepId()).getRight();
+					Script script = CacheService.getScriptCache().get(ruleConfig2.getStepSign()).getRight();
 					script.setBinding(shellContext);
                     try {
                     	// 返回值为 ： 报警上限_报警下限_比较值_报警级别
