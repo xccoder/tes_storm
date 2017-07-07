@@ -66,7 +66,7 @@ public class ResultDataImpl implements IResultData {
     private BigDecimal svIvRange;
     private BigDecimal testTimeDuration;
     private Date testingmesstimestamp;
-
+    private int stepLogicNumber ;
 
     @Override
     public boolean insertResultData(List<TestingResultData> testingResultDatas) throws SQLException {
@@ -152,7 +152,7 @@ public class ResultDataImpl implements IResultData {
                 stepId = testingResultData.getTestingMessage().getStepId();
                 stepName = testingResultData.getTestingMessage().getStepName();
                 subChannels = testingResultData.getTestingMessage().getSubChannel();
-
+                stepLogicNumber = testingResultData.getTestingMessage().getStepLogicNumber();
                 svIcRange = testingResultData.getTestingMessage().getSvIcRange();
                 svIvRange = testingResultData.getTestingMessage().getSvIvRange();
                 testTimeDuration = testingResultData.getTestingMessage().getTestTimeDuration();
@@ -202,7 +202,7 @@ public class ResultDataImpl implements IResultData {
                     pst.setString(10,timestamp.toString());             //注意
                     pst.setString(11,erpResourceBo);
                     pst.setInt(12,channelId);
-                    pst.setInt(13,alertLevel);                         //更改类型
+                    //pst.setInt(13,alertLevel);                         //更改类型
                     pst.setString(14,description);
                     pst.setBigDecimal(15,upLimit);
                     pst.setBigDecimal(16,lowLimit);
@@ -301,8 +301,10 @@ public class ResultDataImpl implements IResultData {
                 }
             }
             //第三张表
-            String procesql = "insert into TX_ORIGINAL_PROCESS_DATA(`handle`,`site`,`remark`,`sfc`,`resource_id`,`channel_id`,`sequence_id`,`cycle`,`step_id`,`step_name`,`test_time_duration`,`timestamp`,`sv_ic_range`,`sv_iv_range`,`pv_voltage`,`pv_current`,`pv_ir`,`pv_temperature`,`pv_charge_capacity`,`pv_discharge_capacity`,`pv_charge_energy`,`pv_discharge_energy`,`pv_sub_channel_1`,`pv_sub_channel_2`,`pv_sub_channel_3`,`pv_sub_channel_4`,`pv_sub_channel_5`,`pv_sub_channel_6`,`pv_data_flag`,`pv_work_type`,`tx_is_exceptional`,`tx_alert_current`,`tx_alert_voltage`,`tx_alert_temperature`,`tx_alert_capacity`,`tx_alert_duration`,`tx_alert_category1`,`tx_alert_category2`,`tx_root_remark`,`st_business_cycle`,`created_data_time`,`created_user`,`modified_date_time`,`modified_user`) " +
+            /*String procesql = "insert into TX_ORIGINAL_PROCESS_DATA(`handle`,`site`,`remark`,`sfc`,`resource_id`,`channel_id`,`sequence_id`,`cycle`,`step_id`,`step_name`,`test_time_duration`,`timestamp`,`sv_ic_range`,`sv_iv_range`,`pv_voltage`,`pv_current`,`pv_ir`,`pv_temperature`,`pv_charge_capacity`,`pv_discharge_capacity`,`pv_charge_energy`,`pv_discharge_energy`,`pv_sub_channel_1`,`pv_sub_channel_2`,`pv_sub_channel_3`,`pv_sub_channel_4`,`pv_sub_channel_5`,`pv_sub_channel_6`,`pv_data_flag`,`pv_work_type`,`tx_is_exceptional`,`tx_alert_current`,`tx_alert_voltage`,`tx_alert_temperature`,`tx_alert_capacity`,`tx_alert_duration`,`tx_alert_category1`,`tx_alert_category2`,`tx_root_remark`,`st_business_cycle`,`created_data_time`,`created_user`,`modified_date_time`,`modified_user`) " +
                     "values ('" + procehandle + "','" + site + "','" + remark + "','" + sfc + "','" + resourceId + "'," + channelId + "," + sequenceId + "," + cycle + "," + stepId + ",'" + stepName + "'," + testTimeDuration + ",'" + testingmesstimestamp + "'," + svIcRange + "," + svIvRange + "," + pvVoltage + "," + pvCurrent + "," + pvIr + "," + pvTemperature + "," + pvChargeCapacity + "," + pvDischargeCapacity + "," + pvChargeEnergy + "," + pvDischargeEnergy + ",'" + subchannel1 + "','" + subchannel2 + "','" + subchannel3 + "','" + subchannel4 + "','" + subchannel5 + "','" + subchannel6 + "'," + pvDataFlag + "," + pvWorkType + ",'" + processDataAlert + "','" + curr + "','" + volt + "','" + temp + "','" + capa + "','" + time + "','" + "预留字段" + "','" + "预留字段" + "','" + "rootremark" + "'," + businessCycle + ",'" + createDateTime + "','" + createUser + "','" + modifiedDateTime + "','" + modifiedUser + "')";
+*/
+            String procesql = "insert into TX_ORIGINAL_PROCESS_DATA VALUES('" + procehandle + "','" + site + "','" + remark + "','" + sfc + "','" + resourceId + "'," + channelId + "," + sequenceId + "," + cycle + "," + stepId + ",'" + stepName + "'," + testTimeDuration + ",'" + testingmesstimestamp + "'," + svIcRange + "," + svIvRange + "," + pvVoltage + "," + pvCurrent + "," + pvIr + "," + pvTemperature + "," + pvChargeCapacity + "," + pvDischargeCapacity + "," + pvChargeEnergy + "," + pvDischargeEnergy + ",'" + subchannel1 + "','" + subchannel2 + "','" + subchannel3 + "','" + subchannel4 + "','" + subchannel5 + "','" + subchannel6 + "'," + pvDataFlag + "," + pvWorkType + ",'" + processDataAlert + "','" + curr + "','" + volt + "','" + temp + "','" + capa + "','" + time + "','" +"category1"+ "','" +"category2" + "','"+ "rootremark" + "'," + businessCycle + ",'" + createDateTime + "','" + createUser + "','" + modifiedDateTime + "','" + modifiedUser + "',"+stepLogicNumber+")";
 
             pst = conn.prepareStatement(procesql);//插入流程结果表
             pst.execute();//待定

@@ -47,7 +47,7 @@ public class MDprocessInfo implements Serializable {
     private BigDecimal soc;//soc
     private int pluseTimes;//脉冲次数
     private BigDecimal chargeMulti;//充电倍率
-    private BigDecimal disChargeMutil;//放电倍率
+    private BigDecimal dischargeMulti;//放电倍率
     private String storeEndCondition;//存储结束条件
     private String storeCrossCondition;//存储交叉条件
     private String cycleEndCondition;//循环结束条件
@@ -359,12 +359,12 @@ public class MDprocessInfo implements Serializable {
         this.chargeMulti = chargeMulti;
     }
 
-    public BigDecimal getDisChargeMutil() {
-        return disChargeMutil;
+    public BigDecimal getDischargeMulti() {
+        return dischargeMulti;
     }
 
-    public void setDisChargeMutil(BigDecimal disChargeMutil) {
-        this.disChargeMutil = disChargeMutil;
+    public void setDischargeMulti(BigDecimal dischargeMulti) {
+        this.dischargeMulti = dischargeMulti;
     }
 
     public String getStoreEndCondition() {

@@ -184,11 +184,12 @@ public class CacheService {
         try {
             //jedis = proxyJedisPool.getResource();
 
-            String newMdProcessjosn = jedis.get("TES");
+            String newMdProcessjosn = jedis.get("TESTEST");
             if (!StringUtils.equals(newMdProcessjosn, processInfoJson)) {
                 //Preconditions.checkNotNull(data);
                 ruleConfig.clear();
                 ruleIds.clear();
+                System.out.println("ruleIds清除后长度："+ruleIds.size());
                 List<MDprocessInfo> mDprocessInfos = JsonUtils.toArray(newMdProcessjosn, MDprocessInfo.class);
                 System.out.println("mDprocessInfos的长度"+mDprocessInfos.size());
                 for (MDprocessInfo mDprocessInfo : mDprocessInfos) {
@@ -288,6 +289,10 @@ public class CacheService {
             //以下是测试
             /*for (Map.Entry<String, List<RuleConfig>> entries : ruleConfig.entrySet()){
                 System.out.println("MapruleConfig的key是"+entries.getKey());
+                for (RuleConfig ruleConfig : entries.getValue()){
+                    System.out.println(ruleConfig.getStepSign());
+                    System.out.println(ruleConfig.getRuleScript());
+                }
             }*/
             //System.out.println(processInfoJson.length());
         } finally {
@@ -305,6 +310,7 @@ public class CacheService {
                 if (!ruleIds.contains(id)) {
                     logger.info("Remove the invalid script caching, rule id: {}.", id);
                     scriptCacheMapping.remove(id);
+                    System.out.println("有删除cachedIds吗");
                 }
             }
         }
