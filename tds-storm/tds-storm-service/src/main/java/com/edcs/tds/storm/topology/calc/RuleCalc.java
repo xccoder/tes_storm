@@ -61,6 +61,7 @@ public class RuleCalc {
                     Script script = CacheService.getScriptCache().get(ruleConfig2.getStepId()).getRight();
                     script.setBinding(shellContext);
                     try {
+
                         alterLevel = scriptExecutor.execute(script);
                     } catch (GroovyException e) {
                         executeUsedTime = System.currentTimeMillis() - executeBeginTime;
@@ -106,12 +107,63 @@ public class RuleCalc {
                         testingResultData.setTestingMessage(testingMessage);
 
                         listResult.add(testingResultData);
+
+                        // 返回值为 ： 报警上限_报警下限_比较值_报警级别
+                        alterLevel = scriptExecutor.execute(script);
+                    } catch(GroovyException e){
+                        executeUsedTime = System.currentTimeMillis() - executeBeginTime;
+                        logger.error("Rule execute error, rule id: {}." + e, ruleConfig2.getId());
+                        executeContext.addRuleException(ruleConfig2, e, executeUsedTime);
+                    }finally{
+                        executeUsedTime = System.currentTimeMillis() - executeBeginTime;
+                    }
+                    if (StringUtils.isNotBlank(alterLevel) && !alterLevel.equals("null")) {
+                        //matchedCount++;
+                        // TODO 记录匹配的规则和相关数据
+                        executeContext.addMatchedRule(ruleConfig2.getId(), 0d, executeUsedTime);
+                        // TODO 将结果集写入Redis缓存
+                        String[] alters = alterLevel.split("_");
+                        BigDecimal upLimit = BigDecimal.valueOf(Long.valueOf(alters[1]));//报警上限
+                        BigDecimal lowLimit = BigDecimal.valueOf(Long.valueOf(alters[2]));//报警下限
+                        int alterLe = Integer.parseInt(alters[4]);//报警级别
+                        // key = 流程号+序号
+                        key = mDprocessInfo.getRemark() + testingMessage.getSequenceId();
+                        String handle = "TxAlertInfoBO:" + mDprocessInfo.getSite() + "," + mDprocessInfo.getRemark() + "," + testingMessage.getSfc() + "," + sceneName;
+                        TestingResultData testingResultData = new TestingResultData();
+                        testingResultData.setHandle(handle);
+                        testingResultData.setSite(mDprocessInfo.getSite());
+                        testingResultData.setCategory(sceneName);
+                        testingResultData.setAltetSequenceNumber(sequenceNumber);
+                        //TxAlertInfoBO:<SITE>,<REMARK>,<SFC>,<CATEGORY>
+                        testingResultData.setTxAlertListInfoBO("TxAlertInfoBO:" + mDprocessInfo.getSite() + "," + mDprocessInfo.getRemark() + "," + mDprocessInfo.getSfc() + "," + sceneName);
+                        testingResultData.setStatus("new");
+                        //MdProcessInfoBO:<SITE>,<PROCESS_ID>,<REMARK>
+                        testingResultData.setProcessDataBO("MdProcessInfoBO:" + mDprocessInfo.getSite() + "," + mDprocessInfo.getProcessId() + "," + mDprocessInfo.getRemark());
+                        testingResultData.setTimestamp(new Date());
+                        //ErpResourceBO:<SITE>,<RESOURCE_ID>
+                        testingResultData.setErpResourceBO("ErpResourceBO:" + mDprocessInfo.getSite() + "," + testingMessage.getResourceId());
+                        testingResultData.setAlertLevel(alterLe);
+                        testingResultData.setDescription("异常数据");
+                        testingResultData.setUpLimit(upLimit);
+                        testingResultData.setLowLimit(lowLimit);
+                        //TxOriginalProcessDataBO:<SITE>,<REMARK>,<SFC> ,<RESOURCE_ID>,<CHANNEL_ID>,<SEQUENCE_ID>
+                        testingResultData.setOriginalProcessDataBO("TxOriginalProcessDataBO:" + mDprocessInfo.getSite() + "," + mDprocessInfo.getRemark() + "," + mDprocessInfo.getSfc() + "," + testingMessage.getResourceId() + "," + testingMessage.getChannelId() + "，" + testingMessage.getSequenceId());
+                        testingResultData.setCreatedDateTime(mDprocessInfo.getCreateDateTime());
+                        testingResultData.setCreatedUser(mDprocessInfo.getCreateUser());
+                        testingResultData.setModifiedDateTime(mDprocessInfo.getModifiedDateTime());
+                        testingResultData.setModifiedUser(mDprocessInfo.getCreateUser());
+                        testingResultData.setRootRemark(mDprocessInfo.getRootRemark());
+                        testingResultData.setTestingMessage(testingMessage);
+
+                        listResult.add(testingResultData);
                     }
                     break;
                 }
             }
         }
         String result = JsonUtils.toJson(listResult);
-        jedis.set(key, result);
+        jedis.set(key, result);//用于计算过程中查询历史数据
+        jedis.expire(key, 60 * 60);
+        jedis.sadd("TES-RESULT", result);//用于同步服务写入hana
     }
 }

@@ -1,13 +1,12 @@
 package com.edcs.tes.storm.sync;
 
+import java.sql.SQLException;
+import java.util.List;
+
 import com.edcs.tds.common.model.TestingResultData;
-import com.edcs.tds.common.util.DBHelperUtils;
 import com.edcs.tds.common.util.JsonUtils;
 import com.edcs.tes.storm.dao.IResultData;
 import com.edcs.tes.storm.dao.impl.ResultDataImpl;
-
-import java.sql.SQLException;
-import java.util.List;
 
 /**
  * Created by CaiSL2 on 2017/7/4.
@@ -18,12 +17,12 @@ import java.util.List;
 
 public class DataSyncService implements Runnable {
 
-    private RedisSync redisSync;
-    private IResultData iResultData = new ResultDataImpl();
     @Override
     public void run() {
+    	IResultData iResultData = new ResultDataImpl();
+    	RedisSync redisSync = new RedisSync();
         String processJson = redisSync.getProcessJson();
-            List<TestingResultData> testingResultDatas = JsonUtils.toArray(processJson,TestingResultData.class);
+        List<TestingResultData> testingResultDatas = JsonUtils.toArray(processJson,TestingResultData.class);
         try {
             iResultData.insertResultData(testingResultDatas);
         } catch (SQLException e) {
