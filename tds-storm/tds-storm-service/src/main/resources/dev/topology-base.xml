@@ -13,9 +13,9 @@
 				<entry key="kafka.brokerZkPath" value="/brokers" />
 				<entry key="kafka.offset.zkServers">
 					<list>
-						<value>hadoop02.catl.com</value>
-						<value>hadoop03.catl.com</value>
-						<value>hadoop04.catl.com</value>
+						<value>hadoop02.catlbattery.com</value>
+						<value>hadoop03.catlbattery.com</value>
+						<value>hadoop04.catlbattery.com</value>
 					</list>
 				</entry>
 				<entry key="kafka.offset.zkPort" value="2181" />

@@ -43,6 +43,68 @@ public class MDprocessInfo implements Serializable {
     private BigDecimal svChargeVoltage;//充电电压
     private BigDecimal svChargePower;//充电功率
     private BigDecimal svDischargePower;//放电功率
+
+    @Override
+    public String toString() {
+        return "MDprocessInfo{" +
+                "handle='" + handle + '\'' +
+                ", processId='" + processId + '\'' +
+                ", site='" + site + '\'' +
+                ", remark='" + remark + '\'' +
+                ", testRequestId='" + testRequestId + '\'' +
+                ", groupName='" + groupName + '\'' +
+                ", sfc='" + sfc + '\'' +
+                ", engineer='" + engineer + '\'' +
+                ", packageId='" + packageId + '\'' +
+                ", project='" + project + '\'' +
+                ", description='" + description + '\'' +
+                ", svModel='" + svModel + '\'' +
+                ", svCapacityValue='" + svCapacityValue + '\'' +
+                ", fixtureType='" + fixtureType + '\'' +
+                ", svInitFixtureForce=" + svInitFixtureForce +
+                ", svInitWeight=" + svInitWeight +
+                ", svInitVolume=" + svInitVolume +
+                ", svInitIr=" + svInitIr +
+                ", svInitOcv=" + svInitOcv +
+                ", svInitThickness=" + svInitThickness +
+                ", daysOrCycle='" + daysOrCycle + '\'' +
+                ", svLowerU=" + svLowerU +
+                ", svUpperU=" + svUpperU +
+                ", svTemperature=" + svTemperature +
+                ", svTimeDuration=" + svTimeDuration +
+                ", svChargeCurrent=" + svChargeCurrent +
+                ", svDischargeVoltage=" + svDischargeVoltage +
+                ", svDischargeCurrent=" + svDischargeCurrent +
+                ", svChargeVoltage=" + svChargeVoltage +
+                ", svChargePower=" + svChargePower +
+                ", svDischargePower=" + svDischargePower +
+                ", cycleNumber=" + cycleNumber +
+                ", soc=" + soc +
+                ", pluseTimes=" + pluseTimes +
+                ", chargeMulti=" + chargeMulti +
+                ", disChargeMutil=" + disChargeMutil +
+                ", storeEndCondition='" + storeEndCondition + '\'' +
+                ", storeCrossCondition='" + storeCrossCondition + '\'' +
+                ", cycleEndCondition='" + cycleEndCondition + '\'' +
+                ", cycleCrossCondition='" + cycleCrossCondition + '\'' +
+                ", simEndCondition='" + simEndCondition + '\'' +
+                ", simCrossCondition='" + simCrossCondition + '\'' +
+                ", isIsoDischarge=" + isIsoDischarge +
+                ", isoDischargeDuration='" + isoDischargeDuration + '\'' +
+                ", constantIrValue='" + constantIrValue + '\'' +
+                ", cycleTemperature='" + cycleTemperature + '\'' +
+                ", storeTemperature='" + storeTemperature + '\'' +
+                ", txStatus='" + txStatus + '\'' +
+                ", createDateTime=" + createDateTime +
+                ", createUser='" + createUser + '\'' +
+                ", modifiedDateTime=" + modifiedDateTime +
+                ", modifiedUser='" + modifiedUser + '\'' +
+                ", mdStepInfoList=" + mdStepInfoList +
+                ", mdSubRuleList=" + mdSubRuleList +
+                ", rootRemark='" + rootRemark + '\'' +
+                '}';
+    }
+
     private int cycleNumber;//循环数
     private BigDecimal soc;//soc
     private int pluseTimes;//脉冲次数

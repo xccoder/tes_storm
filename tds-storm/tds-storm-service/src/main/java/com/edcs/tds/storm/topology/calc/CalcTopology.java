@@ -52,7 +52,8 @@ public class CalcTopology extends BaseTopology {
 
 	public static void main(String[] args) throws Exception {
 		CalcTopology topology = new CalcTopology();
-		topology.run(args);
+//		topology.run(args);
+		topology.createTopology(new TopologyBuilder());
 	}
 
 }
