@@ -21,6 +21,7 @@ public class RedisSync {
     public RedisSync(ProxyJedisPool proxyJedisPool) {
         this.proxyJedisPool = proxyJedisPool;
     }
+    public RedisSync(){}
     public  String getProcessJson(){
         Jedis jedis = null;
         String resultJson = null;
