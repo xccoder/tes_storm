@@ -50,16 +50,17 @@ public class RuleCalc {
         //遍历每一个场景
         Set<String> keys = ruleConfig.keySet();//获取所有的key 的值
         for (String string : keys) {
-            sequenceNumber++;
-            List<RuleConfig> rule = ruleConfig.get(string);//获取每一个场景的值
-            String[] strs = string.split("_");
-            String sceneName = strs[1];//场景名称
-            for (RuleConfig ruleConfig2 : rule) {//遍历一个场景下的所有规则
-                if (testingMessage.getStepName().equals(ruleConfig2.getStepName())) {
-                    long executeUsedTime = 0;
-                    long executeBeginTime = System.currentTimeMillis();
-                    Script script = CacheService.getScriptCache().get(ruleConfig2.getStepId()).getRight();
-                    script.setBinding(shellContext);
+
+        	sequenceNumber++;
+			List<RuleConfig> rule = ruleConfig.get(string);//获取每一个场景的值
+			String[] strs = string.split("_");
+			String sceneName = strs[1];//场景名称
+			for (RuleConfig ruleConfig2 : rule) {//遍历一个场景下的所有规则
+				if(testingMessage.getStepName().equals(ruleConfig2.getStepName())){
+					long executeUsedTime = 0;
+	                long executeBeginTime = System.currentTimeMillis();
+					Script script = CacheService.getScriptCache().get(ruleConfig2.getStepSign()).getRight();
+					script.setBinding(shellContext);
                     try {
                         // 返回值为 ： 报警上限_报警下限_比较值_报警级别
                         alterLevel = scriptExecutor.execute(script);

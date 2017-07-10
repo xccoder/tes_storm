@@ -109,7 +109,7 @@ public class MDprocessInfo implements Serializable {
     private BigDecimal soc;//soc
     private int pluseTimes;//脉冲次数
     private BigDecimal chargeMulti;//充电倍率
-    private BigDecimal disChargeMutil;//放电倍率
+    private BigDecimal dischargeMulti;//放电倍率
     private String storeEndCondition;//存储结束条件
     private String storeCrossCondition;//存储交叉条件
     private String cycleEndCondition;//循环结束条件
@@ -127,18 +127,18 @@ public class MDprocessInfo implements Serializable {
     private Date modifiedDateTime;//最后修改时间
     private String modifiedUser;//最后修改用户
     private List<MDStepInfo> mdStepInfoList;//流程下所有工步
-    private List<MDSubRule> mdSubRuleList;
+    private List<MDSubRule> mdExtractionRuleList;
     private String rootRemark;
 
     public MDprocessInfo() {
     }
 
-    public List<MDSubRule> getMdSubRuleList() {
-        return mdSubRuleList;
+    public List<MDSubRule> getMdExtractionRuleList() {
+        return mdExtractionRuleList;
     }
 
-    public void setMdSubRuleList(List<MDSubRule> mdSubRuleList) {
-        this.mdSubRuleList = mdSubRuleList;
+    public void setMdExtractionRuleList(List<MDSubRule> mdExtractionRuleList) {
+        this.mdExtractionRuleList = mdExtractionRuleList;
     }
 
     public String getHandle() {
@@ -421,12 +421,12 @@ public class MDprocessInfo implements Serializable {
         this.chargeMulti = chargeMulti;
     }
 
-    public BigDecimal getDisChargeMutil() {
-        return disChargeMutil;
+    public BigDecimal getDischargeMulti() {
+        return dischargeMulti;
     }
 
-    public void setDisChargeMutil(BigDecimal disChargeMutil) {
-        this.disChargeMutil = disChargeMutil;
+    public void setDischargeMulti(BigDecimal dischargeMulti) {
+        this.dischargeMulti = dischargeMulti;
     }
 
     public String getStoreEndCondition() {

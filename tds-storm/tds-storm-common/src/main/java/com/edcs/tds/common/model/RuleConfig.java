@@ -9,7 +9,7 @@ public class RuleConfig implements Serializable {
 
 	private Long id;
 	private String ruleName;
-	private String stepId;
+	private String stepSign;//用于标识流程工步场景
 	private String stepName;
 	private Long ruleGroup;
 	private String ruleDesc;
@@ -20,13 +20,14 @@ public class RuleConfig implements Serializable {
 	private String ruleScript;
 	private String hashcode;
 
-	public String getStepId() {
-		return stepId;
+	public String getStepSign() {
+		return stepSign;
 	}
 
-	public void setStepId(String stepId) {
-		this.stepId = stepId;
+	public void setStepSign(String stepSign) {
+		this.stepSign = stepSign;
 	}
+
 	public String getStepName() {
 		return stepName;
 	}

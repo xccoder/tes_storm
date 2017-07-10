@@ -1,5 +1,6 @@
 package com.edcs.tds.storm.service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -89,6 +90,10 @@ public class DataInit {
 			}
 		}
 		if(mDprocessInfo!=null){
+			
+			//将是否是一个公布的第一条测试数据和是否是最后一条测试数据的标志传递给规则配置中
+			shellContext.setProperty("dataState", testingMsg.getPvDataFlag());
+			
 			/*
 			 * 电流测试场景需要的参数
 			 */
@@ -106,12 +111,14 @@ public class DataInit {
 						|| ("恒功率放电".equals(mdStepInfo.getStepName()) && "恒功率放电".equals(testingMsg.getStepName()))
 						|| ("恒阻放电".equals(mdStepInfo.getStepName()) && "恒阻放电".equals(testingMsg.getStepName()))){
 					shellContext.setProperty("svStepEndCurrent", mdStepInfo.getSvStepEndCurrent());//恒压充电工步的 截止电流 （I截止）
+					shellContext.setProperty("svCurrent", mdStepInfo.getSvCurrent());//Ilast为工步最后一点电流值
 				}
 				if(("恒功率充电".equals(mdStepInfo.getStepName()) && "恒功率充电".equals(testingMsg.getStepName()))
 						|| ("恒功率放电".equals(mdStepInfo.getStepName()) && "恒功率放电".equals(testingMsg.getStepName()))
 						|| ("恒阻放电".equals(mdStepInfo.getStepName()) && "恒阻放电".equals(testingMsg.getStepName()))
 						|| ("恒流放电".equals(mdStepInfo.getStepName()) && "恒流放电".equals(testingMsg.getStepName()))){
 					shellContext.setProperty("svStepEndVoltage", mdStepInfo.getSvStepEndVoltage());//U截止 为恒功率充电截止电压 (U截止)
+					shellContext.setProperty("svPower", mdStepInfo.getSvPower());//（P恒 冲） （P恒 放）
 				}
 				if("模拟工步（电流模式）".equals(mdStepInfo.getStepName()) && "模拟工步（电流模式）".equals(testingMsg.getStepName())){
 					shellContext.setProperty("svCurrent", mdStepInfo.getSvCurrent());//I为工况附录文件中规定的电流
@@ -119,9 +126,9 @@ public class DataInit {
 				}
 			}
 			//充电功率（P恒 冲） 用在恒功率充电 工步中的电流场景
-			shellContext.setProperty("svChargePower", mDprocessInfo.getSvChargePower());
+//			shellContext.setProperty("svChargePower", mDprocessInfo.getSvChargePower());
 			//放电功率 （P恒 放）用在恒功率放电  工步中的电流场景
-			shellContext.setProperty("svDischargePower", mDprocessInfo.getSvDischargePower());
+//			shellContext.setProperty("svDischargePower", mDprocessInfo.getSvDischargePower());
 			//R恒 为流程设置恒阻值
 			shellContext.setProperty("constantIrValue", mDprocessInfo.getConstantIrValue());
 			
@@ -131,8 +138,20 @@ public class DataInit {
 			shellContext.setProperty("pvVoltage", testingMsg.getPvVoltage());//需要用来比较的电流
 			shellContext.setProperty("svUpperU", mDprocessInfo.getSvUpperU());//U上限 为测试流程中规定的上限电压
 			shellContext.setProperty("svLowerU", mDprocessInfo.getSvLowerU());//U下限为测试流程中规定的上限电压
+			
+			TestingMessage upTestingMsg  = GetDataInterface.getUpTestingMsg(testingMsg, 1, cacheService);//获取上一条测试数据信息
+			shellContext.setProperty("upPvVoltage", upTestingMsg.getPvVoltage());//U i-1 为上一条数据的电压值
+			
+			TestingMessage upStepTestingMsg = GetDataInterface.getUpStepTestingMsg(testingMsg, 1, cacheService);//获取上一个工步的最后一条测试数据
+			shellContext.setProperty("upStepPvVoltage", upStepTestingMsg.getPvVoltage());//U 放电末 、U 冲电末
+			
 			for (MDStepInfo mdStepInfo : mdStepInfos) {
-				if("恒流恒压充电".equals(mdStepInfo.getStepName()) && "恒流恒压充电".equals(testingMsg.getStepName())){
+				if("恒流恒压充电".equals(mdStepInfo.getStepName()) && "恒流恒压充电".equals(testingMsg.getStepName())
+						|| "恒流放电".equals(mdStepInfo.getStepName()) && "恒流放电".equals(testingMsg.getStepName())
+						|| "恒流充电".equals(mdStepInfo.getStepName()) && "恒流充电".equals(testingMsg.getStepName())
+						|| "恒功率充电".equals(mdStepInfo.getStepName()) && "恒功率充电".equals(testingMsg.getStepName())
+						|| "恒功率放电".equals(mdStepInfo.getStepName()) && "恒功率放电".equals(testingMsg.getStepName())
+						|| "恒阻放电".equals(mdStepInfo.getStepName()) && "恒阻放电".equals(testingMsg.getStepName())){
 					shellContext.setProperty("svVoltage", mdStepInfo.getSvVoltage());//U恒压 为恒压阶段设定电压值
 				}
 			}
@@ -153,6 +172,7 @@ public class DataInit {
 						||("模拟工步（电流模式）".equals(mdStepInfo.getStepName()) && "模拟工步（电流模式）".equals(testingMsg.getStepName()))
 						||("模拟工步（功率模式）".equals(mdStepInfo.getStepName()) && "模拟工步（功率模式）".equals(testingMsg.getStepName()))){
 					shellContext.setProperty("svStepEndCapacity", mdStepInfo.getSvStepEndCapacity());//C设定 为工步设定截止容量
+					shellContext.setProperty("svCapacity", mdStepInfo.getSvCapacity());//Clast 为工步最后一点容量值
 				}
 			}
 			shellContext.setProperty("svCapacityValue", mDprocessInfo.getSvCapacityValue());//C为电芯标称容量
