@@ -31,11 +31,13 @@ public class MDStepInfo implements Serializable {
     private BigDecimal svCurrent;//电流
     private BigDecimal svEnergy;//能量
     private BigDecimal svTemperature;//温度
+    private BigDecimal svTime;
     private int cycleCount;//循环数
     private String conditionType;//循环条件
     private String conditionOperationalCharacter;//条件操作符
-    private String conditionValue;//条件值
+    private BigDecimal conditionValue;//条件值
     private String gotoStep;//跳转工步
+    private String startStep;//起始工步
     private BigDecimal startSoc;//开始SOC
     private BigDecimal socIncrement;//SOC增量
     private BigDecimal endSoc;//结束SOC
@@ -44,13 +46,14 @@ public class MDStepInfo implements Serializable {
     private BigDecimal svStepEndVoltage;//工步截止电压
     private BigDecimal svStepEndCurrent;//工步截止电流
     private BigDecimal svStepEndTemperature;//工步截止温度
+
     private String scriptCurrentHash;//电流脚本hash
     private String scriptVoltageHash;//电压脚本hash
     private String scriptTemperatureHash;//温度脚本hash;
     private String scriptTimeHash;//时间脚本hash
     private String scriptCapacityHash;//容量脚本Hash
     private String scriptEnergyHash;//能量脚本hash
-    private String startStep;//起始工步
+
     private Date createDateTime;//创建日期
     private String createUser;//创建用户
     private Date modifiedDateTime;//最后修改日期
@@ -244,12 +247,24 @@ public class MDStepInfo implements Serializable {
         this.conditionOperationalCharacter = conditionOperationalCharacter;
     }
 
-    public String getConditionValue() {
+    public BigDecimal getSvTime() {
+        return svTime;
+    }
+
+    public void setSvTime(BigDecimal svTime) {
+        this.svTime = svTime;
+    }
+
+    public BigDecimal getConditionValue() {
         return conditionValue;
     }
 
-    public void setConditionValue(String conditionValue) {
+    public void setConditionValue(BigDecimal conditionValue) {
         this.conditionValue = conditionValue;
+    }
+
+    public void setScriptEnergyHash(String scriptEnergyHash) {
+        this.scriptEnergyHash = scriptEnergyHash;
     }
 
     public String getGotoStep() {
