@@ -11,6 +11,18 @@
 		<property name="proxyJedisPool" ref="proxyJedisPool"/>
 	</bean>
 	<!-- redis 连接池 -->
+<!--List<String> addressList, final int timeout, final String password, final int database-->
+	<bean id="proxyJedisFactory" class="com.edcs.tds.common.redis.ProxyJedisFactory">
+		<constructor-arg index="0">
+			<list>
+				<value>172.26.66.31:6379</value>
+			</list>
+		</constructor-arg>
+		<constructor-arg index="1" value="0"></constructor-arg>
+		<constructor-arg index="2" value=""></constructor-arg>
+		<constructor-arg index="3" value="0"></constructor-arg>
+	</bean>
+
 	<bean id="proxyJedisPool" class="com.edcs.tds.common.redis.ProxyJedisPool">
 	    <constructor-arg index="0" ref="poolConfig"></constructor-arg>
 	    <constructor-arg index="1">
@@ -18,15 +30,12 @@
 	          <value>172.26.66.31:6379</value>
 	       </list>
 	    </constructor-arg>
-	    <constructor-arg index="2" value="0"></constructor-arg>
-	    <constructor-arg index="3" value=""></constructor-arg>
-	    <constructor-arg index="4" value="0"></constructor-arg>
 	</bean>
 	
 	
 	
 	<bean id="poolConfig" class="org.apache.commons.pool2.impl.GenericObjectPoolConfig"></bean>
-	
+	<bean id="scriptExecutor" class="com.edcs.tds.common.engine.groovy.ScriptExecutor"></bean>
 	<!-- hana 连接池 -->
 	<bean id="dbUtils" class="com.edcs.tds.common.util.DBHelperUtils">
 	   <property name="dataSource" ref="dataSource"/>
