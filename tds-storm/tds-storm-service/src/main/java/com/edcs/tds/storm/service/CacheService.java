@@ -179,7 +179,7 @@ public class CacheService {
      * 初始化规则配置
      */
     public void initRuleConfig() {
-        Jedis jedis =  new Jedis("172.26.66.31",6379);
+        Jedis jedis = proxyJedisPool.getResource();
         System.out.println("开始》》》》》》》》》》》》");
         try {
             //jedis = proxyJedisPool.getResource();
