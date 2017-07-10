@@ -20,6 +20,7 @@ public class DataService {
 		if(!StringUtils.isNotBlank(cycleNum)){
 			return -1;
 		}
+		jedis.close();//将jedis连接放到redis连接池中
 		return Integer.parseInt(cycleNum);
 	}
 	
@@ -99,6 +100,7 @@ public class DataService {
 				}
 			}
 		}
+		jedis.close();//将jedis连接放到redis连接池中
 		return testingMessage;
 	}
 	
@@ -121,6 +123,7 @@ public class DataService {
 				jedis.set("stepLogicNumber"+testingMessage.getRemark(), a+1+"");
 			}
 		}
+		jedis.close();//将jedis连接放到redis连接池中
 		return testingMessage;
 	}
 }
