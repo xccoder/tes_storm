@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.List;
 
 /**
- *
  * Created by CaiSL2 on 2017/6/29.
  */
 public class MDprocessInfo implements Serializable {
@@ -43,6 +42,30 @@ public class MDprocessInfo implements Serializable {
     private BigDecimal svChargeVoltage;//充电电压
     private BigDecimal svChargePower;//充电功率
     private BigDecimal svDischargePower;//放电功率
+    private int cycleNumber;//循环数
+    private BigDecimal soc;//soc
+    private int pluseTimes;//脉冲次数
+    private BigDecimal chargeMulti;//充电倍率
+    private BigDecimal dischargeMulti;//放电倍率
+    private String storeEndCondition;//存储结束条件
+    private String storeCrossCondition;//存储交叉条件
+    private String cycleEndCondition;//循环结束条件
+    private String cycleCrossCondition;//循环交叉条件
+    private String simEndCondition;//工况结束条件
+    private String simCrossCondition;//工况交叉条件
+    private boolean isIsoDischarge;//是否恒压放电
+    private String isoDischargeDuration;//恒压放电时长
+    private String constantIrValue;//横阻值
+    private String cycleTemperature;//循环温度
+    private String storeTemperature;//存储温度
+    private String txStatus;//流程状态
+    private Date createDateTime;//创建日期
+    private String createUser;//创建用户
+    private Date modifiedDateTime;//最后修改时间
+    private String modifiedUser;//最后修改用户
+    private List<MDStepInfo> mdStepInfoList;//流程下所有工步
+    private List<MDSubRule> mdExtractionRuleList;
+    private String rootRemark;
 
     @Override
     public String toString() {
@@ -82,7 +105,7 @@ public class MDprocessInfo implements Serializable {
                 ", soc=" + soc +
                 ", pluseTimes=" + pluseTimes +
                 ", chargeMulti=" + chargeMulti +
-                ", disChargeMutil=" + disChargeMutil +
+                ", dischargeMulti=" + dischargeMulti +
                 ", storeEndCondition='" + storeEndCondition + '\'' +
                 ", storeCrossCondition='" + storeCrossCondition + '\'' +
                 ", cycleEndCondition='" + cycleEndCondition + '\'' +
@@ -100,35 +123,10 @@ public class MDprocessInfo implements Serializable {
                 ", modifiedDateTime=" + modifiedDateTime +
                 ", modifiedUser='" + modifiedUser + '\'' +
                 ", mdStepInfoList=" + mdStepInfoList +
-                ", mdSubRuleList=" + mdSubRuleList +
+                ", mdExtractionRuleList=" + mdExtractionRuleList +
                 ", rootRemark='" + rootRemark + '\'' +
                 '}';
     }
-
-    private int cycleNumber;//循环数
-    private BigDecimal soc;//soc
-    private int pluseTimes;//脉冲次数
-    private BigDecimal chargeMulti;//充电倍率
-    private BigDecimal dischargeMulti;//放电倍率
-    private String storeEndCondition;//存储结束条件
-    private String storeCrossCondition;//存储交叉条件
-    private String cycleEndCondition;//循环结束条件
-    private String cycleCrossCondition;//循环交叉条件
-    private String simEndCondition;//工况结束条件
-    private String simCrossCondition;//工况交叉条件
-    private boolean isIsoDischarge;//是否恒压放电
-    private String isoDischargeDuration;//恒压放电时长
-    private String constantIrValue;//横阻值
-    private String cycleTemperature;//循环温度
-    private String storeTemperature;//存储温度
-    private String txStatus;//流程状态
-    private Date createDateTime;//创建日期
-    private String createUser;//创建用户
-    private Date modifiedDateTime;//最后修改时间
-    private String modifiedUser;//最后修改用户
-    private List<MDStepInfo> mdStepInfoList;//流程下所有工步
-    private List<MDSubRule> mdExtractionRuleList;
-    private String rootRemark;
 
     public MDprocessInfo() {
     }
