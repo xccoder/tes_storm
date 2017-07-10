@@ -9,25 +9,13 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 
 public class DBHelperUtils {
-	
-	public static final String url = "jdbc:sap://172.26.164.10:30015/TDS";
-	public static final String name = "com.sap.db.jdbc.Driver";
-	public static final String user = "TDS";
-	public static final String password = "Aa123456";
     public ComboPooledDataSource dataSource;
-	public DBHelperUtils() {  
-		try {
-			dataSource = new ComboPooledDataSource();
-			dataSource.setJdbcUrl(url);
-			dataSource.setDriverClass(name);
-			dataSource.setUser(user);
-			dataSource.setPassword(password);
-			dataSource.setInitialPoolSize(3);
-			dataSource.setMaxPoolSize(5);
-			dataSource.setMaxIdleTime(1000);
-		} catch (Exception e) {  
-	           e.printStackTrace();  
-		}  
+    
+    public ComboPooledDataSource getDataSource() {
+		return dataSource;
+	}
+    public void setDataSource(ComboPooledDataSource dataSource) {
+		this.dataSource = dataSource;
 	}
 	
 	public Connection getConnection(){
