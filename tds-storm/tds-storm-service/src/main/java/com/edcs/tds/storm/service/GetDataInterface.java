@@ -118,7 +118,7 @@ public class GetDataInterface {
 			TestingMessage testingMsg = testingResultData.getTestingMessage();
 			int stepLogicNumber = testingMsg.getStepLogicNumber();
 			//如果这条测试数据是当前测试数据的上i个工步中的测试数据，且是上i个工步中的最后一条数据，则取出。
-			if(stepLogicNumber == testingMessage.getStepLogicNumber()-i && testingMsg.getPvDataFlag() == 2 ){
+			if(stepLogicNumber == testingMessage.getStepLogicNumber()-i && testingMsg.getPvDataFlag() == 88 ){
 				testingMsgReturn = testingMsg;
 				break;
 			}
@@ -128,7 +128,7 @@ public class GetDataInterface {
 					+ "CYCLE,STEP_ID,STEP_NAME,TEST_TIME_DURATION,TIMESTAMP,SV_IC_RANGE,"
 					+ "SV_IV_RANGE,PV_VOLTAGE,PV_CURRENT,PV_IR,PV_TEMPERATURE,PV_CHARGE_CAPACITY,"
 					+ "PV_DISCHARGE_CAPACITY,PV_CHARGE_ENERGY,PV_DISCHARGE_ENERGY,ST_BUSINESS_CYCLE "
-					+ "from tx_original_process_data where REMARK= ? and step_logic_number = ? and PV_DATA_FLAG = 2";
+					+ "from tx_original_process_data where REMARK= ? and step_logic_number = ? and PV_DATA_FLAG = 88";
 			DBHelperUtils dbUtils = cacheService.getDbUtils();
 			Connection conn = dbUtils.getConnection();
 			PreparedStatement pst = null;

@@ -38,8 +38,8 @@ public class TestingMessage implements Serializable {
 	private Date timestamp;//测试绝对时间 absTime
 	private List<TestingSubChannel> subChannel;//辅助通道
 	private String resourceId;//设备号
-	private int pvDataFlag;//数据类型标识,能够表示工步起始点，工步终结点等信息（1代表起始，2 代表终节点）
-	private int pvWorkType;//工作状态。正常情况下标识为正常测试状态。能够标识测试的停止，完成，保护等状态(数字)
+	private int pvDataFlag;//数据类型标识,能够表示工步起始点，工步终结点等信息（89代表起始，88 代表终节点）
+	private int pvWorkType;//工作状态。正常情况下标识为正常测试状态。能够标识测试的停止，完成，保护等状态(数字) 0  表示测试完成
 	private int businessCycle;//业务循环号。
 	
 	
