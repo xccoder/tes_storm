@@ -17,7 +17,7 @@ public class MDSubRule implements Serializable {
     private int stepId;
     private String conditionKey;
     private String conditionValue;
-    private String targetProcessDataFiel;
+    private String targetProcessDataField;
     private String alias;
     private String calcScript;
     private String calcResult;
@@ -85,12 +85,13 @@ public class MDSubRule implements Serializable {
         this.conditionValue = conditionValue;
     }
 
-    public String getTargetProcessDataFiel() {
-        return targetProcessDataFiel;
+
+    public String getTargetProcessDataField() {
+        return targetProcessDataField;
     }
 
-    public void setTargetProcessDataFiel(String targetProcessDataFiel) {
-        this.targetProcessDataFiel = targetProcessDataFiel;
+    public void setTargetProcessDataField(String targetProcessDataField) {
+        this.targetProcessDataField = targetProcessDataField;
     }
 
     public String getAlias() {

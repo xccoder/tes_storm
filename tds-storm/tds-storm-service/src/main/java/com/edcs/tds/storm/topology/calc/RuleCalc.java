@@ -89,7 +89,7 @@ public class RuleCalc {
                         testingResultData.setCategory(sceneName);
                         testingResultData.setAltetSequenceNumber(sequenceNumber);
                         //TxAlertInfoBO:<SITE>,<REMARK>,<SFC>,<CATEGORY>
-                        testingResultData.setTxAlertListInfoBO("TxAlertInfoBO:" + mDprocessInfo.getSite() + "," + mDprocessInfo.getRemark() + "," + mDprocessInfo.getSfc() + "," + sceneName);
+                        //testingResultData.setTxAlertListInfoBO("TxAlertInfoBO:" + mDprocessInfo.getSite() + "," + mDprocessInfo.getRemark() + "," + mDprocessInfo.getSfc() + "," + sceneName);
                         testingResultData.setStatus("new");
                         //MdProcessInfoBO:<SITE>,<PROCESS_ID>,<REMARK>
                         testingResultData.setProcessDataBO("MdProcessInfoBO:" + mDprocessInfo.getSite() + "," + mDprocessInfo.getProcessId() + "," + mDprocessInfo.getRemark());

@@ -72,8 +72,9 @@ public class ResultDataImpl implements IResultData {
     public boolean insertResultData(List<TestingResultData> testingResultDatas) throws SQLException {
         String category;//场景
         int alertSquenceNumber;
-        String txAlertListInfoBo;
-        String status;
+        String txAlertListInfoBo = null;//
+        String AlertListInfohandle = null;
+        String status = null;
         String processInfoBo;
         Date timestamp;
         String erpResourceBo;
@@ -82,10 +83,11 @@ public class ResultDataImpl implements IResultData {
         BigDecimal upLimit;
         BigDecimal lowLimit;
         String originalProBo;
-        String handle;//每一个场景报警数据的handle
+        String alertHandle;//每一个场景报警数据的handle
+        String alertListId = null;
 
         //辅助通道
-        String subHandle = null;
+        String subHandle;
         int subChannelId;//辅助通道id，从辅助通道name上截取
         int subSequenceId;
         int subCycle;
@@ -111,14 +113,15 @@ public class ResultDataImpl implements IResultData {
             conn = db.getConnection();
             conn.setAutoCommit(false);
             for (TestingResultData testingResultData : testingResultDatas) {
-
-                handle = testingResultData.getHandle();
+                alertHandle = testingResultData.getHandle();//TxAlertInfoBO:<SITE>,<REMARK>,<SFC>,<CATEGORY>
+                alertListId = testingResultData.getTestingMessage().getRemark()+","+testingResultData.getTestingMessage().getSequenceId();//alertlistinfo里的字段
+                AlertListInfohandle = "TxAlertListInfoBO:"+testingResultData.getSite()+alertListId;//TxAlertListInfoBO:<SITE>,<ALERT_LIST_ID>
                 remark = testingResultData.getTestingMessage().getRemark();
                 site = testingResultData.getSite();
                 sfc = testingResultData.getTestingMessage().getSfc();
                 category = testingResultData.getCategory();//场景
                 alertSquenceNumber = testingResultData.getAltetSequenceNumber();
-                txAlertListInfoBo = testingResultData.getTxAlertListInfoBO();
+                //txAlertListInfoBo = testingResultData.getTxAlertListInfoBO();
                 status = testingResultData.getStatus();
                 processInfoBo = testingResultData.getTxAlertListInfoBO();
                 timestamp = testingResultData.getTimestamp();
@@ -137,7 +140,7 @@ public class ResultDataImpl implements IResultData {
 
                 businessCycle = testingResultData.getTestingMessage().getBusinessCycle();
                 cycle = testingResultData.getTestingMessage().getCycle();
-                procehandle = testingResultData.getTestingMessage().getMessageId();
+                procehandle = testingResultData.getOriginalProcessDataBO();
                 pvChargeCapacity = testingResultData.getTestingMessage().getPvChargeCapacity();
                 pvChargeEnergy = testingResultData.getTestingMessage().getPvChargeEnergy();
                 pvCurrent = testingResultData.getTestingMessage().getPvCurrent();
@@ -158,7 +161,7 @@ public class ResultDataImpl implements IResultData {
                 testTimeDuration = testingResultData.getTestingMessage().getTestTimeDuration();
                 testingmesstimestamp = testingResultData.getTestingMessage().getTimestamp();
 
-                subHandle = testingResultData.getTestingMessage().getMessageId();//辅助通道handle前半段
+
 
                 if (alertLevel !=0 && category != null) {
                     switch (category) {
@@ -190,13 +193,13 @@ public class ResultDataImpl implements IResultData {
                     String sql ="insert into TX_ALERT_INFO(HANDLE,SITE,REMARK,SFC,CATEGORY,ALERT_SEQUENCE_NUMBER,TX_ALERT_LIST_INFO_BO,STATUS,PROCESS_INFO_BO,TIMESTAMP,ERP_RESOURCE_BO,CHANNEL_ID,ALERT_LEVEL,DESCRIPTION,UP_LIMIT,LOW_LIMIT,ORIGINAL_PROCESS_DATA_BO,CREATED_DATE_TIME,CREATED_USER,MODIFIED_DATE_TIME,MODIFIED_USER) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
                     pst = conn.prepareStatement(sql);
-                    pst.setString(1,handle);
+                    pst.setString(1,alertHandle);
                     pst.setString(2,site);
                     pst.setString(3,remark);
                     pst.setString(4,sfc);
                     pst.setString(5,category);
                     pst.setInt(6,alertSquenceNumber);
-                    pst.setString(7,txAlertListInfoBo);
+                    pst.setString(7,AlertListInfohandle);
                     pst.setString(8,status);
                     pst.setString(9,processInfoBo);
                     pst.setString(10,timestamp.toString());             //注意
@@ -243,7 +246,7 @@ public class ResultDataImpl implements IResultData {
                             break;
                     }
 
-                    subHandle = subHandle + testingSubChannel.getSubChannelName();
+                    subHandle = "TxOriginalSubChannelDataBO:"+procehandle+testingSubChannel.getSubChannelName();//:< TX_ORIGINAL_PROCESS_DATA_BO>,<SUB_CHANNEL_ID>
                     subChannelId = Integer.valueOf(testingSubChannel.getSubChannelName().substring(testingSubChannel.getSubChannelName().length()-1));
                     subSequenceId = testingSubChannel.getSequenceId();
                     subCycle = testingSubChannel.getCycle();
@@ -309,8 +312,8 @@ public class ResultDataImpl implements IResultData {
             pst = conn.prepareStatement(procesql);//插入流程结果表
             pst.execute();//待定
             //插入第四张表
-            String alertListId = remark+sequenceId;
-            String alertListsql = "insert into TX_ALERT_LIST_INFO values('"+procehandle+"','"+site+"','"+alertListId+"','NEW','"+""+"','"+"'"+"','"+"'"+"',''"+"'"+"',''"+"'"+"',''"+"'"+"','"+createDateTime + "','" + createUser + "','" + modifiedDateTime + "','" + modifiedUser +"')";
+
+            String alertListsql = "insert into TX_ALERT_LIST_INFO values('"+AlertListInfohandle+"','"+site+"','"+alertListId+"','"+status+"','"+""+"','"+""+"','"+""+"','"+""+"','"+""+"','"+""+"','"+createDateTime + "','" + createUser + "','" + modifiedDateTime + "','" + modifiedUser +"')";
             pst = conn.prepareStatement(alertListsql);//插入报警列表
 
             pst.execute();//待定
