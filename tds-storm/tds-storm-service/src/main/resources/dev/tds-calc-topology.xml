@@ -49,6 +49,8 @@
           <property name="initialPoolSize" value="100"/>  
           <!--最大空闲时间，60秒内未使用则连接被丢弃。若为0则永不丢弃。默认值: 0 -->   
           <property name="maxIdleTime" value="600"/>  
-     </bean>  
+     </bean> 
+     
+     <bean id="dataService" class="com.edcs.tds.storm.service.DataService"></bean> 
 
 </beans>

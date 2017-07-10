@@ -38,10 +38,10 @@ public class CalcBolt extends BaseRichBolt {
     protected String topologyName;
     protected StormBeanFactory beanFactory;
     protected CacheService cacheService;
-    protected BeanSerializer beanSerializer;
-    protected MessageRepeatFilter messageRepeatFilter;
+//    protected BeanSerializer beanSerializer;
+//    protected MessageRepeatFilter messageRepeatFilter;
     protected ScriptExecutor scriptExecutor;
-    protected EngineCommonService engineCommonService;
+//    protected EngineCommonService engineCommonService;
     protected DataService dataService;
 
     @SuppressWarnings({"rawtypes"})
@@ -50,12 +50,13 @@ public class CalcBolt extends BaseRichBolt {
         this.collector = collector;
         this.topologyName = (String) stormConf.get(Config.TOPOLOGY_NAME);
         this.beanFactory = new StormBeanFactory(stormConf);
-        this.beanSerializer = new BeanSerializer();
+        
+//        this.beanSerializer = new BeanSerializer();//对象序列化的工具类
 
-        this.cacheService = beanFactory.getBean(CacheService.class);
-        this.messageRepeatFilter = beanFactory.getBean(MessageRepeatFilter.class);
+//        this.cacheService = beanFactory.getBean(CacheService.class);
+//        this.messageRepeatFilter = beanFactory.getBean(MessageRepeatFilter.class);
         this.scriptExecutor = beanFactory.getBean(ScriptExecutor.class);
-        this.engineCommonService = beanFactory.getBean(EngineCommonService.class);
+//        this.engineCommonService = beanFactory.getBean(EngineCommonService.class);
         this.dataService = beanFactory.getBean(DataService.class);
         this.cacheService = beanFactory.getBean(CacheService.class);
         this.cacheService.start();

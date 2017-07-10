@@ -14,7 +14,8 @@ import com.google.common.io.Resources;
 
 public class StormBeanFactory extends DefaultListableBeanFactory {
 
-	public static final String SPRING_BEAN_FACTORY_XML = "springframework.bean.factory.xml";
+//	public static final String SPRING_BEAN_FACTORY_XML = "springframework.bean.factory.xml";
+	public static final String SPRING_BEAN_FACTORY_XML = "tds-calc-topology.xml";
 
 	private transient final XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(this);
 
