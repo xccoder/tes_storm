@@ -109,8 +109,8 @@ public class DataService {
      */
 	public TestingMessage updateStepLogicNumber(TestingMessage testingMessage, CacheService cacheService) {
 		Jedis jedis = cacheService.getProxyJedisPool().getResource();
-		int dataFlag = testingMessage.getPvDataFlag();//数据类型标识,能够表示工步起始点，工步终结点等信息（1代表起始，2 代表终节点）
-		if(dataFlag==1){
+		int dataFlag = testingMessage.getPvDataFlag();//数据类型标识,能够表示工步起始点，工步终结点等信息（89代表起始，88代表终节点）
+		if(dataFlag==89){
 			String oldStepLogicNumber = jedis.get("stepLogicNumber"+testingMessage.getRemark());
 			if(!StringUtils.isNotBlank(oldStepLogicNumber)){
 				testingMessage.setStepLogicNumber(1);

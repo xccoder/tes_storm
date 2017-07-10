@@ -127,7 +127,7 @@ public class CalcBolt extends BaseRichBolt {
             calc.TestingRuleCalc(scriptExecutor, executeContext, shellContext, ruleConfig,cacheService);
             // 告知redis此流程已经结束
             int workType = testingMessage.getPvWorkType();//假设2代表流程结束标志，到时候根据实际数据更改
-            if (workType == 2) {
+            if (workType == 0) {
                 //TODO 调用redis接口去通知此流程已经结束
             }
             executeContext.setSysVariableLog(shellContext.getVariables());
