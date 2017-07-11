@@ -1,8 +1,10 @@
 package com.edcs.tds.storm.service;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
 
@@ -13,6 +15,7 @@ import com.edcs.tds.common.model.TestingResultData;
 import com.edcs.tds.common.redis.ProxyJedisPool;
 import com.edcs.tds.common.util.DBHelperUtils;
 import com.edcs.tds.common.util.JsonUtils;
+import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 import redis.clients.jedis.Jedis;
 
@@ -219,26 +222,43 @@ public class GetDataInterface {
 		return cycleNum;
 	}
 
-	public static void main(
-			String[] args) {/*
-							 * System.out.println("12222222"); String sql =
-							 * "select *from TX_ALERT_INFO";// SQL语句
-							 * DBHelperUtils db1 = new DBHelperUtils();//
-							 * 创建DBHelper对象 try { ResultSet ret =
-							 * db1.selectList(sql);// 执行语句，得到结果集 while
-							 * (ret.next()) { String uid = ret.getString(1);
-							 * String ufname = ret.getString(2); String ulname =
-							 * ret.getString(3); String udate =
-							 * ret.getString(4); System.out.println(uid + "\t" +
-							 * ufname + "\t" + ulname + "\t" + udate); } // 显示数据
-							 * ret.close(); db1.close();// 关闭连接 } catch
-							 * (SQLException e) { e.printStackTrace(); }
-							 */
-		TestingMessage testingMsg = new TestingMessage();// 用于返回值
-		testingMsg.setRemark("T3-20170215-1892-557478_CL_61715601026");
-		testingMsg.setSequenceId(16);
-		TestingMessage testingMsg11 = getUpTestingMsg(testingMsg, 1, null);
-		System.out.println(testingMsg11);
+	public static void main(String[] args) throws Exception{
+		 System.out.println("12222222"); 
+		 String sql ="select *from TX_ALERT_INFO";// SQL语句
+		  DBHelperUtils db1 = new DBHelperUtils();//创建DBHelper对象 
+		  ComboPooledDataSource pool = new ComboPooledDataSource();
+		  pool.setDriverClass("com.sap.db.jdbc.Driver");
+		  pool.setJdbcUrl("jdbc:sap://172.26.66.36:30015/");
+		  pool.setUser("TES");
+		  pool.setPassword("Aa123456");
+		  db1.setDataSource(pool);
+		  try { 
+			  Connection conn = db1.getConnection();
+			  
+			  CallableStatement c = conn.prepareCall("{call \"TES\".\"EXTRACTIONDATA\"(?, ?, ?, ?)}");
+			    c.setString(1, "T3-20170215-1892-557478_CL_61715601026");
+			    c.setInt(2, 0);	
+			    c.setInt(3, 1);
+			    c.registerOutParameter(4, java.sql.Types.VARCHAR);
+			    c.execute();
+			    System.out.println(c.getString(4));
+       System.out.println("end");
+			  
+//			  PreparedStatement pst = conn.prepareStatement(sql);
+//			  ResultSet ret = pst.executeQuery();
+////						      ResultSet ret = db1.selectList(sql);// 执行语句，得到结果集 
+//		  while(ret.next()) { String uid = ret.getString(1);
+//		  String ufname = ret.getString(2); 
+//		  String ulname =ret.getString(3); 
+//		  String udate =ret.getString(4); 
+//		  System.out.println(uid + "\t" + ufname + "\t" + ulname + "\t" + udate); } // 显示数据
+//		  ret.close(); 
+		  } catch(SQLException e) { e.printStackTrace(); }
+							 
+//		TestingMessage testingMsg = new TestingMessage();// 用于返回值
+//		testingMsg.setRemark("T3-20170215-1892-557478_CL_61715601026");
+//		testingMsg.setSequenceId(16);
+//		TestingMessage testingMsg11 = getUpTestingMsg(testingMsg, 1, null);
+//		System.out.println(testingMsg11);
 	}
-
 }

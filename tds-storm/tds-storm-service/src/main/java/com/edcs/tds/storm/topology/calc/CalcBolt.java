@@ -1,5 +1,6 @@
 package com.edcs.tds.storm.topology.calc;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
@@ -8,15 +9,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.edcs.tds.common.engine.groovy.ScriptExecutor;
-import com.edcs.tds.common.engine.groovy.service.EngineCommonService;
 import com.edcs.tds.common.model.RuleConfig;
 import com.edcs.tds.common.model.TestingMessage;
+import com.edcs.tds.common.util.JsonUtils;
 import com.edcs.tds.storm.model.ExecuteContext;
 import com.edcs.tds.storm.service.CacheService;
 import com.edcs.tds.storm.service.DataInit;
 import com.edcs.tds.storm.service.DataService;
-import com.edcs.tds.storm.service.MessageRepeatFilter;
-import com.edcs.tds.storm.util.BeanSerializer;
+import com.edcs.tds.storm.util.RestUtils;
 import com.edcs.tds.storm.util.StormBeanFactory;
 
 import backtype.storm.Config;
@@ -130,6 +130,14 @@ public class CalcBolt extends BaseRichBolt {
             int workType = testingMessage.getPvWorkType();//假设2代表流程结束标志，到时候根据实际数据更改
             if (workType == 0) {
                 //TODO 调用redis接口去通知此流程已经结束
+            	Map<String,Object> map = new HashMap<String,Object>();
+            	map.put("remark", testingMessage.getRemark());
+            	map.put("txStatus", "close");
+            	map.put("site", "1000");
+            	map.put("totalCycleNum", testingMessage.getBusinessCycle());
+            	String json = JsonUtils.toJson(map);		
+            	String url = "http://172.26.66.35:50000/tes-backing/api/v1/integration/storm/md_process_info";
+            	RestUtils.sendState(url, json);
             }
             executeContext.setSysVariableLog(shellContext.getVariables());
         } catch (Exception e) {
@@ -154,5 +162,16 @@ public class CalcBolt extends BaseRichBolt {
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
         // NOTHING_TO_DO
     }
+    
+    public static void main(String[] args) {
+    	Map<String,Object> map = new HashMap<String,Object>();
+    	map.put("remark", "T3-20170324-3495-603301_RT-DC-POWER_1_F100C0-BF_0_2");
+    	map.put("txStatus", "close");
+    	map.put("site", "1000");
+    	map.put("totalCycleNum", 10);
+    	String json = JsonUtils.toJson(map);		
+    	String url = "http://172.26.66.35:50000/tes-backing/api/v1/integration/storm/md_process_info";
+    	RestUtils.sendState(url, json);
+	}
 
 }

@@ -99,7 +99,7 @@ public class DataInit {
 			shellContext.setProperty("pvCurrent", testingMsg.getPvCurrent());//需要用来比较的电流
 			
 			shellContext.setProperty("svIcRange", testingMsg.getSvIcRange());//电流通道最大流程
-			shellContext.setProperty("svDischargeVoltage", mDprocessInfo.getSvDischargeVoltage());//放电电流
+			shellContext.setProperty("svDischargeVoltage", mDprocessInfo.getSvDischargeVoltage());//放电电流  ???????
 			//获取这个流程的所有工 步信息
 			List<MDStepInfo> mdStepInfos = mDprocessInfo.getMdStepInfoList();
 			for (MDStepInfo mdStepInfo : mdStepInfos) {
@@ -233,7 +233,7 @@ public class DataInit {
 						||("恒阻放电".equals(mdStepInfo.getStepName()) && "恒阻放电".equals(testingMsg.getStepName()))
 						||("模拟工步（电流模式）".equals(mdStepInfo.getStepName()) && "模拟工步（电流模式）".equals(testingMsg.getStepName()))
 						||("模拟工步（功率模式）".equals(mdStepInfo.getStepName()) && "模拟工步（功率模式）".equals(testingMsg.getStepName()))){
-//					shellContext.setProperty("svTemperature", mdStepInfo.getSvTemperature());//工步设定温度由测试申请单导入TDP系统
+					shellContext.setProperty("svTime", mdStepInfo.getSvTime());//工步的相对时间
 					
 				}
 			}

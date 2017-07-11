@@ -13,12 +13,15 @@ import org.slf4j.LoggerFactory;
 
 import com.edcs.tds.common.engine.groovy.ScriptExecutor;
 import com.edcs.tds.common.engine.groovy.exception.GroovyException;
+import com.edcs.tds.common.model.EmailEntity;
 import com.edcs.tds.common.model.RuleConfig;
 import com.edcs.tds.common.model.TestingMessage;
 import com.edcs.tds.common.model.TestingResultData;
 import com.edcs.tds.common.util.JsonUtils;
+import com.edcs.tds.common.util.SendEmailUtils;
 import com.edcs.tds.storm.model.ExecuteContext;
 import com.edcs.tds.storm.model.MDprocessInfo;
+import com.edcs.tds.storm.model.UserIntegrationRedis;
 import com.edcs.tds.storm.service.CacheService;
 
 import groovy.lang.Binding;
@@ -80,6 +83,29 @@ public class RuleCalc {
                         BigDecimal upLimit = BigDecimal.valueOf(Long.valueOf(alters[1]));//报警上限
                         BigDecimal lowLimit = BigDecimal.valueOf(Long.valueOf(alters[2]));//报警下限
                         int alterLe = Integer.parseInt(alters[4]);//报警级别
+                        //调用发送邮件接口发送预警信息  -- start
+                        //通过redis获取收件人信息
+                        Set<String> sets = jedis.smembers("warningLevel_"+alterLe);
+                        String content = "通道号为："+testingMessage.getChannelId()+";</br>公布名称为："+ruleConfig2.getStepName()+";</br>场景名称为："+sceneName+";</br>产生了"+alterLe+"级预警！！";//预警信息。
+                        if(sets!=null && sets.size()>0){
+                        	List<String> receiveAccounts = new ArrayList<String>();//存放收件人帐号
+                        	EmailEntity emailEntity = new EmailEntity();
+                        	for (String string2 : sets) {
+                        		UserIntegrationRedis userMsg = JsonUtils.toObject(string2, UserIntegrationRedis.class);
+                        		receiveAccounts.add(userMsg.getEmail());
+                        	}
+                        	emailEntity.setReceiveAccounts(receiveAccounts);
+                        	emailEntity.setBooeanSsl(false);
+                        	emailEntity.setContent(content);
+                        	//发送邮件
+                        	try {
+								SendEmailUtils.sendEmail(emailEntity);
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+                        }
+                        //调用发送邮件接口发送预警信息  -- end
+
                         // key = 流程号+序号
                         key = mDprocessInfo.getRemark() + testingMessage.getSequenceId();
                         String handle = "TxAlertInfoBO:" + mDprocessInfo.getSite() + "," + mDprocessInfo.getRemark() + "," + testingMessage.getSfc() + "," + sceneName;
@@ -97,7 +123,7 @@ public class RuleCalc {
                         //ErpResourceBO:<SITE>,<RESOURCE_ID>
                         testingResultData.setErpResourceBO("ErpResourceBO:" + mDprocessInfo.getSite() + "," + testingMessage.getResourceId());
                         testingResultData.setAlertLevel(alterLe);
-                        testingResultData.setDescription("异常数据");
+                        testingResultData.setDescription(content);
                         testingResultData.setUpLimit(upLimit);
                         testingResultData.setLowLimit(lowLimit);
                         //TxOriginalProcessDataBO:<SITE>,<REMARK>,<SFC> ,<RESOURCE_ID>,<CHANNEL_ID>,<SEQUENCE_ID>
