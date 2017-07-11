@@ -445,6 +445,7 @@ public class CacheService {
             for (String str : str1){
                 if (!str2.contains(str)){
                     flag = true;
+                    break;
                 }
             }
         }
