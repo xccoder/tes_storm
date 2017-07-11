@@ -2,6 +2,7 @@ package com.edcs.tds.storm.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -76,12 +77,11 @@ public class DataInit {
 			Binding shellContext) {
 		// TODO 取测试数据和主数据中的数据来初始化 shellContext
 		TestingMessage testingMsg = executeContext.getTestingMessage();//获取测试数据
-		String processInfoJson = cacheService.getProcessInfoJson();//获取流程主数据json
-		
+		Set<String> processInfoJsons = cacheService.getProcessInfoJsons();//获取流程主数据 信息
 		MDprocessInfo mDprocessInfo = null;
-		if(StringUtils.isNotBlank(processInfoJson)){
-			List<MDprocessInfo> mDprocessInfos = JsonUtils.toArray(processInfoJson, MDprocessInfo.class);//转化为流程主数据的model
-			for (MDprocessInfo mDprocessInfo2 : mDprocessInfos) {
+		if(processInfoJsons!=null && processInfoJsons.size()>0){
+			for (String processInfoJson : processInfoJsons) {
+				MDprocessInfo mDprocessInfo2 = JsonUtils.toObject(processInfoJson, MDprocessInfo.class);
 				if(mDprocessInfo2.getRemark().equals(testingMsg.getRemark())){//获取当前测试数据对应的流程主数据。
 					mDprocessInfo = mDprocessInfo2;
 					break;

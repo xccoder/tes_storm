@@ -1,6 +1,8 @@
 package com.edcs.tds.storm.service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -42,7 +44,17 @@ public class DataService {
 		 * （也可以从redis里面获取，但是考虑到性能问题，就让CacheService中缓存一份redis所有流程的信息。这样就是牺牲内存换性能）
 		 */
 		Jedis jedis = cacheService.getProxyJedisPool().getResource();
-		List<MDprocessInfo> mDprocessInfos = JsonUtils.toArray(cacheService.getProcessInfoJson(), MDprocessInfo.class);
+		Set<String> processInfoJsons = cacheService.getProcessInfoJsons();//获取流程主数据 信息
+		List<MDprocessInfo> mDprocessInfos = null;
+		if(processInfoJsons!=null && processInfoJsons.size()>0){
+			mDprocessInfos = new ArrayList<MDprocessInfo>();
+			for (String string : processInfoJsons) {
+				MDprocessInfo mDprocessInfo = JsonUtils.toObject(string, MDprocessInfo.class);
+				mDprocessInfos.add(mDprocessInfo);
+			}
+		}else{
+			return testingMessage;
+		}
 		if(testingMessage.getSequenceId()==1){//表明这个测试数据是某个流程的起始数据（第一条数据）
 			for (MDprocessInfo mDprocessInfo : mDprocessInfos) {
 				if(testingMessage.getRemark()!=null && testingMessage.getRemark().equals(mDprocessInfo.getRemark())){

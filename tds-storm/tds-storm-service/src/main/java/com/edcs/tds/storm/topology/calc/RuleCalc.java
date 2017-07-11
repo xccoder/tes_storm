@@ -36,14 +36,20 @@ public class RuleCalc {
                                 ConcurrentMap<String, List<RuleConfig>> ruleConfig, CacheService cacheService) {
 
         TestingMessage testingMessage = executeContext.getTestingMessage();//实时数据
-        List<MDprocessInfo> mDprocessInfos = JsonUtils.toArray(cacheService.getProcessInfoJson(), MDprocessInfo.class);//主数据
+        Set<String> processInfoJsons = cacheService.getProcessInfoJsons();//获取流程主数据 信息
         MDprocessInfo mDprocessInfo = null;
-        for (MDprocessInfo mDprocessInfo2 : mDprocessInfos) {
-            if (testingMessage.getRemark().equals(mDprocessInfo2.getRemark())) {
-                //获取当前测试的流程
-                mDprocessInfo = mDprocessInfo2;
-            }
-        }
+		if(processInfoJsons!=null && processInfoJsons.size()>0){
+			for (String string : processInfoJsons) {
+				MDprocessInfo mDprocessInfo2 = JsonUtils.toObject(string, MDprocessInfo.class);
+				if (testingMessage.getRemark().equals(mDprocessInfo2.getRemark())) {
+	                //获取当前测试的流程
+	                mDprocessInfo = mDprocessInfo2;
+	                break;
+	            }
+			}
+		}else{
+			return;
+		}
         Jedis jedis = cacheService.getProxyJedisPool().getResource();
         List<TestingResultData> listResult = new ArrayList<TestingResultData>();//用来存放结果数据
         //int matchedCount = 0;

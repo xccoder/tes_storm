@@ -55,8 +55,7 @@ public class CacheService {
 
     private String ruleConfigVersion;
 
-    private String processInfoJson;//存流程信息
-    private Set<String> processInfoJsons;
+    private Set<String> processInfoJsons;//存流程信息
     private boolean flag = false;
     private DBHelperUtils dbUtils;//连接hana的工具类
 
@@ -74,14 +73,6 @@ public class CacheService {
 
     public void setFlag(boolean flag) {
         this.flag = flag;
-    }
-
-    public String getProcessInfoJson() {
-        return processInfoJson;
-    }
-
-    public void setProcessInfoJson(String processInfoJson) {
-        this.processInfoJson = processInfoJson;
     }
 
     public String getRuleConfigVersion() {
