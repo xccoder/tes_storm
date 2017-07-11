@@ -122,6 +122,7 @@ public abstract class BaseTopology {
 		LocalCluster cluster = new LocalCluster();
 		String topoName = cmd.getOptionValue("name",
 				StringUtils.join(getTopologyName(), "-", new DateTime().toString("yyyyMMdd-HHmmss")));
+		System.out.println(topoName+"------------------------>");
 		cluster.submitTopology(topoName, config, builder.createTopology());
 	}
 
