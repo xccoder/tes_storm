@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Savepoint;
 import java.util.Date;
 import java.util.List;
 
@@ -109,6 +110,7 @@ public class ResultDataImpl implements IResultData {
 
         Connection conn = null;
         PreparedStatement pst = null;
+        Savepoint savePoint = null;
         PreparedStatement pst1 ;
         PreparedStatement pst2 ;
         PreparedStatement pst3 ;
@@ -117,6 +119,7 @@ public class ResultDataImpl implements IResultData {
         try {
             conn = db.getConnection();
             conn.setAutoCommit(false);//
+            savePoint = conn.setSavepoint("point1");
             String sql ="insert into TX_ALERT_INFO(HANDLE,SITE,REMARK,SFC,CATEGORY,ALERT_SEQUENCE_NUMBER,TX_ALERT_LIST_INFO_BO,STATUS,PROCESS_INFO_BO,TIMESTAMP,ERP_RESOURCE_BO,CHANNEL_ID,ALERT_LEVEL,DESCRIPTION,UP_LIMIT,LOW_LIMIT,ORIGINAL_PROCESS_DATA_BO,CREATED_DATE_TIME,CREATED_USER,MODIFIED_DATE_TIME,MODIFIED_USER) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
             pst = conn.prepareStatement(sql);
             for (TestingResultData testingResultData : testingResultDatas) {
@@ -400,10 +403,8 @@ public class ResultDataImpl implements IResultData {
 
             }
 
-
-
         } catch (SQLException e) {
-            conn.rollback();            //回滚
+            conn.rollback(savePoint);            //回滚
             e.printStackTrace();
             System.out.println("插入告警数据错误");
         } finally {
