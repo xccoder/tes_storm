@@ -5,6 +5,7 @@ import com.edcs.tds.common.model.TestingSubChannel;
 import com.edcs.tds.common.util.DBHelperUtils;
 import com.edcs.tds.common.util.JsonUtils;
 import com.edcs.tes.storm.dao.IResultData;
+import com.edcs.tes.storm.extract.ExtractData;
 
 
 import java.math.BigDecimal;
@@ -85,7 +86,6 @@ public class ResultDataImpl implements IResultData {
         String originalProBo;
         String alertHandle;//每一个场景报警数据的handle
         String alertListId = null;
-
         //辅助通道
         String subHandle;
         int subChannelId;//辅助通道id，从辅助通道name上截取
@@ -104,14 +104,21 @@ public class ResultDataImpl implements IResultData {
         Date subTimestamp;
         int subDataFlag;
         int subWorkType;
-
+        //zip
+        String zipHandle = null;
 
         Connection conn = null;
         PreparedStatement pst = null;
+        PreparedStatement pst1 ;
+        PreparedStatement pst2 ;
+        PreparedStatement pst3 ;
+        PreparedStatement pst4 ;
 
         try {
             conn = db.getConnection();
-            conn.setAutoCommit(false);
+            conn.setAutoCommit(false);//
+            String sql ="insert into TX_ALERT_INFO(HANDLE,SITE,REMARK,SFC,CATEGORY,ALERT_SEQUENCE_NUMBER,TX_ALERT_LIST_INFO_BO,STATUS,PROCESS_INFO_BO,TIMESTAMP,ERP_RESOURCE_BO,CHANNEL_ID,ALERT_LEVEL,DESCRIPTION,UP_LIMIT,LOW_LIMIT,ORIGINAL_PROCESS_DATA_BO,CREATED_DATE_TIME,CREATED_USER,MODIFIED_DATE_TIME,MODIFIED_USER) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+            pst = conn.prepareStatement(sql);
             for (TestingResultData testingResultData : testingResultDatas) {
                 alertHandle = testingResultData.getHandle();//TxAlertInfoBO:<SITE>,<REMARK>,<SFC>,<CATEGORY>
                 alertListId = testingResultData.getTestingMessage().getRemark()+","+testingResultData.getTestingMessage().getSequenceId();//alertlistinfo里的字段
@@ -137,7 +144,7 @@ public class ResultDataImpl implements IResultData {
                 modifiedDateTime = testingResultData.getModifiedDateTime();
                 modifiedUser = testingResultData.getModifiedUser();
                 sequenceId = testingResultData.getTestingMessage().getSequenceId();
-
+                pvDataFlag = testingResultData.getTestingMessage().getPvDataFlag();
                 businessCycle = testingResultData.getTestingMessage().getBusinessCycle();
                 cycle = testingResultData.getTestingMessage().getCycle();
                 procehandle = testingResultData.getOriginalProcessDataBO();
@@ -160,9 +167,7 @@ public class ResultDataImpl implements IResultData {
                 svIvRange = testingResultData.getTestingMessage().getSvIvRange();
                 testTimeDuration = testingResultData.getTestingMessage().getTestTimeDuration();
                 testingmesstimestamp = testingResultData.getTestingMessage().getTimestamp();
-
-
-
+                zipHandle = "TechZipStatusBO:"+testingResultData.getSite()+testingResultData.getTestingMessage().getRemark()+testingResultData.getTestingMessage().getBusinessCycle()+testingResultData.getTestingMessage().getStepId();
                 if (alertLevel !=0 && category != null) {
                     switch (category) {
                         case "curr":
@@ -186,13 +191,6 @@ public class ResultDataImpl implements IResultData {
                             processDataAlert = true;
                             break;
                     }
-
-                    /*String sql = "insert into tx_alert_info(`handle`,`site`,`remark`,`sfc`,`category`,`alert_sequence_number`,`tx_alert_list_info_bo`,`status`,`process_info_bo`,`timestamp`,`erp_resource_bo`,`channel_id`,`alert_level`,`description`,`up_limit`,`low_limit`,`original_process_data_bo`,`created_data_time`,`created_user`,`modified_date_time`,`modified_user`) " +
-                            "values ('"+handle +"','" + site + "','" + remark + "','" + sfc + "','" + category + "'," + alertSquenceNumber + ",'" + txAlertListInfoBo + "','" + status + "','" + processInfoBo + "','" + timestamp + "','" + erpResourceBo + "'," + channelId + "," + alertLevel + ",'" + description + "'," + upLimit + "," + lowLimit + ",'" + originalProBo + "','" + createDateTime + "','" + createUser + "','" + modifiedDateTime + "','" + modifiedUser + "')";
-                    */
-                    String sql ="insert into TX_ALERT_INFO(HANDLE,SITE,REMARK,SFC,CATEGORY,ALERT_SEQUENCE_NUMBER,TX_ALERT_LIST_INFO_BO,STATUS,PROCESS_INFO_BO,TIMESTAMP,ERP_RESOURCE_BO,CHANNEL_ID,ALERT_LEVEL,DESCRIPTION,UP_LIMIT,LOW_LIMIT,ORIGINAL_PROCESS_DATA_BO,CREATED_DATE_TIME,CREATED_USER,MODIFIED_DATE_TIME,MODIFIED_USER) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-
-                    pst = conn.prepareStatement(sql);
                     pst.setString(1,alertHandle);
                     pst.setString(2,site);
                     pst.setString(3,remark);
@@ -217,12 +215,11 @@ public class ResultDataImpl implements IResultData {
                     pst.addBatch();
                 }
             }
-            if (pst != null) {
-                pst.executeBatch();
-                conn.commit();
-                pst.clearBatch();        //待定
-            }
 
+            //第二张表
+            //String subsql = "insert into TX_ORIGINAL_SUB_CHANNEL_DATA values('"+subHandle+"','"+procehandle+"',"+subChannelId+",'"+site+"','"+remark+"','"+sfc+"','"+resourceId+"',"+channelId+","+subSequenceId+","+subCycle+","+subStepId+","+subTestTimeDuration+","+subVolt+","+subCurr+","+subIr+","+subTemp+","+subChargeCapacity+","+subDisChargeCapacity+","+subChargeEnergy+","+subDisChargeEnergy+",'"+subTimestamp+"',"+subDataFlag+","+subWorkType+"','"+" "+"','"+" "+"','"+" "+"','"+" "+"','"+")";
+            String subsql = "insert into TX_ORIGINAL_SUB_CHANNEL_DATA(HANDLE,TX_ORIGINAL_PROCESS_DATA_BO,SUB_CHANNEL_ID,SITE,REMARK,SFC,RESOURCE_ID,CHANNEL_ID,SEQUENCE_ID,CYCLE,STEP_ID,TEST_TIME_DURATION,PV_VOLTAGE,PV_CURRENT,PV_IR,PV_TEMPERATURE,PV_CHARGE_CAPACITY,PV_DISCHARGE_CAPACITY,PV_CHARGE_ENERGY,PV_DISCHARGE_ENERGY,TIMESTAMP,DATA_FLAG,WORK_TYPE,CREATED_DATE_TIME,CREATED_USER,MODIFIED_DATE_TIME,MODIFIED_USER) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+            pst1 = conn.prepareStatement(subsql);//插入子通道表
             if (subChannels != null) {
                 for (TestingSubChannel testingSubChannel : subChannels) {
                     switch (testingSubChannel.getSubChannelName()) {
@@ -245,7 +242,6 @@ public class ResultDataImpl implements IResultData {
                             subchannel6 = JsonUtils.toJson(testingSubChannel);
                             break;
                     }
-
                     subHandle = "TxOriginalSubChannelDataBO:"+procehandle+testingSubChannel.getSubChannelName();//:< TX_ORIGINAL_PROCESS_DATA_BO>,<SUB_CHANNEL_ID>
                     subChannelId = Integer.valueOf(testingSubChannel.getSubChannelName().substring(testingSubChannel.getSubChannelName().length()-1));
                     subSequenceId = testingSubChannel.getSequenceId();
@@ -263,60 +259,146 @@ public class ResultDataImpl implements IResultData {
                     subTimestamp = testingSubChannel.getTimestamp();
                     subDataFlag = testingSubChannel.getDataFlag();
                     subWorkType = testingSubChannel.getWorkType();
-                    //第二张表
-                    //String subsql = "insert into TX_ORIGINAL_SUB_CHANNEL_DATA values('"+subHandle+"','"+procehandle+"',"+subChannelId+",'"+site+"','"+remark+"','"+sfc+"','"+resourceId+"',"+channelId+","+subSequenceId+","+subCycle+","+subStepId+","+subTestTimeDuration+","+subVolt+","+subCurr+","+subIr+","+subTemp+","+subChargeCapacity+","+subDisChargeCapacity+","+subChargeEnergy+","+subDisChargeEnergy+",'"+subTimestamp+"',"+subDataFlag+","+subWorkType+"','"+" "+"','"+" "+"','"+" "+"','"+" "+"','"+")";
-                    String subsql = "insert into TX_ORIGINAL_SUB_CHANNEL_DATA(HANDLE,TX_ORIGINAL_PROCESS_DATA_BO,SUB_CHANNEL_ID,SITE,REMARK,SFC,RESOURCE_ID,CHANNEL_ID,SEQUENCE_ID,CYCLE,STEP_ID,TEST_TIME_DURATION,PV_VOLTAGE,PV_CURRENT,PV_IR,PV_TEMPERATURE,PV_CHARGE_CAPACITY,PV_DISCHARGE_CAPACITY,PV_CHARGE_ENERGY,PV_DISCHARGE_ENERGY,TIMESTAMP,DATA_FLAG,WORK_TYPE,CREATED_DATE_TIME,CREATED_USER,MODIFIED_DATE_TIME,MODIFIED_USER) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-                    pst = conn.prepareStatement(subsql);//插入子通道表
-                    pst = conn.prepareStatement(subsql);//插入子通道表
-                    pst.setString(1,subHandle);
-                    pst.setString(2,procehandle);
-                    pst.setInt(3,subChannelId);
-                    pst.setString(4,site);
-                    pst.setString(5,remark);
-                    pst.setString(6,sfc);
-                    pst.setString(7,resourceId);
-                    pst.setInt(8,channelId);
-                    pst.setInt(9,subSequenceId);
-                    pst.setInt(10,subCycle);
-                    pst.setInt(11,subStepId);
-                    pst.setBigDecimal(12,subTestTimeDuration);
-                    pst.setBigDecimal(13,subVolt);
-                    pst.setBigDecimal(14,subCurr);
-                    pst.setBigDecimal(15,subIr);
-                    pst.setBigDecimal(16,subTemp);
-                    pst.setBigDecimal(17,subChargeCapacity);
-                    pst.setBigDecimal(18,subDisChargeCapacity);
-                    pst.setBigDecimal(19,subChargeEnergy);
-                    pst.setBigDecimal(20,subDisChargeEnergy);
-                    pst.setString(21,subTimestamp.toString());
-                    pst.setInt(22,subDataFlag);
-                    pst.setInt(23,subWorkType);
-                    pst.setString(24,subTimestamp.toString());
-                    pst.setString(25,"qqq");
-                    pst.setString(26,subTimestamp.toString());
-                    pst.setString(27,"www");
 
-                    pst.addBatch();//待定
+                    pst1.setString(1,subHandle);
+                    pst1.setString(2,procehandle);
+                    pst1.setInt(3,subChannelId);
+                    pst1.setString(4,site);
+                    pst1.setString(5,remark);
+                    pst1.setString(6,sfc);
+                    pst1.setString(7,resourceId);
+                    pst1.setInt(8,channelId);
+                    pst1.setInt(9,subSequenceId);
+                    pst1.setInt(10,subCycle);
+                    pst1.setInt(11,subStepId);
+                    pst1.setBigDecimal(12,subTestTimeDuration);
+                    pst1.setBigDecimal(13,subVolt);
+                    pst1.setBigDecimal(14,subCurr);
+                    pst1.setBigDecimal(15,subIr);
+                    pst1.setBigDecimal(16,subTemp);
+                    pst1.setBigDecimal(17,subChargeCapacity);
+                    pst1.setBigDecimal(18,subDisChargeCapacity);
+                    pst1.setBigDecimal(19,subChargeEnergy);
+                    pst1.setBigDecimal(20,subDisChargeEnergy);
+                    pst1.setString(21,subTimestamp.toString());
+                    pst1.setInt(22,subDataFlag);
+                    pst1.setInt(23,subWorkType);
+                    pst1.setString(24,subTimestamp.toString());
+                    pst1.setString(25,"qqq");
+                    pst1.setString(26,subTimestamp.toString());
+                    pst1.setString(27,"www");
+
+                    pst1.addBatch();//待定
                 }
-                if (pst != null) {
-                    pst.executeBatch();
-                    conn.commit();
-                }
+
             }
             //第三张表
-            /*String procesql = "insert into TX_ORIGINAL_PROCESS_DATA(`handle`,`site`,`remark`,`sfc`,`resource_id`,`channel_id`,`sequence_id`,`cycle`,`step_id`,`step_name`,`test_time_duration`,`timestamp`,`sv_ic_range`,`sv_iv_range`,`pv_voltage`,`pv_current`,`pv_ir`,`pv_temperature`,`pv_charge_capacity`,`pv_discharge_capacity`,`pv_charge_energy`,`pv_discharge_energy`,`pv_sub_channel_1`,`pv_sub_channel_2`,`pv_sub_channel_3`,`pv_sub_channel_4`,`pv_sub_channel_5`,`pv_sub_channel_6`,`pv_data_flag`,`pv_work_type`,`tx_is_exceptional`,`tx_alert_current`,`tx_alert_voltage`,`tx_alert_temperature`,`tx_alert_capacity`,`tx_alert_duration`,`tx_alert_category1`,`tx_alert_category2`,`tx_root_remark`,`st_business_cycle`,`created_data_time`,`created_user`,`modified_date_time`,`modified_user`) " +
-                    "values ('" + procehandle + "','" + site + "','" + remark + "','" + sfc + "','" + resourceId + "'," + channelId + "," + sequenceId + "," + cycle + "," + stepId + ",'" + stepName + "'," + testTimeDuration + ",'" + testingmesstimestamp + "'," + svIcRange + "," + svIvRange + "," + pvVoltage + "," + pvCurrent + "," + pvIr + "," + pvTemperature + "," + pvChargeCapacity + "," + pvDischargeCapacity + "," + pvChargeEnergy + "," + pvDischargeEnergy + ",'" + subchannel1 + "','" + subchannel2 + "','" + subchannel3 + "','" + subchannel4 + "','" + subchannel5 + "','" + subchannel6 + "'," + pvDataFlag + "," + pvWorkType + ",'" + processDataAlert + "','" + curr + "','" + volt + "','" + temp + "','" + capa + "','" + time + "','" + "预留字段" + "','" + "预留字段" + "','" + "rootremark" + "'," + businessCycle + ",'" + createDateTime + "','" + createUser + "','" + modifiedDateTime + "','" + modifiedUser + "')";
-*/
-            String procesql = "insert into TX_ORIGINAL_PROCESS_DATA VALUES('" + procehandle + "','" + site + "','" + remark + "','" + sfc + "','" + resourceId + "'," + channelId + "," + sequenceId + "," + cycle + "," + stepId + ",'" + stepName + "'," + testTimeDuration + ",'" + testingmesstimestamp + "'," + svIcRange + "," + svIvRange + "," + pvVoltage + "," + pvCurrent + "," + pvIr + "," + pvTemperature + "," + pvChargeCapacity + "," + pvDischargeCapacity + "," + pvChargeEnergy + "," + pvDischargeEnergy + ",'" + subchannel1 + "','" + subchannel2 + "','" + subchannel3 + "','" + subchannel4 + "','" + subchannel5 + "','" + subchannel6 + "'," + pvDataFlag + "," + pvWorkType + ",'" + processDataAlert + "','" + curr + "','" + volt + "','" + temp + "','" + capa + "','" + time + "','" +"category1"+ "','" +"category2" + "','"+ "rootremark" + "'," + businessCycle + ",'" + createDateTime + "','" + createUser + "','" + modifiedDateTime + "','" + modifiedUser + "',"+stepLogicNumber+")";
+            //String procesql = "insert into TX_ORIGINAL_PROCESS_DATA VALUES('" + procehandle + "','" + site + "','" + remark + "','" + sfc + "','" + resourceId + "'," + channelId + "," + sequenceId + "," + cycle + "," + stepId + ",'" + stepName + "'," + testTimeDuration + ",'" + testingmesstimestamp + "'," + svIcRange + "," + svIvRange + "," + pvVoltage + "," + pvCurrent + "," + pvIr + "," + pvTemperature + "," + pvChargeCapacity + "," + pvDischargeCapacity + "," + pvChargeEnergy + "," + pvDischargeEnergy + ",'" + subchannel1 + "','" + subchannel2 + "','" + subchannel3 + "','" + subchannel4 + "','" + subchannel5 + "','" + subchannel6 + "'," + pvDataFlag + "," + pvWorkType + ",'" + processDataAlert + "','" + curr + "','" + volt + "','" + temp + "','" + capa + "','" + time + "','" +"category1"+ "','" +"category2" + "','"+ "rootremark" + "'," + businessCycle + ",'" + createDateTime + "','" + createUser + "','" + modifiedDateTime + "','" + modifiedUser + "',"+stepLogicNumber+")";
+            String procesql = "insert into TX_ORIGINAL_PROCESS_DATA(HANDLE,SITE,REMARK,SFC,RESOURCE_ID,CHANNEL_ID,SEQUENCE_ID,CYCLE,STEP_ID,STEP_NAME,TEST_TIME_DURATION,TIMESTAMP,SV_IC_RANGE,SV_IV_RANGE,PV_VOLTAGE,PV_CURRENT,PV_IR,PV_TEMPERATURE,PV_CHARGE_CAPACITY,PV_DISCHARGE_CAPACITY,PV_CHARGE_ENERGY,PV_DISCHARGE_ENERGY,PV_SUB_CHANNEL_1,PV_SUB_CHANNEL_2,PV_SUB_CHANNEL_3,PV_SUB_CHANNEL_4,PV_SUB_CHANNEL_5,PV_SUB_CHANNEL_6,PV_DATA_FLAG,PV_WORK_TYPE,TX_IS_EXCEPTIONAL,TX_ALERT_CURRENT,TX_ALERT_VOLTAGE,TX_ALERT_TEMPERATURE,TX_ALERT_CAPACITY,TX_ALERT_DURATION,TX_ALERT_CATEGORY1,TX_ALERT_CATEGORY2,TX_ROOT_REMARK,ST_BUSINESS_CYCLE,CREATED_DATE_TIME,CREATED_USER,MODIFIED_DATE_TIME,MODIFIED_USER,STEP_LOGIC_NUMBER) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ";
+            pst2 = conn.prepareStatement(procesql);//插入流程结果表
+            pst2.setString(1,procehandle);
+            pst2.setString(2,site);
+            pst2.setString(3,remark);
+            pst2.setString(4,sfc);
+            pst2.setString(5,resourceId);
+            pst2.setInt(6,channelId);
+            pst2.setInt(7,sequenceId);
+            pst2.setInt(8,cycle);
+            pst2.setInt(9,stepId);
+            pst2.setString(10,stepName);
+            pst2.setBigDecimal(11,testTimeDuration);
+            pst2.setString(12,testingmesstimestamp.toString());
+            pst2.setBigDecimal(13,svIcRange);
+            pst2.setBigDecimal(14,svIvRange);
+            pst2.setBigDecimal(15,pvVoltage);
+            pst2.setBigDecimal(16,pvCurrent);
+            pst2.setBigDecimal(17,pvIr);
+            pst2.setBigDecimal(18,pvTemperature);
+            pst2.setBigDecimal(19,pvChargeCapacity);
+            pst2.setBigDecimal(20,pvDischargeCapacity);
+            pst2.setBigDecimal(21,pvChargeEnergy);
+            pst2.setBigDecimal(22,pvDischargeEnergy);
+            pst2.setString(23,subchannel1);
+            pst2.setString(24,subchannel2);
+            pst2.setString(25,subchannel3);
+            pst2.setString(26,subchannel4);
+            pst2.setString(27,subchannel5);
+            pst2.setString(28,subchannel6);
+            pst2.setInt(29,pvDataFlag);
+            pst2.setInt(30,pvWorkType);
+            pst2.setBoolean(31,processDataAlert);
+            pst2.setBoolean(32,curr);
+            pst2.setBoolean(33,volt);
+            pst2.setBoolean(34,temp);
+            pst2.setBoolean(35,capa);
+            pst2.setBoolean(36,time);
+            pst2.setString(37,"caty");
+            pst2.setString(38,"caty");
+            pst2.setString(39,"rootremark");
+            pst2.setInt(40,businessCycle);
+            pst2.setString(41,createDateTime.toString());
+            pst2.setString(42,createUser);
+            pst2.setString(43,modifiedDateTime.toString());
+            pst2.setString(44,modifiedUser);
+            pst2.setInt(45,stepLogicNumber);
+            pst2.addBatch();//待定
 
-            pst = conn.prepareStatement(procesql);//插入流程结果表
-            pst.execute();//待定
+
             //插入第四张表
+            //String alertListsql = "insert into TX_ALERT_LIST_INFO values('"+AlertListInfohandle+"','"+site+"','"+alertListId+"','"+status+"','"+""+"','"+""+"','"+""+"','"+""+"','"+""+"','"+""+"','"+createDateTime + "','" + createUser + "','" + modifiedDateTime + "','" + modifiedUser +"')";
+            String alertListsql = "insert into TX_ALERT_LIST_INFO(HANDLE,SITE,ALERT_LIST_ID,STATUS,FEEDBACK_I,FEEDBACK_U,FEEDBACK_T,FEEDBACK_C,FEEDBACK_D,COMMENTS,CREATED_DATE_TIME,CREATED_USER,MODIFIED_DATE_TIME,MODIFIED_USER) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+            pst3 = conn.prepareStatement(alertListsql);//插入报警列表
+            pst3.setString(1,AlertListInfohandle);
+            pst3.setString(2,site);
+            pst3.setString(3,alertListId);
+            pst3.setString(4,status);
+            pst3.setString(5,"");//用户输入
+            pst3.setString(6,"");
+            pst3.setString(7,"");
+            pst3.setString(8,"");
+            pst3.setString(9,"");
+            pst3.setString(10,"comments");
+            pst3.setString(11,createDateTime.toString());
+            pst3.setString(12,createUser);
+            pst3.setString(13,modifiedDateTime.toString());
+            pst3.setString(14,modifiedUser);
+            pst3.addBatch();//待定
+            //执行四表同时插入
+            if (pst != null && pst1 != null && pst2 != null && pst3 != null) {
+                pst.executeBatch();
+                pst1.executeBatch();
+                pst2.executeBatch();
+                pst3.executeBatch();
+                conn.commit();
+               // pst.clearBatch();        //待定
 
-            String alertListsql = "insert into TX_ALERT_LIST_INFO values('"+AlertListInfohandle+"','"+site+"','"+alertListId+"','"+status+"','"+""+"','"+""+"','"+""+"','"+""+"','"+""+"','"+""+"','"+createDateTime + "','" + createUser + "','" + modifiedDateTime + "','" + modifiedUser +"')";
-            pst = conn.prepareStatement(alertListsql);//插入报警列表
+                //用于确定工步结束，触发抽取
+                if (pvDataFlag == 88){//工步终止标识
+                    ExtractData extractData = new ExtractData();
+                    try {
+                        extractData.extractData(remark,businessCycle,stepId);
+                    }catch (Exception e){
+                        //
+                    }
+                    //触发压缩表数据初始化
+                    String zipSql = "insert into TECH_ZIP_STATUS(HANDLE,SITE,REMARK,ST_BUSINESS_CYCLE,STEP_ID,I_STATUS,V_STATUS,T_STATUS,C_STATUS,E_STATUS) VALUES (?,?,?,?,?,?,?,?,?,?) ";
+                    pst4 =  conn.prepareStatement(zipSql);
+                    pst4.setString(1,zipHandle);
+                    pst4.setString(2,site);
+                    pst4.setString(3,remark);
+                    pst4.setInt(4,businessCycle);
+                    pst4.setInt(5,stepId);
+                    pst4.setInt(6,0);
+                    pst4.setInt(7,0);
+                    pst4.setInt(8,0);
+                    pst4.setInt(9,0);
+                    pst4.setInt(10,0);
+                    pst4.addBatch();
+                    pst4.executeBatch();
+                    conn.commit();
+                }
 
-            pst.execute();//待定
+            }
 
 
 
@@ -328,7 +410,7 @@ public class ResultDataImpl implements IResultData {
             db.close(conn, pst);
         }
 
-        return false;
+        return true;
     }
 
     public static void main(String[] args) {
