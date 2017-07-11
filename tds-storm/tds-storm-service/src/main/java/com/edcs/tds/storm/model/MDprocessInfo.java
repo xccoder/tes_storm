@@ -31,7 +31,7 @@ public class MDprocessInfo implements Serializable {
     private BigDecimal svInitIr;//初始电阻
     private BigDecimal svInitOcv;//初始ocv
     private BigDecimal svInitThickness;//初始厚度
-    private String daysOrCycle;//天数/循环
+    private Double daysOrCycle;//天数/循环
     private BigDecimal svLowerU;//电压下线
     private BigDecimal svUpperU;//电压上线
     private BigDecimal svTemperature;//温度
@@ -45,8 +45,8 @@ public class MDprocessInfo implements Serializable {
     private int cycleNumber;//循环数
     private BigDecimal soc;//soc
     private int pluseTimes;//脉冲次数
-    private BigDecimal chargeMulti;//充电倍率
-    private BigDecimal dischargeMulti;//放电倍率
+    private String chargeMulti;//充电倍率
+    private String dischargeMulti;//放电倍率
     private String storeEndCondition;//存储结束条件
     private String storeCrossCondition;//存储交叉条件
     private String cycleEndCondition;//循环结束条件
@@ -299,13 +299,7 @@ public class MDprocessInfo implements Serializable {
         this.svInitThickness = svInitThickness;
     }
 
-    public String getDaysOrCycle() {
-        return daysOrCycle;
-    }
 
-    public void setDaysOrCycle(String daysOrCycle) {
-        this.daysOrCycle = daysOrCycle;
-    }
 
     public BigDecimal getSvLowerU() {
         return svLowerU;
@@ -411,19 +405,27 @@ public class MDprocessInfo implements Serializable {
         this.pluseTimes = pluseTimes;
     }
 
-    public BigDecimal getChargeMulti() {
+    public Double getDaysOrCycle() {
+        return daysOrCycle;
+    }
+
+    public void setDaysOrCycle(Double daysOrCycle) {
+        this.daysOrCycle = daysOrCycle;
+    }
+
+    public String getChargeMulti() {
         return chargeMulti;
     }
 
-    public void setChargeMulti(BigDecimal chargeMulti) {
+    public void setChargeMulti(String chargeMulti) {
         this.chargeMulti = chargeMulti;
     }
 
-    public BigDecimal getDischargeMulti() {
+    public String getDischargeMulti() {
         return dischargeMulti;
     }
 
-    public void setDischargeMulti(BigDecimal dischargeMulti) {
+    public void setDischargeMulti(String dischargeMulti) {
         this.dischargeMulti = dischargeMulti;
     }
 
