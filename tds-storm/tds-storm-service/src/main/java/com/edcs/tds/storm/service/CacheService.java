@@ -193,7 +193,7 @@ public class CacheService {
         try {
             //jedis = proxyJedisPool.getResource();
             Set<String> MdProcessjsons = jedis.smembers("TES");
-            if (!compareSet(MdProcessjsons, processInfoJsons)){
+            if (compareSet(MdProcessjsons, processInfoJsons)){
                 ruleConfig.clear();
                 ruleIds.clear();
                 for (String str : MdProcessjsons){
@@ -438,16 +438,20 @@ public class CacheService {
         }
     }
     private boolean compareSet(Set<String> str1,Set<String> str2){
-        if (str2 != null && str1 != null ) {
-            if (str1.size() != str2.size()) {
-                flag = true;
-            } else {
-                for (String str : str1) {
-                    if (!str2.contains(str)) {
-                        flag = true;
-                        break;
+        if ( str1 != null ) {
+            if (str2 != null) {
+                if (str1.size() != str2.size()) {
+                    flag = true;
+                } else {
+                    for (String str : str1) {
+                        if (!str2.contains(str)) {
+                            flag = true;
+                            break;
+                        }
                     }
                 }
+            }else {
+                flag = true;
             }
         }
         return flag;
