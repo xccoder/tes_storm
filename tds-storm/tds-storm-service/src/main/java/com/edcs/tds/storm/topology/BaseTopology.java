@@ -11,19 +11,19 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.storm.Config;
+import org.apache.storm.LocalCluster;
+import org.apache.storm.StormSubmitter;
+import org.apache.storm.kafka.BrokerHosts;
+import org.apache.storm.kafka.KafkaSpout;
+import org.apache.storm.kafka.SpoutConfig;
+import org.apache.storm.kafka.ZkHosts;
+import org.apache.storm.topology.TopologyBuilder;
 import org.joda.time.DateTime;
 
 import com.edcs.tds.storm.util.StormBeanFactory;
 import com.google.common.base.Preconditions;
 
-import backtype.storm.Config;
-import backtype.storm.LocalCluster;
-import backtype.storm.StormSubmitter;
-import backtype.storm.topology.TopologyBuilder;
-import storm.kafka.BrokerHosts;
-import storm.kafka.KafkaSpout;
-import storm.kafka.SpoutConfig;
-import storm.kafka.ZkHosts;
 
 public abstract class BaseTopology {
 
@@ -62,6 +62,7 @@ public abstract class BaseTopology {
 	public void setupConfig(CommandLine cmd) {
 		String confLocation = cmd.getOptionValue("conf", getConfigName());
 		stormBeanFactory = new StormBeanFactory(confLocation);
+		System.out.println(stormBeanFactory+"++++++++++++++++++++");
 		@SuppressWarnings("unchecked")
 		Map<String, Object> stormConfig = stormBeanFactory.getBean("stormConfig", Map.class);
 		Preconditions.checkNotNull(stormConfig);
@@ -92,8 +93,11 @@ public abstract class BaseTopology {
 
 		@SuppressWarnings("unchecked")
 		List<String> zkServers = (List<String>) config.get("kafka.offset.zkServers");
-		Integer zkPort = Integer.parseInt(String.valueOf(config.get("kafka.offset.zkPort")));
+		System.out.println(String.valueOf(config.get("kafka.offset.zkPort"))+"=======================================>");
+//		Integer zkPort = Integer.parseInt(String.valueOf(config.get("kafka.offset.zkPort")));
+		Integer zkPort = Integer.parseInt("2181");
 		String zkRoot = (String) config.get("kafka.offset.zkRoot");
+		System.out.println(zkRoot+"#################");
 		String id = StringUtils.join(getTopologyName(), "-", topic);
 
 		BrokerHosts kafkaBrokerZk = new ZkHosts(brokerZkStr, brokerZkPath);
@@ -133,7 +137,6 @@ public abstract class BaseTopology {
 		formatter.printHelp("topology", options);
 		setupConfig(cmd);
 		setupOptionValue(cmd);
-		//
 		TopologyBuilder builder = new TopologyBuilder();
 		createTopology(builder);
 		String topoName = cmd.getOptionValue("name", StringUtils.join(getTopologyName(), "-", new DateTime().toString("yyyyMMdd-HHmmss")));

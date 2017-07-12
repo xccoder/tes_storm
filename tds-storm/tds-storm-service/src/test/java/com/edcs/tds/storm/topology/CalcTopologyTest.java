@@ -7,6 +7,7 @@ public class CalcTopologyTest {
 	public static void main(String[] args) throws Exception {
 		CalcTopology topology = new CalcTopology();
 		topology.runForLocal(args);
+//		topology.run(args);
 
 	}
 
