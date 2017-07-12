@@ -99,7 +99,6 @@ public class DataInit {
 			shellContext.setProperty("pvCurrent", testingMsg.getPvCurrent());//需要用来比较的电流
 			
 			shellContext.setProperty("svIcRange", testingMsg.getSvIcRange());//电流通道最大流程
-			shellContext.setProperty("svDischargeVoltage", mDprocessInfo.getSvDischargeVoltage());//放电电流  ???????
 			//获取这个流程的所有工 步信息
 			List<MDStepInfo> mdStepInfos = mDprocessInfo.getMdStepInfoList();
 			for (MDStepInfo mdStepInfo : mdStepInfos) {
@@ -108,7 +107,8 @@ public class DataInit {
 						|| ("恒流恒压充电".equals(mdStepInfo.getStepName()) && "恒流恒压充电".equals(testingMsg.getStepName()))
 						|| ("恒功率充电".equals(mdStepInfo.getStepName()) && "恒功率充电".equals(testingMsg.getStepName()))
 						|| ("恒功率放电".equals(mdStepInfo.getStepName()) && "恒功率放电".equals(testingMsg.getStepName()))
-						|| ("恒阻放电".equals(mdStepInfo.getStepName()) && "恒阻放电".equals(testingMsg.getStepName()))){
+						|| ("恒阻放电".equals(mdStepInfo.getStepName()) && "恒阻放电".equals(testingMsg.getStepName()))
+						|| ("恒流充电".equals(mdStepInfo.getStepName()) && "恒流充电".equals(testingMsg.getStepName()))){
 					shellContext.setProperty("svStepEndCurrent", mdStepInfo.getSvStepEndCurrent());//恒压充电工步的 截止电流 （I截止）
 					shellContext.setProperty("svCurrent", mdStepInfo.getSvCurrent());//Ilast为工步最后一点电流值
 				}
@@ -134,7 +134,7 @@ public class DataInit {
 			/*
 			 * 电压测试场景需要的参数
 			 */
-			shellContext.setProperty("pvVoltage", testingMsg.getPvVoltage());//需要用来比较的电流
+			shellContext.setProperty("pvVoltage", testingMsg.getPvVoltage());//需要用来比较的电压
 			shellContext.setProperty("svUpperU", mDprocessInfo.getSvUpperU());//U上限 为测试流程中规定的上限电压
 			shellContext.setProperty("svLowerU", mDprocessInfo.getSvLowerU());//U下限为测试流程中规定的上限电压
 			
