@@ -55,7 +55,7 @@ public class CacheService {
 
     private String ruleConfigVersion;
 
-    private Set<String> processInfoJsons;//存流程信息
+    private Set<String> processInfoJsons ;//存流程信息
     private boolean flag = false;
     private DBHelperUtils dbUtils;//连接hana的工具类
 
@@ -192,8 +192,8 @@ public class CacheService {
         System.out.println("开始》》》》》》》》》》》》");
         try {
             //jedis = proxyJedisPool.getResource();
-            Set<String> MdProcessjsons = jedis.smembers(" ");
-            if (compareSet(MdProcessjsons, processInfoJsons)){
+            Set<String> MdProcessjsons = jedis.smembers("TES");
+            if (!compareSet(MdProcessjsons, processInfoJsons)){
                 ruleConfig.clear();
                 ruleIds.clear();
                 for (String str : MdProcessjsons){
@@ -438,14 +438,15 @@ public class CacheService {
         }
     }
     private boolean compareSet(Set<String> str1,Set<String> str2){
-
-        if (str1.size() != str2.size()){
-            flag = true;
-        }else {
-            for (String str : str1){
-                if (!str2.contains(str)){
-                    flag = true;
-                    break;
+        if (str2 != null && str1 != null ) {
+            if (str1.size() != str2.size()) {
+                flag = true;
+            } else {
+                for (String str : str1) {
+                    if (!str2.contains(str)) {
+                        flag = true;
+                        break;
+                    }
                 }
             }
         }
