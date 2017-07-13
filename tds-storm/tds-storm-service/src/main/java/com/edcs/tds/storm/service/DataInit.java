@@ -138,6 +138,8 @@ public class DataInit {
 			shellContext.setProperty("svUpperU", mDprocessInfo.getSvUpperU());//U上限 为测试流程中规定的上限电压
 			shellContext.setProperty("svLowerU", mDprocessInfo.getSvLowerU());//U下限为测试流程中规定的上限电压
 			
+			TestingMessage firstTestingMsg = GetDataInterface.getFirstTestingMsg(testingMsg,cacheService);//
+			shellContext.setProperty("pvVoltageFirst", firstTestingMsg.getPvVoltage());//U1
 			TestingMessage upTestingMsg  = GetDataInterface.getUpTestingMsg(testingMsg, 1, cacheService);//获取上一条测试数据信息
 			shellContext.setProperty("upPvVoltage", upTestingMsg.getPvVoltage());//U i-1 为上一条数据的电压值
 			
