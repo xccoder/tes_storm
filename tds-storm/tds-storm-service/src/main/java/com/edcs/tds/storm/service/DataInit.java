@@ -48,6 +48,10 @@ public class DataInit {
 		List<TestingSubChannel> lists = new ArrayList<TestingSubChannel>();//用来存放子通道信息
 		while(true){
 			i++;
+			String str = jsonObject.getString(SUBCHANNEL_NAME+i);
+			if("0".equals(str)){
+				continue;
+			}
 			JSONObject subJson = jsonObject.getJSONObject(SUBCHANNEL_NAME+i);
 			if(subJson == null){
 				break;

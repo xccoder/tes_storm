@@ -31,7 +31,7 @@ public class TestingResultData implements Serializable{
 	private String txAlertListInfoBO;//TX_ALERT_LIST_INFO.HANDLE  TxAlertListInfoBO:<SITE>,<ALERT_LIST_ID>
 	private String status;//状态，new  、close、inprogress
 	private String processDataBO;//MD_PROCESS_DATA.HANDLE  MdProcessInfoBO:<SITE>,<PROCESS_ID>,<REMARK>
-	private Date timestamp;//记录报警时间（什么时候报警的）
+	private Timestamp timestamp;//记录报警时间（什么时候报警的）
 	private String erpResourceBO;//ERP_RESOURCE.HANDLE   ErpResourceBO:<SITE>,<RESOURCE_ID>
 //	private int channelId;//通道号
 	private int alertLevel;//报警级别
@@ -99,10 +99,10 @@ public class TestingResultData implements Serializable{
 	public void setProcessDataBO(String processDataBO) {
 		this.processDataBO = processDataBO;
 	}
-	public Date getTimestamp() {
+	public Timestamp getTimestamp() {
 		return timestamp;
 	}
-	public void setTimestamp(Date timestamp) {
+	public void setTimestamp(Timestamp timestamp) {
 		this.timestamp = timestamp;
 	}
 	public String getErpResourceBO() {

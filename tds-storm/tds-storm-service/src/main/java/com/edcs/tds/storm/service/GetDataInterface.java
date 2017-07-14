@@ -79,7 +79,7 @@ public class GetDataInterface {
 						testingMsg.setStepId(results.getInt(7));
 						testingMsg.setStepName(results.getString(8));
 						testingMsg.setTestTimeDuration(results.getBigDecimal(9));
-						testingMsg.setTimestamp(results.getDate(10));
+						testingMsg.setTimestamp(results.getTimestamp(10));
 						testingMsg.setSvIcRange(results.getBigDecimal(11));
 						testingMsg.setSvIvRange(results.getBigDecimal(12));
 						testingMsg.setPvVoltage(results.getBigDecimal(13));
@@ -159,7 +159,7 @@ public class GetDataInterface {
 						testingMsgResult.setStepId(results.getInt(7));
 						testingMsgResult.setStepName(results.getString(8));
 						testingMsgResult.setTestTimeDuration(results.getBigDecimal(9));
-						testingMsgResult.setTimestamp(results.getDate(10));
+						testingMsgResult.setTimestamp(results.getTimestamp(10));
 						testingMsgResult.setSvIcRange(results.getBigDecimal(11));
 						testingMsgResult.setSvIvRange(results.getBigDecimal(12));
 						testingMsgResult.setPvVoltage(results.getBigDecimal(13));
@@ -240,7 +240,7 @@ public class GetDataInterface {
 						testingMsgReturn.setStepId(results.getInt(7));
 						testingMsgReturn.setStepName(results.getString(8));
 						testingMsgReturn.setTestTimeDuration(results.getBigDecimal(9));
-						testingMsgReturn.setTimestamp(results.getDate(10));
+						testingMsgReturn.setTimestamp(results.getTimestamp(10));
 						testingMsgReturn.setSvIcRange(results.getBigDecimal(11));
 						testingMsgReturn.setSvIvRange(results.getBigDecimal(12));
 						testingMsgReturn.setPvVoltage(results.getBigDecimal(13));
