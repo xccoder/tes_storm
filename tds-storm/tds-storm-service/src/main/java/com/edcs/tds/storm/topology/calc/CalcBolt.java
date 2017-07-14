@@ -104,9 +104,11 @@ public class CalcBolt extends BaseRichBolt {
                     //更新business_cycle
                     testingMessage.setBusinessCycle(newCycle);
                 }
+                jedis.close();
             } else {
                 //更新Redis
                 jedis.set(testingMessage.getRemark(), newCycle + "");
+                jedis.close();
                 //TODO 更新business_cycle
 //				testingMessage.setBusinessCycle(currentCycle);
             }
@@ -150,12 +152,7 @@ public class CalcBolt extends BaseRichBolt {
     }
 
     public boolean repeatFilter(String messageId) {
-        // TODO
-        // if (onceFilterService.filter("AUTH", messageId)) {
-        // logger.info("AuthRuleBolt filter the repetitive tuple,messagedId is
-        // {}.", messageId);
-        // return true;
-        // }
+        
         return false;
     }
 
