@@ -191,12 +191,10 @@ public class CacheService {
      * 初始化规则配置
      */
     public void initRuleConfig() {
-        //Jedis jedis = proxyJedisPool.getResource();
+        Jedis jedis = proxyJedisPool.getResource();
 
         System.out.println("开始》》》》》》》》》》》》");
-        Jedis jedis =new Jedis("172.26.66.31",6379);
         try {
-            //jedis = proxyJedisPool.getResource();
             Set<String> MdProcessjsons = jedis.smembers("TES:PROCESSDATA");
 
             System.out.println("MdProcessjsons"+MdProcessjsons.size());
@@ -204,7 +202,6 @@ public class CacheService {
                 ruleConfig.clear();
                 ruleIds.clear();
                 for (String str : MdProcessjsons){
-                   // MDprocessInfo mDprocessInfo = JsonUtils.toObject(str, MDprocessInfo.class);
                 	System.out.println(str);
                 	str = str.substring(str.indexOf("{"));
                     MDprocessInfo mDprocessInfo = JsonUtils.toObject(str,MDprocessInfo.class);
