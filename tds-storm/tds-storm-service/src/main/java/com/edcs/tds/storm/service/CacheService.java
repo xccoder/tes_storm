@@ -6,6 +6,9 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
@@ -46,7 +49,7 @@ public class CacheService {
 
     private static Vector<String> ruleIds = new Vector<String>();
 
-
+    private static Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
     private static ScriptCacheMapping scriptCacheMapping = new ScriptCacheMapping();
 
     private static volatile boolean inited = false;
@@ -188,16 +191,23 @@ public class CacheService {
      * 初始化规则配置
      */
     public void initRuleConfig() {
-        Jedis jedis = proxyJedisPool.getResource();
+        //Jedis jedis = proxyJedisPool.getResource();
+
         System.out.println("开始》》》》》》》》》》》》");
+        Jedis jedis =new Jedis("172.26.66.31",6379);
         try {
             //jedis = proxyJedisPool.getResource();
             Set<String> MdProcessjsons = jedis.smembers("TES");
+
+            System.out.println("MdProcessjsons"+MdProcessjsons.size());
             if (compareSet(MdProcessjsons, processInfoJsons)){
                 ruleConfig.clear();
                 ruleIds.clear();
                 for (String str : MdProcessjsons){
-                    MDprocessInfo mDprocessInfo = JsonUtils.toObject(str, MDprocessInfo.class);
+                   // MDprocessInfo mDprocessInfo = JsonUtils.toObject(str, MDprocessInfo.class);
+                    MDprocessInfo mDprocessInfo = gson.fromJson(str,
+                            new TypeToken<MDprocessInfo>() {
+                            }.getType());
                     List<MDStepInfo> mdStepInfos = mDprocessInfo.getMdStepInfoList();
                     System.out.println("mdStepInfos的长度"+mdStepInfos.size());
                     List<RuleConfig> ruleConfigCurrlist = new ArrayList<>();//电流场景
@@ -291,6 +301,7 @@ public class CacheService {
                 }
             }
             processInfoJsons = MdProcessjsons ;
+
            /* if (!StringUtils.equals(newMdProcessjosn, processInfoJson)) {
                 //Preconditions.checkNotNull(data);
                 ruleConfig.clear();
