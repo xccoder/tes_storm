@@ -107,8 +107,7 @@ public class DataInit {
 			
 			shellContext.setProperty("svIcRange", testingMsg.getSvIcRange());//电流通道最大流程
 			
-			TestingMessage upTestingMsg  = GetDataInterface.getUpTestingMsg(testingMsg, 1, cacheService);//获取上一条测试数据信息
-			shellContext.setProperty("upPvCurrent", upTestingMsg.getPvCurrent());//I i-1 为上一条数据的电流值
+			
 			
 			//获取这个流程的所有工 步信息
 			List<MDStepInfo> mdStepInfos = mDprocessInfo.getMdStepInfoList();
@@ -134,6 +133,13 @@ public class DataInit {
 					shellContext.setProperty("svCurrent", mdStepInfo.getSvCurrent());//I为工况附录文件中规定的电流
 					shellContext.setProperty("svPower", mdStepInfo.getSvPower());//模拟工步（电流模式）中的（P恒）
 				}
+				if(("恒功率放电".equals(mdStepInfo.getStepName()) && "恒功率放电".equals(testingMsg.getStepName()))
+						|| ("恒阻放电".equals(mdStepInfo.getStepName()) && "恒阻放电".equals(testingMsg.getStepName()))){
+					TestingMessage upTestingMsg  = GetDataInterface.getUpTestingMsg(testingMsg, 1, cacheService);//获取上一条测试数据信息
+					if(upTestingMsg!=null){
+						shellContext.setProperty("upPvCurrent", upTestingMsg.getPvCurrent());//I i-1 为上一条数据的电流值
+					}
+				}
 			}
 			//充电功率（P恒 冲） 用在恒功率充电 工步中的电流场景
 //			shellContext.setProperty("svChargePower", mDprocessInfo.getSvChargePower());
@@ -150,12 +156,18 @@ public class DataInit {
 			shellContext.setProperty("svLowerU", mDprocessInfo.getSvLowerU());//U下限为测试流程中规定的上限电压
 			
 			TestingMessage firstTestingMsg = GetDataInterface.getFirstTestingMsg(testingMsg,cacheService);//
-			shellContext.setProperty("pvVoltageFirst", firstTestingMsg.getPvVoltage());//U1
-//			TestingMessage upTestingMsg  = GetDataInterface.getUpTestingMsg(testingMsg, 1, cacheService);//获取上一条测试数据信息
-			shellContext.setProperty("upPvVoltage", upTestingMsg.getPvVoltage());//U i-1 为上一条数据的电压值
+			if(firstTestingMsg!=null){
+				shellContext.setProperty("pvVoltageFirst", firstTestingMsg.getPvVoltage());//U1
+			}
+			TestingMessage upTestingMsg  = GetDataInterface.getUpTestingMsg(testingMsg, 1, cacheService);//获取上一条测试数据信息
+			if(upTestingMsg!=null){
+				shellContext.setProperty("upPvVoltage", upTestingMsg.getPvVoltage());//U i-1 为上一条数据的电压值
+			}
 			
 			TestingMessage upStepTestingMsg = GetDataInterface.getUpStepTestingMsg(testingMsg, 1, cacheService);//获取上一个工步的最后一条测试数据
-			shellContext.setProperty("upStepPvVoltage", upStepTestingMsg.getPvVoltage());//U 放电末 、U 冲电末
+			if(upStepTestingMsg!=null){
+				shellContext.setProperty("upStepPvVoltage", upStepTestingMsg.getPvVoltage());//U 放电末 、U 冲电末
+			}
 			
 			for (MDStepInfo mdStepInfo : mdStepInfos) {
 				if("恒流恒压充电".equals(mdStepInfo.getStepName()) && "恒流恒压充电".equals(testingMsg.getStepName())

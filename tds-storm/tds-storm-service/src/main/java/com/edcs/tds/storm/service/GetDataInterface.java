@@ -36,7 +36,7 @@ public class GetDataInterface {
 	 * @return
 	 */
 	public static TestingMessage getUpTestingMsg(TestingMessage testingMessage, int i, CacheService cacheService) {
-		TestingMessage testingMsg = new TestingMessage();// 用于返回值
+		TestingMessage testingMsg = null;// 用于返回值
 		// 先从redis读取数据，如果读取不到，则再去hana中读取
 		ProxyJedisPool jedisPool = cacheService.getProxyJedisPool();// 获取连接池
 		Jedis jedis = jedisPool.getResource();
@@ -69,6 +69,7 @@ public class GetDataInterface {
 			}
 			try {
 				if (results != null) {
+					testingMsg = new TestingMessage();
 					while (results.next()) {
 						testingMsg.setRemark(results.getString(1));
 						testingMsg.setSfc(results.getString(2));
