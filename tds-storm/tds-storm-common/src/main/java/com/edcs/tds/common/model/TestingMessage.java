@@ -3,6 +3,7 @@ package com.edcs.tds.common.model;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.List;
 /**
  * 测试数据的实体类（实时数据）
@@ -35,7 +36,7 @@ public class TestingMessage implements Serializable {
 	private BigDecimal pvDischargeCapacity;//放电容量 dccap
 	private BigDecimal pvChargeEnergy;//充电能量
 	private BigDecimal pvDischargeEnergy;//放电能量 dceng
-	private Date timestamp;//测试绝对时间 absTime
+	private Timestamp timestamp;//测试绝对时间 absTime
 	private List<TestingSubChannel> subChannel;//辅助通道
 	private String resourceId;//设备号
 	private int pvDataFlag;//数据类型标识,能够表示工步起始点，工步终结点等信息（89代表起始，88 代表终节点）
@@ -170,10 +171,10 @@ public class TestingMessage implements Serializable {
 	public void setPvDischargeEnergy(BigDecimal pvDischargeEnergy) {
 		this.pvDischargeEnergy = pvDischargeEnergy;
 	}
-	public Date getTimestamp() {
+	public Timestamp getTimestamp() {
 		return timestamp;
 	}
-	public void setTimestamp(Date timestamp) {
+	public void setTimestamp(Timestamp timestamp) {
 		this.timestamp = timestamp;
 	}
 	public List<TestingSubChannel> getSubChannel() {

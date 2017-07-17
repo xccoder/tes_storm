@@ -79,7 +79,7 @@ public class GetDataInterface {
 						testingMsg.setStepId(results.getInt(7));
 						testingMsg.setStepName(results.getString(8));
 						testingMsg.setTestTimeDuration(results.getBigDecimal(9));
-						testingMsg.setTimestamp(results.getDate(10));
+						testingMsg.setTimestamp(results.getTimestamp(10));
 						testingMsg.setSvIcRange(results.getBigDecimal(11));
 						testingMsg.setSvIvRange(results.getBigDecimal(12));
 						testingMsg.setPvVoltage(results.getBigDecimal(13));
@@ -103,6 +103,87 @@ public class GetDataInterface {
 		}
 		return testingMsg;
 	}
+	/**
+	 * 获取一个循环中一个工步中的第一条数据
+	 * @param testingMessage
+	 * @param cacheService
+	 * @return
+	 */
+	public static TestingMessage getFirstTestingMsg(TestingMessage testingMessage,CacheService cacheService) {
+		TestingMessage testingMsgResult = null;// 用于返回值
+		// 先从redis读取数据，如果读取不到，则再去hana中读取
+		ProxyJedisPool jedisPool = cacheService.getProxyJedisPool();// 获取连接池
+		Jedis jedis = jedisPool.getResource();
+		Set<String> keys = jedis.keys(testingMessage.getRemark()+"*");
+		for (String string : keys) {
+			String json = jedis.get(string);
+			TestingResultData testingResultData = JsonUtils.toObject(json, TestingResultData.class);
+			TestingMessage testingMsg = testingResultData.getTestingMessage();
+			int businessCycle = testingMsg.getBusinessCycle();//业务循环号
+			//如果这条测试数据是当前测试数据的同一个循环的同一个工步的第一条测试数据，则取出。
+			if(businessCycle == testingMessage.getBusinessCycle() && testingMsg.getStepId()==testingMessage.getStepId() &&testingMsg.getPvDataFlag() == 89 ){
+				testingMsgResult = testingMsg;
+				break;
+			}
+		}
+		jedis.close();//将jedis连接放到redis连接池中
+		if (testingMsgResult==null){// 如果读取不到，则再去hana中读取
+			testingMsgResult = new TestingMessage();
+			String sql = "select REMARK,SFC,RESOURCE_ID,CHANNEL_ID,SEQUENCE_ID,"
+					+ "CYCLE,STEP_ID,STEP_NAME,TEST_TIME_DURATION,TIMESTAMP,SV_IC_RANGE,"
+					+ "SV_IV_RANGE,PV_VOLTAGE,PV_CURRENT,PV_IR,PV_TEMPERATURE,PV_CHARGE_CAPACITY,"
+					+ "PV_DISCHARGE_CAPACITY,PV_CHARGE_ENERGY,PV_DISCHARGE_ENERGY,ST_BUSINESS_CYCLE "
+					+ "from tx_original_process_data where REMARK= ? and ST_BUSINESS_CYCLE = ? and STEP_ID = ? and PV_DATA_FLAG = 89";
+			DBHelperUtils dbUtils = cacheService.getDbUtils();
+			Connection conn = dbUtils.getConnection();
+			PreparedStatement pst = null;
+			ResultSet results = null;
+			try {
+				pst = conn.prepareStatement(sql);
+				pst.setString(1, testingMessage.getRemark());
+				pst.setInt(2, testingMessage.getBusinessCycle());
+				pst.setInt(3, testingMessage.getStepId());
+				results = pst.executeQuery();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			try {
+				if (results != null) {
+					while (results.next()) {
+						testingMsgResult.setRemark(results.getString(1));
+						testingMsgResult.setSfc(results.getString(2));
+						testingMsgResult.setResourceId(results.getString(3));
+						testingMsgResult.setChannelId(results.getInt(4));
+						testingMsgResult.setSequenceId(results.getInt(5));
+						testingMsgResult.setCycle(results.getInt(6));
+						testingMsgResult.setStepId(results.getInt(7));
+						testingMsgResult.setStepName(results.getString(8));
+						testingMsgResult.setTestTimeDuration(results.getBigDecimal(9));
+						testingMsgResult.setTimestamp(results.getTimestamp(10));
+						testingMsgResult.setSvIcRange(results.getBigDecimal(11));
+						testingMsgResult.setSvIvRange(results.getBigDecimal(12));
+						testingMsgResult.setPvVoltage(results.getBigDecimal(13));
+						testingMsgResult.setPvCurrent(results.getBigDecimal(14));
+						testingMsgResult.setPvIr(results.getBigDecimal(15));
+						testingMsgResult.setPvTemperature(results.getBigDecimal(16));
+						testingMsgResult.setPvChargeCapacity(results.getBigDecimal(17));
+						testingMsgResult.setPvDischargeCapacity(results.getBigDecimal(18));
+						testingMsgResult.setPvChargeEnergy(results.getBigDecimal(19));
+						testingMsgResult.setPvDischargeEnergy(results.getBigDecimal(20));
+						testingMsgResult.setBusinessCycle(results.getInt(21));
+					}
+
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				dbUtils.close(conn, pst, results);
+			} finally {
+				dbUtils.close(conn, pst, results);
+			}
+		}
+		return testingMsgResult;
+	}
+	
 	
 	/**
 	 * 获取一个流程中的上一个工步的最后一条数据（先到redis中获取，如果获取不到就到hana中获取）
@@ -159,7 +240,7 @@ public class GetDataInterface {
 						testingMsgReturn.setStepId(results.getInt(7));
 						testingMsgReturn.setStepName(results.getString(8));
 						testingMsgReturn.setTestTimeDuration(results.getBigDecimal(9));
-						testingMsgReturn.setTimestamp(results.getDate(10));
+						testingMsgReturn.setTimestamp(results.getTimestamp(10));
 						testingMsgReturn.setSvIcRange(results.getBigDecimal(11));
 						testingMsgReturn.setSvIvRange(results.getBigDecimal(12));
 						testingMsgReturn.setPvVoltage(results.getBigDecimal(13));

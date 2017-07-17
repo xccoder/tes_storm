@@ -8,6 +8,7 @@ import java.io.Serializable;
  */
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.sql.Timestamp;
 public class TestingSubChannel implements Serializable {
 
 	private static final long serialVersionUID = 4863558373163111458L;
@@ -26,7 +27,7 @@ public class TestingSubChannel implements Serializable {
     private BigDecimal dischargeCapacity;//放电容量
     private BigDecimal chargeEnergy;//充电能量
     private BigDecimal dischargeEnergy;//放电能量
-    private Date timestamp;// "2017-03-21 18:07:43";绝对时间
+    private Timestamp timestamp;// "2017-03-21 18:07:43";绝对时间
     private int dataFlag;//数据类型标识,能够表示工步起始点，工步终结点等信息
     private int workType;//工作状态。正常情况下标识为正常测试状态。能够标识测试的停止，完成，保护等状态
 	
@@ -108,10 +109,10 @@ public class TestingSubChannel implements Serializable {
 	public void setDischargeEnergy(BigDecimal dischargeEnergy) {
 		this.dischargeEnergy = dischargeEnergy;
 	}
-	public Date getTimestamp() {
+	public Timestamp getTimestamp() {
 		return timestamp;
 	}
-	public void setTimestamp(Date timestamp) {
+	public void setTimestamp(Timestamp timestamp) {
 		this.timestamp = timestamp;
 	}
 	public int getDataFlag() {

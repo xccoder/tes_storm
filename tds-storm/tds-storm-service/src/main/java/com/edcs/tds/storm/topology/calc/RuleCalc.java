@@ -1,6 +1,7 @@
 package com.edcs.tds.storm.topology.calc;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -125,7 +126,7 @@ public class RuleCalc {
                         testingResultData.setStatus("new");
                         //MdProcessInfoBO:<SITE>,<PROCESS_ID>,<REMARK>
                         testingResultData.setProcessDataBO("MdProcessInfoBO:" + mDprocessInfo.getSite() + "," + mDprocessInfo.getProcessId() + "," + mDprocessInfo.getRemark());
-                        testingResultData.setTimestamp(new Date());
+                        testingResultData.setTimestamp(new Timestamp(new Date().getTime()));
                         //ErpResourceBO:<SITE>,<RESOURCE_ID>
                         testingResultData.setErpResourceBO("ErpResourceBO:" + mDprocessInfo.getSite() + "," + testingMessage.getResourceId());
                         testingResultData.setAlertLevel(alterLe);
