@@ -1,5 +1,6 @@
 package com.edcs.tds.storm.service;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -28,11 +29,13 @@ public class DataInit {
      * @return
      */
 	public static TestingMessage initRequestMessage(Tuple input) {
-//		@SuppressWarnings("unchecked")
-//		Map<String, String> testingDataMap = (Map<String, String>) DataSerializer
-//				.asObjectForDefault((byte[]) input.getValue(0));
 		// TODO 实现DataInit，实现对Kafka测试数据的序列化；
-		String json = (String)input.getValue(0);
+		String json = null;
+		try {
+			json = new String((byte[])input.getValue(0),"UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
 		System.out.println(json+"-----++++++++++++++++++++++=");
 		//如果传递过来的参数为空，则直接返回null
 		if(!StringUtils.isNotBlank(json)){
