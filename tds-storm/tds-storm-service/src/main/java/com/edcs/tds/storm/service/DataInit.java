@@ -33,6 +33,7 @@ public class DataInit {
 //				.asObjectForDefault((byte[]) input.getValue(0));
 		// TODO 实现DataInit，实现对Kafka测试数据的序列化；
 		String json = (String)input.getValue(0);
+		System.out.println(json+"-----++++++++++++++++++++++=");
 		//如果传递过来的参数为空，则直接返回null
 		if(!StringUtils.isNotBlank(json)){
 			return null;
