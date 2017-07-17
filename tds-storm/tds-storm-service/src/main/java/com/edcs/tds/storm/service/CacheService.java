@@ -195,7 +195,8 @@ public class CacheService {
 
         System.out.println("开始》》》》》》》》》》》》");
         try {
-            Set<String> MdProcessjsons = jedis.smembers("TES:PROCESSDATA");
+            Set<String> MdProcessjsons = jedis.smembers("TES1");
+
 
             System.out.println("MdProcessjsons"+MdProcessjsons.size());
             if (compareSet(MdProcessjsons, processInfoJsons)){
@@ -203,7 +204,7 @@ public class CacheService {
                 ruleIds.clear();
                 for (String str : MdProcessjsons){
                 	System.out.println(str);
-                	str = str.substring(str.indexOf("{"));
+                	//str = str.substring(str.indexOf("{"));
                     MDprocessInfo mDprocessInfo = JsonUtils.toObject(str,MDprocessInfo.class);
                     List<MDStepInfo> mdStepInfos = mDprocessInfo.getMdStepInfoList();
                     System.out.println("mdStepInfos的长度"+mdStepInfos.size());
@@ -287,12 +288,12 @@ public class CacheService {
                         /***将每个流程的各种场景放入scriptcachemapping*/
                     }
 
-                    ruleConfig.put(mDprocessInfo.getProcessId()+"_curr", ruleConfigCurrlist);
-                    ruleConfig.put(mDprocessInfo.getProcessId()+"_capa", ruleConfigCapalist);
-                    ruleConfig.put(mDprocessInfo.getProcessId()+"_enger", ruleConfigEnerlist);
-                    ruleConfig.put(mDprocessInfo.getProcessId()+"_temp", ruleConfigTemplist);
-                    ruleConfig.put(mDprocessInfo.getProcessId()+"_time", ruleConfigTimelist);
-                    ruleConfig.put(mDprocessInfo.getProcessId()+"_volt", ruleConfigVoltlist);
+                    ruleConfig.put(mDprocessInfo.getRemark()+"_curr", ruleConfigCurrlist);
+                    ruleConfig.put(mDprocessInfo.getRemark()+"_capa", ruleConfigCapalist);
+                    ruleConfig.put(mDprocessInfo.getRemark()+"_enger", ruleConfigEnerlist);
+                    ruleConfig.put(mDprocessInfo.getRemark()+"_temp", ruleConfigTemplist);
+                    ruleConfig.put(mDprocessInfo.getRemark()+"_time", ruleConfigTimelist);
+                    ruleConfig.put(mDprocessInfo.getRemark()+"_volt", ruleConfigVoltlist);
                     System.out.println("ruleConfig长度："+ruleConfig.size());
                     System.out.println("ruleIds长度："+ruleIds.size());
                 }
