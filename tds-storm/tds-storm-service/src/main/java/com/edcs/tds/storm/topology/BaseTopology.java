@@ -62,7 +62,6 @@ public abstract class BaseTopology {
 	public void setupConfig(CommandLine cmd) {
 		String confLocation = cmd.getOptionValue("conf", getConfigName());
 		stormBeanFactory = new StormBeanFactory(confLocation);
-		System.out.println(stormBeanFactory+"++++++++++++++++++++");
 		@SuppressWarnings("unchecked")
 		Map<String, Object> stormConfig = stormBeanFactory.getBean("stormConfig", Map.class);
 		Preconditions.checkNotNull(stormConfig);
@@ -93,11 +92,8 @@ public abstract class BaseTopology {
 
 		@SuppressWarnings("unchecked")
 		List<String> zkServers = (List<String>) config.get("kafka.offset.zkServers");
-		System.out.println(String.valueOf(config.get("kafka.offset.zkPort"))+"=======================================>");
-//		Integer zkPort = Integer.parseInt(String.valueOf(config.get("kafka.offset.zkPort")));
-		Integer zkPort = Integer.parseInt("2181");
+		Integer zkPort = Integer.parseInt(String.valueOf(config.get("kafka.offset.zkPort")));
 		String zkRoot = (String) config.get("kafka.offset.zkRoot");
-		System.out.println(zkRoot+"#################");
 		String id = StringUtils.join(getTopologyName(), "-", topic);
 
 		BrokerHosts kafkaBrokerZk = new ZkHosts(brokerZkStr, brokerZkPath);
