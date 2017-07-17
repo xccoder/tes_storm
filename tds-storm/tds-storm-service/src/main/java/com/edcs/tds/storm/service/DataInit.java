@@ -1,10 +1,13 @@
 package com.edcs.tds.storm.service;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.storm.tuple.Tuple;
 
 import com.alibaba.fastjson.JSONObject;
 import com.edcs.tds.common.engine.groovy.ContextConfig;
@@ -17,7 +20,6 @@ import com.edcs.tds.storm.model.MDStepInfo;
 import com.edcs.tds.storm.model.MDprocessInfo;
 
 import groovy.lang.Binding;
-import org.apache.storm.tuple.Tuple;
 
 public class DataInit {
 	
@@ -28,11 +30,13 @@ public class DataInit {
      * @return
      */
 	public static TestingMessage initRequestMessage(Tuple input) {
-//		@SuppressWarnings("unchecked")
-//		Map<String, String> testingDataMap = (Map<String, String>) DataSerializer
-//				.asObjectForDefault((byte[]) input.getValue(0));
 		// TODO 实现DataInit，实现对Kafka测试数据的序列化；
-		String json = (String)input.getValue(0);
+		String json = null;
+		try {
+			json = new String((byte[])input.getValue(0),"UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
 		//如果传递过来的参数为空，则直接返回null
 		if(!StringUtils.isNotBlank(json)){
 			return null;
