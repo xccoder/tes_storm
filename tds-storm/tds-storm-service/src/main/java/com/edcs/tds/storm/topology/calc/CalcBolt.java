@@ -94,14 +94,12 @@ public class CalcBolt extends BaseRichBolt {
             }
             // TODO 实现对异常的循环次数校验、处理
             int currentCycle = dataService.getCurrentCycleCount(testingMessage.getRemark(), cacheService); // TODO 从Redis读取
-//            int newCycle = currentCycle + 1;
             Jedis jedis = cacheService.getProxyJedisPool().getResource();
             int cycle = 0;
             if (currentCycle != -1) {
                 cycle = testingMessage.getCycle();
                 if (cycle<currentCycle) {
-                    //更新Redis
-//                    jedis.set(testingMessage.getRemark(), currentCycle + "");
+                	cycle = currentCycle;
                     //更新cycle
                     testingMessage.setCycle(currentCycle);
                 }
@@ -112,9 +110,6 @@ public class CalcBolt extends BaseRichBolt {
                 //更新Redis
                 jedis.set(testingMessage.getRemark(), cycle + "");
                 jedis.close();
-                
-                //TODO 更新business_cycle
-//				testingMessage.setBusinessCycle(currentCycle);
             }
             //修改测试数据中的业务循环号（businessCycle）
             testingMessage = dataService.updateBusinessCycle(testingMessage, cacheService);
