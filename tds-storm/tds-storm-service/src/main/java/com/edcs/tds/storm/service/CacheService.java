@@ -197,7 +197,7 @@ public class CacheService {
         Jedis jedis =new Jedis("172.26.66.31",6379);
         try {
             //jedis = proxyJedisPool.getResource();
-            Set<String> MdProcessjsons = jedis.smembers("TES");
+            Set<String> MdProcessjsons = jedis.smembers("TES:PROCESSDATA");
 
             System.out.println("MdProcessjsons"+MdProcessjsons.size());
             if (compareSet(MdProcessjsons, processInfoJsons)){
