@@ -88,6 +88,7 @@ public class DataInit {
 		MDprocessInfo mDprocessInfo = null;
 		if(processInfoJsons!=null && processInfoJsons.size()>0){
 			for (String processInfoJson : processInfoJsons) {
+				processInfoJson = processInfoJson.substring(processInfoJson.indexOf("{"));//------------------------------------------------------
 				MDprocessInfo mDprocessInfo2 = JsonUtils.toObject(processInfoJson, MDprocessInfo.class);
 				if(mDprocessInfo2.getRemark().equals(testingMsg.getRemark())){//获取当前测试数据对应的流程主数据。
 					mDprocessInfo = mDprocessInfo2;

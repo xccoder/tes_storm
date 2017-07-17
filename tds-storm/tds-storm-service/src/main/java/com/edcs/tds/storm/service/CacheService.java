@@ -11,7 +11,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.storm.shade.com.google.common.reflect.TypeToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +20,7 @@ import com.edcs.tds.common.model.RuleConfig;
 import com.edcs.tds.common.redis.JedisFactory;
 import com.edcs.tds.common.redis.ProxyJedisPool;
 import com.edcs.tds.common.util.DBHelperUtils;
+import com.edcs.tds.common.util.JsonUtils;
 import com.edcs.tds.storm.model.MDStepInfo;
 import com.edcs.tds.storm.model.MDprocessInfo;
 import com.edcs.tds.storm.model.VariableDict;
@@ -205,9 +205,9 @@ public class CacheService {
                 ruleIds.clear();
                 for (String str : MdProcessjsons){
                    // MDprocessInfo mDprocessInfo = JsonUtils.toObject(str, MDprocessInfo.class);
-                    MDprocessInfo mDprocessInfo = gson.fromJson(str,
-                            new TypeToken<MDprocessInfo>() {
-                            }.getType());
+                	System.out.println(str);
+                	str = str.substring(str.indexOf("{"));
+                    MDprocessInfo mDprocessInfo = JsonUtils.toObject(str,MDprocessInfo.class);
                     List<MDStepInfo> mdStepInfos = mDprocessInfo.getMdStepInfoList();
                     System.out.println("mdStepInfos的长度"+mdStepInfos.size());
                     List<RuleConfig> ruleConfigCurrlist = new ArrayList<>();//电流场景

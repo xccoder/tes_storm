@@ -41,6 +41,7 @@ public class RuleCalc {
         MDprocessInfo mDprocessInfo = null;
 		if(processInfoJsons!=null && processInfoJsons.size()>0){
 			for (String string : processInfoJsons) {
+				string = string.substring(string.indexOf("{"));//----------------------------------------------------------------------------
 				MDprocessInfo mDprocessInfo2 = JsonUtils.toObject(string, MDprocessInfo.class);
 				if (testingMessage.getRemark().equals(mDprocessInfo2.getRemark())) {
 	                //获取当前测试的流程

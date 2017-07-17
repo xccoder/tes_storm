@@ -49,6 +49,7 @@ public class DataService {
 		if(processInfoJsons!=null && processInfoJsons.size()>0){
 			mDprocessInfos = new ArrayList<MDprocessInfo>();
 			for (String string : processInfoJsons) {
+				string = string.substring(string.indexOf("{"));//-----------------------------------------------------------------------------------
 				MDprocessInfo mDprocessInfo = JsonUtils.toObject(string, MDprocessInfo.class);
 				mDprocessInfos.add(mDprocessInfo);
 			}
