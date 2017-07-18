@@ -2,7 +2,6 @@ package com.edcs.tds.common.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.List;
 /**

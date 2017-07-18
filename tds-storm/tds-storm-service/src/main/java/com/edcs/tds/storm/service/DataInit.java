@@ -88,7 +88,6 @@ public class DataInit {
 		MDprocessInfo mDprocessInfo = null;
 		if(processInfoJsons!=null && processInfoJsons.size()>0){
 			for (String processInfoJson : processInfoJsons) {
-				processInfoJson = processInfoJson.substring(processInfoJson.indexOf("{"));//------------------------------------------------------
 				MDprocessInfo mDprocessInfo2 = JsonUtils.toObject(processInfoJson, MDprocessInfo.class);
 				if(mDprocessInfo2.getRemark().equals(testingMsg.getRemark())){//获取当前测试数据对应的流程主数据。
 					mDprocessInfo = mDprocessInfo2;
@@ -119,14 +118,15 @@ public class DataInit {
 						|| ("恒功率充电".equals(mdStepInfo.getStepName()) && "恒功率充电".equals(testingMsg.getStepName()))
 						|| ("恒功率放电".equals(mdStepInfo.getStepName()) && "恒功率放电".equals(testingMsg.getStepName()))
 						|| ("恒阻放电".equals(mdStepInfo.getStepName()) && "恒阻放电".equals(testingMsg.getStepName()))
-						|| ("恒流充电".equals(mdStepInfo.getStepName()) && "恒流充电".equals(testingMsg.getStepName()))){
+						|| ("恒流充电".equals(mdStepInfo.getStepName()) && "恒流充电".equals(testingMsg.getStepName()))
+						|| ("CCCC".equals(mdStepInfo.getStepName()) && "CCCC".equals(testingMsg.getStepName()))){
 					shellContext.setProperty("svStepEndCurrent", mdStepInfo.getSvStepEndCurrent());//恒压充电工步的 截止电流 （I截止）
 					shellContext.setProperty("svCurrent", mdStepInfo.getSvCurrent());//Ilast为工步最后一点电流值
 				}
 				if(("恒功率充电".equals(mdStepInfo.getStepName()) && "恒功率充电".equals(testingMsg.getStepName()))
 						|| ("恒功率放电".equals(mdStepInfo.getStepName()) && "恒功率放电".equals(testingMsg.getStepName()))
 						|| ("恒阻放电".equals(mdStepInfo.getStepName()) && "恒阻放电".equals(testingMsg.getStepName()))
-						|| ("恒流放电".equals(mdStepInfo.getStepName()) && "恒流放电".equals(testingMsg.getStepName()))){
+						|| ("CCCC".equals(mdStepInfo.getStepName()) && "CCCC".equals(testingMsg.getStepName()))){
 					shellContext.setProperty("svStepEndVoltage", mdStepInfo.getSvStepEndVoltage());//U截止 为恒功率充电截止电压 (U截止)
 					shellContext.setProperty("svPower", mdStepInfo.getSvPower());//（P恒 冲） （P恒 放）
 				}
@@ -142,10 +142,6 @@ public class DataInit {
 					}
 				}
 			}
-			//充电功率（P恒 冲） 用在恒功率充电 工步中的电流场景
-//			shellContext.setProperty("svChargePower", mDprocessInfo.getSvChargePower());
-			//放电功率 （P恒 放）用在恒功率放电  工步中的电流场景
-//			shellContext.setProperty("svDischargePower", mDprocessInfo.getSvDischargePower());
 			//R恒 为流程设置恒阻值
 			shellContext.setProperty("constantIrValue", mDprocessInfo.getConstantIrValue());
 			
@@ -172,7 +168,7 @@ public class DataInit {
 			
 			for (MDStepInfo mdStepInfo : mdStepInfos) {
 				if("恒流恒压充电".equals(mdStepInfo.getStepName()) && "恒流恒压充电".equals(testingMsg.getStepName())
-						|| "恒流放电".equals(mdStepInfo.getStepName()) && "恒流放电".equals(testingMsg.getStepName())
+						|| "CCCC".equals(mdStepInfo.getStepName()) && "CCCC".equals(testingMsg.getStepName())
 						|| "恒流充电".equals(mdStepInfo.getStepName()) && "恒流充电".equals(testingMsg.getStepName())
 						|| "恒功率充电".equals(mdStepInfo.getStepName()) && "恒功率充电".equals(testingMsg.getStepName())
 						|| "恒功率放电".equals(mdStepInfo.getStepName()) && "恒功率放电".equals(testingMsg.getStepName())
@@ -184,7 +180,7 @@ public class DataInit {
 			/*
 			 * 容量测试场景需要的参数
 			 */
-			if("恒流放电".equals(testingMsg.getStepName()) 
+			if("CCCC".equals(testingMsg.getStepName()) 
 					||"恒功率放电".equals(testingMsg.getStepName())
 					||"恒阻放电".equals(testingMsg.getStepName())){
 				shellContext.setProperty("pvCapacity", testingMsg.getPvDischargeCapacity());//Ci为工步实时容量值
@@ -196,7 +192,7 @@ public class DataInit {
 				shellContext.setProperty("pvCapacity", testingMsg.getPvChargeCapacity());//Ci为工步实时容量值
 			}
 			for (MDStepInfo mdStepInfo : mdStepInfos) {
-				if(("恒流放电".equals(mdStepInfo.getStepName()) && "恒流放电".equals(testingMsg.getStepName())) 
+				if(("CCCC".equals(mdStepInfo.getStepName()) && "CCCC".equals(testingMsg.getStepName())) 
 						||("恒流充电".equals(mdStepInfo.getStepName()) && "恒流充电".equals(testingMsg.getStepName())) 
 						||("恒压充电".equals(mdStepInfo.getStepName()) && "恒压充电".equals(testingMsg.getStepName()))
 						||("恒流恒压充电".equals(mdStepInfo.getStepName()) && "恒流恒压充电".equals(testingMsg.getStepName()))
@@ -246,25 +242,25 @@ public class DataInit {
 			 * 温度
 			 */
 			
-			shellContext.setProperty("pvTemperature", testingMsg.getPvTemperature());//用来比较的温度
-			for (MDStepInfo mdStepInfo : mdStepInfos) {
-				if(("搁置（Start）".equals(mdStepInfo.getStepName()) && "搁置（Start）".equals(testingMsg.getStepName()))
-						||("搁置（A-DC）".equals(mdStepInfo.getStepName()) && "搁置（A-DC）".equals(testingMsg.getStepName()))
-						||("搁置（A-CC）".equals(mdStepInfo.getStepName()) && "搁置（A-CC）".equals(testingMsg.getStepName()))
-						
-						||("恒流放电".equals(mdStepInfo.getStepName()) && "恒流放电".equals(testingMsg.getStepName())) 
-						||("恒流充电".equals(mdStepInfo.getStepName()) && "恒流充电".equals(testingMsg.getStepName())) 
-						||("恒压充电".equals(mdStepInfo.getStepName()) && "恒压充电".equals(testingMsg.getStepName()))
-						||("恒流恒压充电".equals(mdStepInfo.getStepName()) && "恒流恒压充电".equals(testingMsg.getStepName()))
-						||("恒功率充电".equals(mdStepInfo.getStepName()) && "恒功率充电".equals(testingMsg.getStepName()))
-						||("恒功率放电".equals(mdStepInfo.getStepName()) && "恒功率放电".equals(testingMsg.getStepName()))
-						||("恒阻放电".equals(mdStepInfo.getStepName()) && "恒阻放电".equals(testingMsg.getStepName()))
-						||("模拟工步（电流模式）".equals(mdStepInfo.getStepName()) && "模拟工步（电流模式）".equals(testingMsg.getStepName()))
-						||("模拟工步（功率模式）".equals(mdStepInfo.getStepName()) && "模拟工步（功率模式）".equals(testingMsg.getStepName()))){
-					shellContext.setProperty("svTemperature", mdStepInfo.getSvTemperature());//工步设定温度由测试申请单导入TDP系统
-					
-				}
-			}
+//			shellContext.setProperty("pvTemperature", testingMsg.getPvTemperature());//用来比较的温度
+//			for (MDStepInfo mdStepInfo : mdStepInfos) {
+//				if(("搁置（Start）".equals(mdStepInfo.getStepName()) && "搁置（Start）".equals(testingMsg.getStepName()))
+//						||("搁置（A-DC）".equals(mdStepInfo.getStepName()) && "搁置（A-DC）".equals(testingMsg.getStepName()))
+//						||("搁置（A-CC）".equals(mdStepInfo.getStepName()) && "搁置（A-CC）".equals(testingMsg.getStepName()))
+//						
+//						||("恒流放电".equals(mdStepInfo.getStepName()) && "恒流放电".equals(testingMsg.getStepName())) 
+//						||("恒流充电".equals(mdStepInfo.getStepName()) && "恒流充电".equals(testingMsg.getStepName())) 
+//						||("恒压充电".equals(mdStepInfo.getStepName()) && "恒压充电".equals(testingMsg.getStepName()))
+//						||("恒流恒压充电".equals(mdStepInfo.getStepName()) && "恒流恒压充电".equals(testingMsg.getStepName()))
+//						||("恒功率充电".equals(mdStepInfo.getStepName()) && "恒功率充电".equals(testingMsg.getStepName()))
+//						||("恒功率放电".equals(mdStepInfo.getStepName()) && "恒功率放电".equals(testingMsg.getStepName()))
+//						||("恒阻放电".equals(mdStepInfo.getStepName()) && "恒阻放电".equals(testingMsg.getStepName()))
+//						||("模拟工步（电流模式）".equals(mdStepInfo.getStepName()) && "模拟工步（电流模式）".equals(testingMsg.getStepName()))
+//						||("模拟工步（功率模式）".equals(mdStepInfo.getStepName()) && "模拟工步（功率模式）".equals(testingMsg.getStepName()))){
+//					shellContext.setProperty("svTemperature", mdStepInfo.getSvTemperature());//工步设定温度由测试申请单导入TDP系统
+//					
+//				}
+//			}
 			
 			/**
 			 * 相对时间
@@ -276,7 +272,7 @@ public class DataInit {
 						||("搁置（A-DC）".equals(mdStepInfo.getStepName()) && "搁置（A-DC）".equals(testingMsg.getStepName()))
 						||("搁置（A-CC）".equals(mdStepInfo.getStepName()) && "搁置（A-CC）".equals(testingMsg.getStepName()))
 						
-						||("恒流放电".equals(mdStepInfo.getStepName()) && "恒流放电".equals(testingMsg.getStepName())) 
+						||("CCCC".equals(mdStepInfo.getStepName()) && "CCCC".equals(testingMsg.getStepName())) 
 						||("恒流充电".equals(mdStepInfo.getStepName()) && "恒流充电".equals(testingMsg.getStepName())) 
 						||("恒压充电".equals(mdStepInfo.getStepName()) && "恒压充电".equals(testingMsg.getStepName()))
 						||("恒流恒压充电".equals(mdStepInfo.getStepName()) && "恒流恒压充电".equals(testingMsg.getStepName()))

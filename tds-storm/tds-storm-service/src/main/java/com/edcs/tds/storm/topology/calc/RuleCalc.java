@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
@@ -13,12 +14,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.edcs.tds.common.engine.groovy.ScriptExecutor;
+import com.edcs.tds.common.model.EmailEntity;
 import com.edcs.tds.common.model.RuleConfig;
 import com.edcs.tds.common.model.TestingMessage;
 import com.edcs.tds.common.model.TestingResultData;
 import com.edcs.tds.common.util.JsonUtils;
+import com.edcs.tds.common.util.SendEmailUtils;
 import com.edcs.tds.storm.model.ExecuteContext;
 import com.edcs.tds.storm.model.MDprocessInfo;
+import com.edcs.tds.storm.model.UserIntegrationRedis;
 import com.edcs.tds.storm.service.CacheService;
 
 import groovy.lang.Binding;
@@ -26,6 +30,10 @@ import groovy.lang.Script;
 import redis.clients.jedis.Jedis;
 
 public class RuleCalc {
+	
+	public static final String myEmailAccount = "TDS-Admin@catlbattery.com";
+    public static final String myEmailPassword = "Aa123456";
+    public static final String myEmailSMTPHost = "Mail.catlbattery.com";
 
     private static final Logger logger = LoggerFactory.getLogger(RuleCalc.class);
 
@@ -57,8 +65,9 @@ public class RuleCalc {
         for (String string : keys) {
         	sequenceNumber++;
 			List<RuleConfig> rule = ruleConfig.get(string);//获取每一个场景的值
-			String[] strs = string.split("_");
-			String sceneName = strs[1];//场景名称
+			String str = string.substring(string.lastIndexOf("_")+1);
+//			String[] strs = string.split("_");
+			String sceneName = str;//场景名称
 			for (RuleConfig ruleConfig2 : rule) {//遍历一个场景下的所有规则
 				if(testingMessage.getStepName().equals(ruleConfig2.getStepName())){
 					long executeUsedTime = 0;
@@ -88,26 +97,35 @@ public class RuleCalc {
                         int alterLe = Integer.parseInt(alters[3]);//报警级别
                         //调用发送邮件接口发送预警信息  -- start
                         //通过redis获取收件人信息
-                        Set<String> sets = jedis.smembers("warningLevel_"+alterLe);
+//                        Set<String> sets = jedis.smembers("warningLevel_"+alterLe);
+                        Set<String> sets = new HashSet<String>();
+                        sets.add("XiangC@CATLBattery.com");
+                        sets.add("CaiSL2@CATLBattery.com");
+                        sets.add("LiQF@CATLBattery.com");
                         String content = "通道号为："+testingMessage.getChannelId()+";</br>公布名称为："+ruleConfig2.getStepName()+";</br>场景名称为："+sceneName+";</br>产生了"+alterLe+"级预警！！";//预警信息。
                         System.out.println("报警信息为："+content+"$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-//                        if(sets!=null && sets.size()>0){
-//                        	List<String> receiveAccounts = new ArrayList<String>();//存放收件人帐号
-//                        	EmailEntity emailEntity = new EmailEntity();
+                        if(sets!=null && sets.size()>0){
+                        	List<String> receiveAccounts = new ArrayList<String>();//存放收件人帐号
+                        	EmailEntity emailEntity = new EmailEntity();
 //                        	for (String string2 : sets) {
 //                        		UserIntegrationRedis userMsg = JsonUtils.toObject(string2, UserIntegrationRedis.class);
 //                        		receiveAccounts.add(userMsg.getEmail());
 //                        	}
-//                        	emailEntity.setReceiveAccounts(receiveAccounts);
-//                        	emailEntity.setBooeanSsl(false);
-//                        	emailEntity.setContent(content);
-//                        	//发送邮件
-//                        	try {
-//								SendEmailUtils.sendEmail(emailEntity);
-//							} catch (Exception e) {
-//								e.printStackTrace();
-//							}
-//                        }
+                        	receiveAccounts.addAll(sets);
+                        	emailEntity.setReceiveAccounts(receiveAccounts);
+                        	emailEntity.setBooeanSsl(false);
+                        	emailEntity.setContent(content);
+                        	
+                        	emailEntity.setSendServer(myEmailSMTPHost);
+                        	emailEntity.setSendAccount(myEmailAccount);
+                        	emailEntity.setEmailPassword(myEmailPassword);
+                        	//发送邮件
+                        	try {
+								SendEmailUtils.sendEmail(emailEntity);
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+                        }
                         //调用发送邮件接口发送预警信息  -- end
 
                         // key = 流程号+序号

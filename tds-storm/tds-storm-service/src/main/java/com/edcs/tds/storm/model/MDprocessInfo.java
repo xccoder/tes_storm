@@ -23,7 +23,7 @@ public class MDprocessInfo implements Serializable {
     private String project;//测试项目
     private String description;//描述
     private String svModel;//model
-    private String svCapacityValue;//标称容量
+    private BigDecimal svCapacityValue;//标称容量
     private String fixtureType;//夹具模型
     private BigDecimal svInitFixtureForce;//初始夹具力
     private BigDecimal svInitWeight;//初始重量
@@ -235,11 +235,11 @@ public class MDprocessInfo implements Serializable {
         this.svModel = svModel;
     }
 
-    public String getSvCapacityValue() {
+    public BigDecimal getSvCapacityValue() {
         return svCapacityValue;
     }
 
-    public void setSvCapacityValue(String svCapacityValue) {
+    public void setSvCapacityValue(BigDecimal svCapacityValue) {
         this.svCapacityValue = svCapacityValue;
     }
 

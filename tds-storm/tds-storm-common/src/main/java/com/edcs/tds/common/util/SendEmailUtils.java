@@ -18,7 +18,7 @@ public class SendEmailUtils {
 	public static void sendEmail(EmailEntity emailEntity) throws Exception{
 		Properties props = new Properties();
 		props.setProperty("mail.transsport.protocol", "smtp");
-		props.setProperty("mail.smtp.port", emailEntity.getPort());
+//		props.setProperty("mail.smtp.port", emailEntity.getPort());
 		if(emailEntity.isBooeanSsl()){
 			MailSSLSocketFactory sf = null;
 			try {
