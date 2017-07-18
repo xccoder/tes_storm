@@ -19,14 +19,16 @@ public class DataSyncService implements Runnable {
 
     @Override
     public void run() {
-    	IResultData iResultData = new ResultDataImpl();
-    	RedisSync redisSync = new RedisSync();
+        IResultData iResultData = new ResultDataImpl();
+        RedisSync redisSync = new RedisSync();
         String processJson = redisSync.getProcessJson();
-        List<TestingResultData> testingResultDatas = JsonUtils.toArray(processJson,TestingResultData.class);
-        try {
-            iResultData.insertResultData(testingResultDatas);
-        } catch (SQLException e) {
-            e.printStackTrace();
+        List<TestingResultData> testingResultDatas = JsonUtils.toArray(processJson, TestingResultData.class);
+        if (testingResultDatas.size() > 0) {
+            try {
+                iResultData.insertResultData(testingResultDatas);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 

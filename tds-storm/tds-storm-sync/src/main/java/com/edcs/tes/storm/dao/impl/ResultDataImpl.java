@@ -6,8 +6,10 @@ import com.edcs.tds.common.util.DBHelperUtils;
 import com.edcs.tds.common.util.JsonUtils;
 import com.edcs.tes.storm.dao.IResultData;
 import com.edcs.tes.storm.extract.ExtractData;
+import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 
+import java.beans.PropertyVetoException;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -22,6 +24,10 @@ import java.util.List;
  */
 public class ResultDataImpl implements IResultData {
     private DBHelperUtils db = new DBHelperUtils();
+    private ComboPooledDataSource dataSource = new ComboPooledDataSource();
+
+
+
     private boolean curr = false;//判断电流是否异常
     private boolean volt = false;//判断电压是否异常
     private boolean time = false;//判断时间是否异常
@@ -111,13 +117,19 @@ public class ResultDataImpl implements IResultData {
         Connection conn = null;
         PreparedStatement pst = null;
         Savepoint savePoint = null;
-        PreparedStatement pst1 ;
-        PreparedStatement pst2 ;
-        PreparedStatement pst3 ;
-        PreparedStatement pst4 ;
+        PreparedStatement pst1 = null;
+        PreparedStatement pst2 = null;
+        PreparedStatement pst3 = null;
+        PreparedStatement pst4 = null;
 
         try {
+            dataSource.setDriverClass("com.sap.db.jdbc.Driver");
+            dataSource.setJdbcUrl("jdbc:sap://172.26.66.36:30015/TES");
+            dataSource.setUser("TES");
+            dataSource.setPassword("Aa123456");
+            db.setDataSource(dataSource);
             conn = db.getConnection();
+
             conn.setAutoCommit(false);//
             savePoint = conn.setSavepoint("point1");
             String sql ="insert into TX_ALERT_INFO(HANDLE,SITE,REMARK,SFC,CATEGORY,ALERT_SEQUENCE_NUMBER,TX_ALERT_LIST_INFO_BO,STATUS,PROCESS_INFO_BO,TIMESTAMP,ERP_RESOURCE_BO,CHANNEL_ID,ALERT_LEVEL,DESCRIPTION,UP_LIMIT,LOW_LIMIT,ORIGINAL_PROCESS_DATA_BO,CREATED_DATE_TIME,CREATED_USER,MODIFIED_DATE_TIME,MODIFIED_USER) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
@@ -203,24 +215,23 @@ public class ResultDataImpl implements IResultData {
                     pst.setString(7,AlertListInfohandle);
                     pst.setString(8,status);
                     pst.setString(9,processInfoBo);
-                    pst.setString(10,timestamp.toString());             //注意
+                    pst.setObject(10,timestamp);             //注意
                     pst.setString(11,erpResourceBo);
                     pst.setInt(12,channelId);
-                    //pst.setInt(13,alertLevel);                         //更改类型
+                    pst.setInt(13,alertLevel);                         //更改类型
                     pst.setString(14,description);
                     pst.setBigDecimal(15,upLimit);
                     pst.setBigDecimal(16,lowLimit);
                     pst.setString(17,originalProBo);
-                    pst.setString(18,timestamp.toString());             //注意
+                    pst.setObject(18,timestamp);             //注意
                     pst.setString(19,"HJHJ");
-                    pst.setString(20,timestamp.toString());                //注意
+                    pst.setObject(20,timestamp);                //注意
                     pst.setString(21,"NMCX");
                     pst.addBatch();
                 }
             }
 
             //第二张表
-            //String subsql = "insert into TX_ORIGINAL_SUB_CHANNEL_DATA values('"+subHandle+"','"+procehandle+"',"+subChannelId+",'"+site+"','"+remark+"','"+sfc+"','"+resourceId+"',"+channelId+","+subSequenceId+","+subCycle+","+subStepId+","+subTestTimeDuration+","+subVolt+","+subCurr+","+subIr+","+subTemp+","+subChargeCapacity+","+subDisChargeCapacity+","+subChargeEnergy+","+subDisChargeEnergy+",'"+subTimestamp+"',"+subDataFlag+","+subWorkType+"','"+" "+"','"+" "+"','"+" "+"','"+" "+"','"+")";
             String subsql = "insert into TX_ORIGINAL_SUB_CHANNEL_DATA(HANDLE,TX_ORIGINAL_PROCESS_DATA_BO,SUB_CHANNEL_ID,SITE,REMARK,SFC,RESOURCE_ID,CHANNEL_ID,SEQUENCE_ID,CYCLE,STEP_ID,TEST_TIME_DURATION,PV_VOLTAGE,PV_CURRENT,PV_IR,PV_TEMPERATURE,PV_CHARGE_CAPACITY,PV_DISCHARGE_CAPACITY,PV_CHARGE_ENERGY,PV_DISCHARGE_ENERGY,TIMESTAMP,DATA_FLAG,WORK_TYPE,CREATED_DATE_TIME,CREATED_USER,MODIFIED_DATE_TIME,MODIFIED_USER) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
             pst1 = conn.prepareStatement(subsql);//插入子通道表
             if (subChannels != null) {
@@ -286,9 +297,9 @@ public class ResultDataImpl implements IResultData {
                     pst1.setString(21,subTimestamp.toString());
                     pst1.setInt(22,subDataFlag);
                     pst1.setInt(23,subWorkType);
-                    pst1.setString(24,subTimestamp.toString());
+                    pst1.setObject(24,subTimestamp);
                     pst1.setString(25,"qqq");
-                    pst1.setString(26,subTimestamp.toString());
+                    pst1.setObject(26,subTimestamp);
                     pst1.setString(27,"www");
 
                     pst1.addBatch();//待定
@@ -339,9 +350,9 @@ public class ResultDataImpl implements IResultData {
             pst2.setString(38,"caty");
             pst2.setString(39,"rootremark");
             pst2.setInt(40,businessCycle);
-            pst2.setString(41,createDateTime.toString());
+            pst2.setObject(41,createDateTime);
             pst2.setString(42,createUser);
-            pst2.setString(43,modifiedDateTime.toString());
+            pst2.setObject(43,modifiedDateTime);
             pst2.setString(44,modifiedUser);
             pst2.setInt(45,stepLogicNumber);
             pst2.addBatch();//待定
@@ -361,9 +372,9 @@ public class ResultDataImpl implements IResultData {
             pst3.setString(8,"");
             pst3.setString(9,"");
             pst3.setString(10,"comments");
-            pst3.setString(11,createDateTime.toString());
+            pst3.setObject(11,createDateTime);
             pst3.setString(12,createUser);
-            pst3.setString(13,modifiedDateTime.toString());
+            pst3.setObject(13,modifiedDateTime);
             pst3.setString(14,modifiedUser);
             pst3.addBatch();//待定
             //执行四表同时插入
@@ -373,7 +384,7 @@ public class ResultDataImpl implements IResultData {
                 pst2.executeBatch();
                 pst3.executeBatch();
                 conn.commit();
-               // pst.clearBatch();        //待定
+                // pst.clearBatch();        //待定
 
                 //用于确定工步结束，触发抽取
                 if (pvDataFlag == 88){//工步终止标识
@@ -407,8 +418,13 @@ public class ResultDataImpl implements IResultData {
             conn.rollback(savePoint);            //回滚
             e.printStackTrace();
             System.out.println("插入告警数据错误");
+        } catch (PropertyVetoException e) {
+            e.printStackTrace();
         } finally {
             db.close(conn, pst);
+            db.close(conn, pst1);
+            db.close(conn, pst2);
+            db.close(conn, pst3);
         }
 
         return true;
