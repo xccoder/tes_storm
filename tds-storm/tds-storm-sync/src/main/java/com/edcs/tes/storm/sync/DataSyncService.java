@@ -37,7 +37,8 @@ public class DataSyncService implements Runnable {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-
+        }else{
+        	return;
         }
     }
 }
