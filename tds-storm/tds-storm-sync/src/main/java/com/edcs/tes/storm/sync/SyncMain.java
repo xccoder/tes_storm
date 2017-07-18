@@ -3,6 +3,9 @@ package com.edcs.tes.storm.sync;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.edcs.tes.storm.util.SpringBeanFactory;
+
+
 public class SyncMain {
 	
 	public static void main(String[] args) {
@@ -10,7 +13,8 @@ public class SyncMain {
 		if(args!=null && args.length>0){
 			threadNum = Integer.parseInt(args[0]);
 		}
-		DataSyncService threadTask = new DataSyncService();//线程任务
+		SpringBeanFactory beanFactory = new SpringBeanFactory();
+		DataSyncService threadTask = new DataSyncService(beanFactory);//线程任务
 		List<Thread> threads = new ArrayList<Thread>();
 		for(int i = 0;i<threadNum;i++){
 			Thread thread = new Thread(threadTask);

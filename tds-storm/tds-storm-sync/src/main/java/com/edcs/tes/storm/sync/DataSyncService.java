@@ -4,9 +4,12 @@ import java.sql.SQLException;
 import java.util.List;
 
 import com.edcs.tds.common.model.TestingResultData;
+import com.edcs.tds.common.redis.ProxyJedisPool;
+import com.edcs.tds.common.util.DBHelperUtils;
 import com.edcs.tds.common.util.JsonUtils;
 import com.edcs.tes.storm.dao.IResultData;
 import com.edcs.tes.storm.dao.impl.ResultDataImpl;
+import com.edcs.tes.storm.util.SpringBeanFactory;
 
 /**
  * Created by CaiSL2 on 2017/7/4.
@@ -15,11 +18,17 @@ import com.edcs.tes.storm.dao.impl.ResultDataImpl;
  */
 
 public class DataSyncService implements Runnable {
-
+     
+	private ProxyJedisPool proxyJedisPool;
+	private DBHelperUtils dbHelperUtils;
+	public DataSyncService(SpringBeanFactory beanFactory){
+		this.proxyJedisPool = beanFactory.getBean(ProxyJedisPool.class);
+		this.dbHelperUtils = beanFactory.getBean(DBHelperUtils.class);
+	}
     @Override
     public void run() {
-        IResultData iResultData = new ResultDataImpl();
-        RedisSync redisSync = new RedisSync();
+        IResultData iResultData = new ResultDataImpl(dbHelperUtils);
+        RedisSync redisSync = new RedisSync(proxyJedisPool);
         String processJson = redisSync.getProcessJson();
         if (processJson != null) {
             try {

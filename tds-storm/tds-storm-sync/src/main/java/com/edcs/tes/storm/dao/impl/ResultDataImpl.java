@@ -1,15 +1,5 @@
 package com.edcs.tes.storm.dao.impl;
 
-import com.edcs.tds.common.model.TestingResultData;
-import com.edcs.tds.common.model.TestingSubChannel;
-import com.edcs.tds.common.util.DBHelperUtils;
-import com.edcs.tds.common.util.JsonUtils;
-import com.edcs.tes.storm.dao.IResultData;
-import com.edcs.tes.storm.extract.ExtractData;
-import com.mchange.v2.c3p0.ComboPooledDataSource;
-
-
-import java.beans.PropertyVetoException;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -18,16 +8,23 @@ import java.sql.Savepoint;
 import java.util.Date;
 import java.util.List;
 
+import com.edcs.tds.common.model.TestingResultData;
+import com.edcs.tds.common.model.TestingSubChannel;
+import com.edcs.tds.common.util.DBHelperUtils;
+import com.edcs.tds.common.util.JsonUtils;
+import com.edcs.tes.storm.dao.IResultData;
+import com.edcs.tes.storm.extract.ExtractData;
+
 /**
  * Created by CaiSL2 on 2017/7/4.
  *
  */
 public class ResultDataImpl implements IResultData {
     private DBHelperUtils db = new DBHelperUtils();
-    private ComboPooledDataSource dataSource = new ComboPooledDataSource();
-
-
-
+    public ResultDataImpl(DBHelperUtils db){
+    	this.db = db;
+    }
+    public ResultDataImpl(){}
     private boolean curr = false;//判断电流是否异常
     private boolean volt = false;//判断电压是否异常
     private boolean time = false;//判断时间是否异常
@@ -123,11 +120,6 @@ public class ResultDataImpl implements IResultData {
         PreparedStatement pst4 = null;
 
         try {
-            dataSource.setDriverClass("com.sap.db.jdbc.Driver");
-            dataSource.setJdbcUrl("jdbc:sap://172.26.66.36:30015/TES");
-            dataSource.setUser("TES");
-            dataSource.setPassword("Aa123456");
-            db.setDataSource(dataSource);
             conn = db.getConnection();
 
             conn.setAutoCommit(false);//
@@ -418,9 +410,7 @@ public class ResultDataImpl implements IResultData {
             conn.rollback(savePoint);            //回滚
             e.printStackTrace();
             System.out.println("插入告警数据错误");
-        } catch (PropertyVetoException e) {
-            e.printStackTrace();
-        } finally {
+        }finally {
             db.close(conn, pst);
             db.close(conn, pst1);
             db.close(conn, pst2);

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd"
+	default-lazy-init="true" default-init-method="init">
+
+	<bean id="proxyJedisPool" class="com.edcs.tds.common.redis.ProxyJedisPool">
+	    <constructor-arg index="0" ref="poolConfig"></constructor-arg>
+	    <constructor-arg index="1">
+	       <list>
+	          <value>172.26.66.31:6379</value>
+	       </list>
+	    </constructor-arg>
+	</bean>
+	<bean id="poolConfig" class="org.apache.commons.pool2.impl.GenericObjectPoolConfig"></bean>
+	<!-- hana 连接池 -->
+	<bean id="dbUtils" class="com.edcs.tds.common.util.DBHelperUtils">
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+
+	<!-- c3p0连接池配置 -->  
+     <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">  
+          <!-- 用户名-->  
+          <property name="user" value="TES"/>  
+          <!-- 用户密码-->  
+          <property name="password" value="Aa123456"/>  
+          <property name="driverClass" value="com.sap.db.jdbc.Driver"/>  
+          <!-- <property name="jdbcUrl" value="jdbc:sap://172.26.164.10:30015/TDS"/> -->
+		 <property name="jdbcUrl" value="jdbc:sap://172.26.66.36:30015/TES"/>
+		 <!--连接池中保留的最大连接数。默认值: 15 -->
+          <property name="maxPoolSize" value="100"/>  
+          <!-- 连接池中保留的最小连接数，默认为：3-->  
+          <property name="minPoolSize" value="20"/>  
+          <!-- 初始化连接池中的连接数，取值应在minPoolSize与maxPoolSize之间，默认为3-->  
+          <property name="initialPoolSize" value="100"/>  
+          <!--最大空闲时间，60秒内未使用则连接被丢弃。若为0则永不丢弃。默认值: 0 -->   
+          <property name="maxIdleTime" value="600"/>  
+     </bean>
+
+</beans>

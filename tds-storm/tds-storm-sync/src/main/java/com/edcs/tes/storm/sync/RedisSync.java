@@ -29,7 +29,7 @@ public class RedisSync {
             jedis = proxyJedisPool.getResource();
             resultJson = jedis.spop("TES-RESULT");
         }catch (Exception e){
-           ///
+           e.printStackTrace();
         }
         return resultJson;
     }
