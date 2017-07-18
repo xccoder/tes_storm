@@ -26,8 +26,6 @@ import com.edcs.tds.storm.model.MDprocessInfo;
 import com.edcs.tds.storm.model.VariableDict;
 import com.edcs.tds.storm.util.DataSerializer;
 import com.google.common.collect.Maps;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import groovy.lang.Script;
 import redis.clients.jedis.Jedis;
@@ -49,7 +47,6 @@ public class CacheService {
 
     private static Vector<String> ruleIds = new Vector<String>();
 
-    private static Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
     private static ScriptCacheMapping scriptCacheMapping = new ScriptCacheMapping();
 
     private static volatile boolean inited = false;
@@ -204,7 +201,6 @@ public class CacheService {
                 ruleIds.clear();
                 for (String str : MdProcessjsons){
                 	System.out.println(str);
-                	//str = str.substring(str.indexOf("{"));
                     MDprocessInfo mDprocessInfo = JsonUtils.toObject(str,MDprocessInfo.class);
                     List<MDStepInfo> mdStepInfos = mDprocessInfo.getMdStepInfoList();
                     System.out.println("mdStepInfos的长度"+mdStepInfos.size());

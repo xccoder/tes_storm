@@ -1,10 +1,8 @@
 package com.edcs.tds.storm.service;
 
-import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
 
@@ -15,7 +13,6 @@ import com.edcs.tds.common.model.TestingResultData;
 import com.edcs.tds.common.redis.ProxyJedisPool;
 import com.edcs.tds.common.util.DBHelperUtils;
 import com.edcs.tds.common.util.JsonUtils;
-import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 import redis.clients.jedis.Jedis;
 
@@ -40,7 +37,7 @@ public class GetDataInterface {
 		// 先从redis读取数据，如果读取不到，则再去hana中读取
 		ProxyJedisPool jedisPool = cacheService.getProxyJedisPool();// 获取连接池
 		Jedis jedis = jedisPool.getResource();
-		String json = jedis.get(testingMessage.getRemark() + (testingMessage.getSequenceId() - i));
+		String json = jedis.get(testingMessage.getRemark() +"_"+(testingMessage.getSequenceId() - i));
 		jedis.close();//将jedis连接放到redis连接池中
 		if (StringUtils.isNotBlank(json)) {
 			List<TestingResultData> testingResultData = JsonUtils.toArray(json, TestingResultData.class);
@@ -115,7 +112,7 @@ public class GetDataInterface {
 		// 先从redis读取数据，如果读取不到，则再去hana中读取
 		ProxyJedisPool jedisPool = cacheService.getProxyJedisPool();// 获取连接池
 		Jedis jedis = jedisPool.getResource();
-		Set<String> keys = jedis.keys(testingMessage.getRemark()+"*");
+		Set<String> keys = jedis.keys(testingMessage.getRemark()+"_*");
 		for (String string : keys) {
 			String json = jedis.get(string);
 			TestingResultData testingResultData = JsonUtils.toObject(json, TestingResultData.class);
@@ -197,7 +194,7 @@ public class GetDataInterface {
 		TestingMessage testingMsgReturn = null;
 		ProxyJedisPool jedisPool = cacheService.getProxyJedisPool();// 获取连接池
 		Jedis jedis = jedisPool.getResource();
-		Set<String> keys = jedis.keys(testingMessage.getRemark()+"*");
+		Set<String> keys = jedis.keys(testingMessage.getRemark()+"_*");
 		for (String string : keys) {
 			String json = jedis.get(string);
 			TestingResultData testingResultData = JsonUtils.toObject(json, TestingResultData.class);
@@ -305,7 +302,7 @@ public class GetDataInterface {
 	}
 
 	public static void main(String[] args) throws Exception{
-		 System.out.println("12222222"); 
+		 /*System.out.println("12222222"); 
 		 String sql ="select *from TX_ALERT_INFO";// SQL语句
 		  DBHelperUtils db1 = new DBHelperUtils();//创建DBHelper对象 
 		  ComboPooledDataSource pool = new ComboPooledDataSource();
@@ -342,5 +339,5 @@ public class GetDataInterface {
 //		testingMsg.setSequenceId(16);
 //		TestingMessage testingMsg11 = getUpTestingMsg(testingMsg, 1, null);
 //		System.out.println(testingMsg11);
-	}
+*/	}
 }

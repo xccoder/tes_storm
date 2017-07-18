@@ -3,6 +3,7 @@ package com.edcs.tds.storm.topology.calc;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 
 import org.apache.storm.Config;
@@ -19,15 +20,14 @@ import com.edcs.tds.common.model.RuleConfig;
 import com.edcs.tds.common.model.TestingMessage;
 import com.edcs.tds.common.util.JsonUtils;
 import com.edcs.tds.storm.model.ExecuteContext;
+import com.edcs.tds.storm.model.MDprocessInfo;
 import com.edcs.tds.storm.service.CacheService;
 import com.edcs.tds.storm.service.DataInit;
 import com.edcs.tds.storm.service.DataService;
 import com.edcs.tds.storm.util.RestUtils;
 import com.edcs.tds.storm.util.StormBeanFactory;
 
-
 import groovy.lang.Binding;
-import redis.clients.jedis.Jedis;
 
 public class CalcBolt extends BaseRichBolt {
 
@@ -61,7 +61,7 @@ public class CalcBolt extends BaseRichBolt {
         this.dataService = beanFactory.getBean(DataService.class);
         this.cacheService = beanFactory.getBean(CacheService.class);
         this.cacheService.start();
-
+        System.out.println("****************prepare");
         logger.info("The {} blot is prepared..", topologyName);
 
     }
@@ -84,16 +84,16 @@ public class CalcBolt extends BaseRichBolt {
 
         boolean isRepeated = false;
         try {
-            // TODO 解析请求数据
+            //解析请求数据
             logger.info("Start parsing request data...");
             TestingMessage testingMessage = DataInit.initRequestMessage(input);
-            // TODO 消息重复消费过滤
+            //消息重复消费过滤
             isRepeated = repeatFilter(testingMessage.getMessageId());
             if (isRepeated) {
                 return;
             }
-            // TODO 实现对异常的循环次数校验、处理
-            int currentCycle = dataService.getCurrentCycleCount(testingMessage.getRemark(), cacheService); // TODO 从Redis读取
+            //实现对异常的循环次数校验、处理---------因为cycle暂时用不到，所以这里暂时不做维护
+            /*int currentCycle = dataService.getCurrentCycleCount(testingMessage.getRemark(), cacheService); // 从Redis读取
             Jedis jedis = cacheService.getProxyJedisPool().getResource();
             int cycle = 0;
             if (currentCycle != -1) {
@@ -110,7 +110,7 @@ public class CalcBolt extends BaseRichBolt {
                 //更新Redis
                 jedis.set(testingMessage.getRemark(), cycle + "");
                 jedis.close();
-            }
+            }*/
             //修改测试数据中的业务循环号（businessCycle）
             testingMessage = dataService.updateBusinessCycle(testingMessage, cacheService);
             //维护工步的逻辑序号
@@ -119,8 +119,6 @@ public class CalcBolt extends BaseRichBolt {
             executeContext.setDebug(testingMessage.isDebug());
             executeContext.setTestingMessage(testingMessage);
             
-            
-            // TODO 加载主数据  CacheService.getDataXxxx();
             // 初始化 ShellContext
 //          DataInit.initShellContext(testingMessage, engineCommonService, executeContext, shellContext);
             shellContext = DataInit.initShellContext(executeContext, cacheService, shellContext);
@@ -129,13 +127,27 @@ public class CalcBolt extends BaseRichBolt {
             // 核心计算
             calc.TestingRuleCalc(scriptExecutor, executeContext, shellContext, ruleConfig,cacheService);
             // 告知redis此流程已经结束
-            int workType = testingMessage.getPvWorkType();//假设2代表流程结束标志，到时候根据实际数据更改
+            int workType = testingMessage.getPvWorkType();//0代表流程结束标志
             if (workType == 0) {
-                //TODO 调用redis接口去通知此流程已经结束
+                //调用redis接口去通知此流程已经结束
             	Map<String,Object> map = new HashMap<String,Object>();
             	map.put("remark", testingMessage.getRemark());
             	map.put("txStatus", "close");
-            	map.put("site", "1000");
+            	String site = null;
+            	Set<String> mainData = cacheService.getProcessInfoJsons();//获取流程主数据
+            	if(mainData!=null && mainData.size()>0){
+            		for (String string : mainData) {
+            			MDprocessInfo mDprocessInfo = JsonUtils.toObject(string, MDprocessInfo.class);
+            			if(testingMessage.getRemark().equals(mDprocessInfo.getRemark())){
+            				site = mDprocessInfo.getSite();
+            				break;
+            			}
+					}
+            	}
+            	if(site == null){
+            		site = "1000";
+            	}
+            	map.put("site", site);
             	map.put("totalCycleNum", testingMessage.getBusinessCycle());
             	String json = JsonUtils.toJson(map);		
             	String url = "http://172.26.66.35:50000/tes-backing/api/v1/integration/storm/md_process_info";
@@ -151,12 +163,8 @@ public class CalcBolt extends BaseRichBolt {
     }
 
     public boolean repeatFilter(String messageId) {
-        // TODO
-        // if (onceFilterService.filter("AUTH", messageId)) {
-        // logger.info("AuthRuleBolt filter the repetitive tuple,messagedId is
-        // {}.", messageId);
-        // return true;
-        // }
+    	
+    	
         return false;
     }
 

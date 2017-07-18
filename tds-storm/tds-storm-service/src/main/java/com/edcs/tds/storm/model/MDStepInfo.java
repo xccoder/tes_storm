@@ -3,7 +3,6 @@ package com.edcs.tds.storm.model;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by CaiSL2 on 2017/6/29.

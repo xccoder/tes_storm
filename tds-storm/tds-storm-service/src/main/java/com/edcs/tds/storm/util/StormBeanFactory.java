@@ -25,7 +25,6 @@ public class StormBeanFactory extends DefaultListableBeanFactory {
 		super();
 		try {
 			Resource resource = reader.getResourceLoader().getResource(location);
-			System.out.println(resource+"%%%%%%%%%%%%%%%%%%%%%%");
 			URL url = resource.getURL();
 			this.xml = Resources.toString(url, Charsets.UTF_8);
 			this.reader.setValidating(false);
