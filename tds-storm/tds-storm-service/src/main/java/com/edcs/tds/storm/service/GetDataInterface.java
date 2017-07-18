@@ -115,8 +115,8 @@ public class GetDataInterface {
 		Set<String> keys = jedis.keys(testingMessage.getRemark()+"_*");
 		for (String string : keys) {
 			String json = jedis.get(string);
-			TestingResultData testingResultData = JsonUtils.toObject(json, TestingResultData.class);
-			TestingMessage testingMsg = testingResultData.getTestingMessage();
+			List<TestingResultData> testingResultDatas = JsonUtils.toArray(json, TestingResultData.class);
+			TestingMessage testingMsg = testingResultDatas.get(0).getTestingMessage();
 			int businessCycle = testingMsg.getBusinessCycle();//业务循环号
 			//如果这条测试数据是当前测试数据的同一个循环的同一个工步的第一条测试数据，则取出。
 			if(businessCycle == testingMessage.getBusinessCycle() && testingMsg.getStepId()==testingMessage.getStepId() &&testingMsg.getPvDataFlag() == 89 ){
@@ -197,8 +197,8 @@ public class GetDataInterface {
 		Set<String> keys = jedis.keys(testingMessage.getRemark()+"_*");
 		for (String string : keys) {
 			String json = jedis.get(string);
-			TestingResultData testingResultData = JsonUtils.toObject(json, TestingResultData.class);
-			TestingMessage testingMsg = testingResultData.getTestingMessage();
+			List<TestingResultData> testingResultDatas = JsonUtils.toArray(json, TestingResultData.class);
+			TestingMessage testingMsg = testingResultDatas.get(0).getTestingMessage();
 			int stepLogicNumber = testingMsg.getStepLogicNumber();
 			//如果这条测试数据是当前测试数据的上i个工步中的测试数据，且是上i个工步中的最后一条数据，则取出。
 			if(stepLogicNumber == testingMessage.getStepLogicNumber()-i && testingMsg.getPvDataFlag() == 88 ){

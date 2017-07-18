@@ -50,7 +50,6 @@ public class RuleCalc {
         Jedis jedis = cacheService.getProxyJedisPool().getResource();
         List<TestingResultData> listResult = new ArrayList<TestingResultData>();//用来存放结果数据
         //int matchedCount = 0;
-        String alterLevel = null;
         String key = null;
         int sequenceNumber = 0;//同一个工步中报警的序号
         //遍历每一个场景
@@ -64,6 +63,7 @@ public class RuleCalc {
 				if(testingMessage.getStepName().equals(ruleConfig2.getStepName())){
 					long executeUsedTime = 0;
 	                long executeBeginTime = System.currentTimeMillis();
+	                String alterLevel = null;
                     try {
                     	Script script = CacheService.getScriptCache().get(ruleConfig2.getStepSign()).getRight();
                     	script.setBinding(shellContext);
@@ -76,8 +76,8 @@ public class RuleCalc {
                     } finally {
                         executeUsedTime = System.currentTimeMillis() - executeBeginTime;
                     }
-                    TestingResultData testingResultData = new TestingResultData();
                     if (StringUtils.isNotBlank(alterLevel) && !alterLevel.equals("null")) {
+                    	TestingResultData testingResultData = new TestingResultData();
                         //matchedCount++;
                         // TODO 记录匹配的规则和相关数据
 //                        executeContext.addMatchedRule(ruleConfig2.getId(), 0d, executeUsedTime);
@@ -90,6 +90,7 @@ public class RuleCalc {
                         //通过redis获取收件人信息
                         Set<String> sets = jedis.smembers("warningLevel_"+alterLe);
                         String content = "通道号为："+testingMessage.getChannelId()+";</br>公布名称为："+ruleConfig2.getStepName()+";</br>场景名称为："+sceneName+";</br>产生了"+alterLe+"级预警！！";//预警信息。
+                        System.out.println("报警信息为："+content+"$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
 //                        if(sets!=null && sets.size()>0){
 //                        	List<String> receiveAccounts = new ArrayList<String>();//存放收件人帐号
 //                        	EmailEntity emailEntity = new EmailEntity();
@@ -130,18 +131,22 @@ public class RuleCalc {
                         testingResultData.setUpLimit(upLimit);
                         testingResultData.setLowLimit(lowLimit);
                         //TxOriginalProcessDataBO:<SITE>,<REMARK>,<SFC> ,<RESOURCE_ID>,<CHANNEL_ID>,<SEQUENCE_ID>
-                        testingResultData.setOriginalProcessDataBO("TxOriginalProcessDataBO:" + mDprocessInfo.getSite() + "," + mDprocessInfo.getRemark() + "," + mDprocessInfo.getSfc() + "," + testingMessage.getResourceId() + "," + testingMessage.getChannelId() + "，" + testingMessage.getSequenceId());
+                        testingResultData.setOriginalProcessDataBO("TxOriginalProcessDataBO:" + mDprocessInfo.getSite() + "," + mDprocessInfo.getRemark() + "," + mDprocessInfo.getSfc() + "," + testingMessage.getResourceId() + "," + testingMessage.getChannelId() + "," + testingMessage.getSequenceId());
                         testingResultData.setCreatedDateTime(mDprocessInfo.getCreateDateTime());
                         testingResultData.setCreatedUser(mDprocessInfo.getCreateUser());
                         testingResultData.setModifiedDateTime(mDprocessInfo.getModifiedDateTime());
                         testingResultData.setModifiedUser(mDprocessInfo.getCreateUser());
                         testingResultData.setRootRemark(mDprocessInfo.getRootRemark());
+                        testingResultData.setTestingMessage(testingMessage);
+                        listResult.add(testingResultData);
                     }
-                    testingResultData.setTestingMessage(testingMessage);
-                    listResult.add(testingResultData);
                     break;
                 }
             }
+        }
+        if(listResult.size()==0){//表明这条测试数据一个预警信息都没有，那么我们要产生一个result对象来存放原始测试数据信息
+        	TestingResultData testingResultData = new TestingResultData();
+        	testingResultData.setTestingMessage(testingMessage);
         }
         String result = JsonUtils.toJson(listResult);
         jedis.set(key, result);//用于计算过程中查询历史数据
