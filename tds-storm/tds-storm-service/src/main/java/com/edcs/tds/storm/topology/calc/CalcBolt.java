@@ -154,9 +154,11 @@ public class CalcBolt extends BaseRichBolt {
             	RestUtils.sendState(url, json);
             }
             executeContext.setSysVariableLog(shellContext.getVariables());
+            System.out.println("匹配成功**********************************************************************************");
         } catch (Exception e) {
             logger.error("", e);
             executeContext.addException(e);
+            System.out.println("匹配失败**********************************************************************************");
         } finally {
             shellContext = null;
         }

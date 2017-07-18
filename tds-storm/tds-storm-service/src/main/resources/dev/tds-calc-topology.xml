@@ -48,8 +48,8 @@
           <!-- 用户密码-->  
           <property name="password" value="Aa123456"/>  
           <property name="driverClass" value="com.sap.db.jdbc.Driver"/>  
-          <property name="jdbcUrl" value="jdbc:sap://172.26.164.10:30015/TDS"/>
-		 <!--<property name="jdbcUrl" value="jdbc:sap://172.26.66.36:30015/TDS"/>-->
+          <!-- <property name="jdbcUrl" value="jdbc:sap://172.26.164.10:30015/TDS"/> -->
+		 <property name="jdbcUrl" value="jdbc:sap://172.26.66.36:30015/TES"/>
 		 <!--连接池中保留的最大连接数。默认值: 15 -->
           <property name="maxPoolSize" value="100"/>  
           <!-- 连接池中保留的最小连接数，默认为：3-->  
