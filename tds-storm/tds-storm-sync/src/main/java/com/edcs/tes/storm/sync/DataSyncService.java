@@ -22,7 +22,9 @@ public class DataSyncService implements Runnable {
     	IResultData iResultData = new ResultDataImpl();
     	RedisSync redisSync = new RedisSync();
         String processJson = redisSync.getProcessJson();
+        //System.out.println("processJson="+processJson);
         List<TestingResultData> testingResultDatas = JsonUtils.toArray(processJson,TestingResultData.class);
+        //System.out.println("testingResultDatas个数为"+testingResultDatas.size());
         try {
             iResultData.insertResultData(testingResultDatas);
         } catch (SQLException e) {
