@@ -12,7 +12,6 @@ import com.edcs.tes.storm.dao.impl.ResultDataImpl;
  * Created by CaiSL2 on 2017/7/4.
  * 数据同步服务
  * 将存储在redis的所有结果数据，多线程的将其读出并放入到hana数据库中
- *
  */
 
 public class DataSyncService implements Runnable {
@@ -22,14 +21,14 @@ public class DataSyncService implements Runnable {
         IResultData iResultData = new ResultDataImpl();
         RedisSync redisSync = new RedisSync();
         String processJson = redisSync.getProcessJson();
-        List<TestingResultData> testingResultDatas = JsonUtils.toArray(processJson, TestingResultData.class);
-        if (testingResultDatas.size() > 0) {
+        if (processJson != null) {
             try {
+                List<TestingResultData> testingResultDatas = JsonUtils.toArray(processJson, TestingResultData.class);
                 iResultData.insertResultData(testingResultDatas);
             } catch (SQLException e) {
                 e.printStackTrace();
             }
+
         }
     }
-
 }
