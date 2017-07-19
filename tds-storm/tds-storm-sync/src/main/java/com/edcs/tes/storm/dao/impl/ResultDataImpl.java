@@ -155,6 +155,7 @@ public class ResultDataImpl implements IResultData {
                 businessCycle = testingResultData.getTestingMessage().getBusinessCycle();
                 cycle = testingResultData.getTestingMessage().getCycle();
                 procehandle = testingResultData.getOriginalProcessDataBO();
+                System.out.println(procehandle+"procehandleprocehandleprocehandleprocehandle");
                 pvChargeCapacity = testingResultData.getTestingMessage().getPvChargeCapacity();
                 pvChargeEnergy = testingResultData.getTestingMessage().getPvChargeEnergy();
                 pvCurrent = testingResultData.getTestingMessage().getPvCurrent();
@@ -420,6 +421,7 @@ public class ResultDataImpl implements IResultData {
             db.close(conn, pst1);
             db.close(conn, pst2);
             db.close(conn, pst3);
+            db.close(conn,pst4);
         }
 
         return true;
