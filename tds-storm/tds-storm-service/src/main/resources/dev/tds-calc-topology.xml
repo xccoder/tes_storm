@@ -34,7 +34,9 @@
 	
 	
 	
-	<bean id="poolConfig" class="org.apache.commons.pool2.impl.GenericObjectPoolConfig"></bean>
+	<bean id="poolConfig" class="org.apache.commons.pool2.impl.GenericObjectPoolConfig">
+	    <property name="maxTotal" value="15"></property>
+	</bean>
 	<bean id="scriptExecutor" class="com.edcs.tds.common.engine.groovy.ScriptExecutor"></bean>
 	<!-- hana 连接池 -->
 	<bean id="dbUtils" class="com.edcs.tds.common.util.DBHelperUtils">
@@ -44,7 +46,7 @@
 	<!-- c3p0连接池配置 -->  
      <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">  
           <!-- 用户名-->  
-          <property name="user" value="TDS"/>  
+          <property name="user" value="TES"/>  
           <!-- 用户密码-->  
           <property name="password" value="Aa123456"/>  
           <property name="driverClass" value="com.sap.db.jdbc.Driver"/>  

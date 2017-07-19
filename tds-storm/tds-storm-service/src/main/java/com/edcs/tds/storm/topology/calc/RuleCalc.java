@@ -178,5 +178,8 @@ public class RuleCalc {
             jedis.expire(key, 60 * 60);
             jedis.sadd("TES-RESULT", result);//用于同步服务写入hana
         }
+        if(jedis!=null){
+        	jedis.close();
+        }
     }
 }
