@@ -38,7 +38,9 @@ public class GetDataInterface {
 		ProxyJedisPool jedisPool = cacheService.getProxyJedisPool();// 获取连接池
 		Jedis jedis = jedisPool.getResource();
 		String json = jedis.get(testingMessage.getRemark() +"_"+(testingMessage.getSequenceId() - i));
-		jedis.close();//将jedis连接放到redis连接池中
+		if(jedis!=null){
+        	jedis.close();
+        }//将jedis连接放到redis连接池中
 		if (StringUtils.isNotBlank(json)) {
 			List<TestingResultData> testingResultData = JsonUtils.toArray(json, TestingResultData.class);
 			for (TestingResultData testingResultData2 : testingResultData) {
@@ -124,7 +126,9 @@ public class GetDataInterface {
 				break;
 			}
 		}
-		jedis.close();//将jedis连接放到redis连接池中
+		if(jedis!=null){
+        	jedis.close();
+        }//将jedis连接放到redis连接池中
 		if (testingMsgResult==null){// 如果读取不到，则再去hana中读取
 			testingMsgResult = new TestingMessage();
 			String sql = "select REMARK,SFC,RESOURCE_ID,CHANNEL_ID,SEQUENCE_ID,"
@@ -206,7 +210,9 @@ public class GetDataInterface {
 				break;
 			}
 		}
-		jedis.close();//将jedis连接放到redis连接池中
+		if(jedis!=null){
+        	jedis.close();
+        }//将jedis连接放到redis连接池中
 		if(testingMsgReturn == null){//redis 中没有找到，则到hana中找
 			String sql = "select REMARK,SFC,RESOURCE_ID,CHANNEL_ID,SEQUENCE_ID,"
 					+ "CYCLE,STEP_ID,STEP_NAME,TEST_TIME_DURATION,TIMESTAMP,SV_IC_RANGE,"

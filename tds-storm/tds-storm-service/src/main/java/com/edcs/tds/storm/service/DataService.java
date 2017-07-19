@@ -20,9 +20,14 @@ public class DataService {
 		Jedis jedis = cacheService.getProxyJedisPool().getResource();
 		String cycleNum = jedis.get(remark);
 		if(!StringUtils.isNotBlank(cycleNum)){
+			if(jedis!=null){
+            	jedis.close();
+            }
 			return -1;
 		}
-		jedis.close();//将jedis连接放到redis连接池中
+		if(jedis!=null){
+        	jedis.close();
+        }//将jedis连接放到redis连接池中
 		return Integer.parseInt(cycleNum);
 	}
 	
@@ -53,6 +58,9 @@ public class DataService {
 				mDprocessInfos.add(mDprocessInfo);
 			}
 		}else{
+			if(jedis!=null){
+            	jedis.close();
+            }//将jedis连接放到redis连接池中
 			return testingMessage;
 		}
 		if(testingMessage.getSequenceId()==1){//表明这个测试数据是某个流程的起始数据（第一条数据）
@@ -77,6 +85,9 @@ public class DataService {
 					}
 				}
 			}
+			if(jedis!=null){
+            	jedis.close();
+            }//将jedis连接放到redis连接池中
 		}else{//如果不等于1
 			//查看这条测试数据对应的工步的IS_CYCLE_SIGNAL_STEP 是否为true，如果为true则进行下面的操作，如果为false，则什么都不做
 			bre:for (MDprocessInfo mDprocessInfo : mDprocessInfos) {
@@ -108,7 +119,9 @@ public class DataService {
 				}
 			}
 		}
-		jedis.close();//将jedis连接放到redis连接池中
+		if(jedis!=null){
+        	jedis.close();
+        }//将jedis连接放到redis连接池中
 		return testingMessage;
 	}
 	
@@ -136,7 +149,9 @@ public class DataService {
 				testingMessage.setStepLogicNumber(Integer.parseInt(oldStepLogicNumber));
 			}
 		}
-		jedis.close();//将jedis连接放到redis连接池中
+		if(jedis!=null){
+        	jedis.close();
+        }//将jedis连接放到redis连接池中
 		return testingMessage;
 	}
 }
