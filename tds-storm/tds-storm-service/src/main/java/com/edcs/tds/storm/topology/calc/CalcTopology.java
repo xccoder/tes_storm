@@ -12,7 +12,7 @@ public class CalcTopology extends BaseTopology {
 
     private int spoutNum = 1;
     private int calcNum = 1;
-    private String topicName = "test_cai";
+    private String topicName = "DToTEStest";
 
     @Override
     public String getTopologyName() {

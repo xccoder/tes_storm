@@ -107,7 +107,7 @@ public class DataInit {
 			
 			shellContext.setProperty("svIcRange", testingMsg.getSvIcRange());//电流通道最大流程
 			
-			
+			// CCCC 恒流放电     DDDD 恒流充电
 			
 			//获取这个流程的所有工 步信息
 			List<MDStepInfo> mdStepInfos = mDprocessInfo.getMdStepInfoList();
@@ -118,7 +118,7 @@ public class DataInit {
 						|| ("恒功率充电".equals(mdStepInfo.getStepName()) && "恒功率充电".equals(testingMsg.getStepName()))
 						|| ("恒功率放电".equals(mdStepInfo.getStepName()) && "恒功率放电".equals(testingMsg.getStepName()))
 						|| ("恒阻放电".equals(mdStepInfo.getStepName()) && "恒阻放电".equals(testingMsg.getStepName()))
-						|| ("恒流充电".equals(mdStepInfo.getStepName()) && "恒流充电".equals(testingMsg.getStepName()))
+						|| ("DDDD".equals(mdStepInfo.getStepName()) && "DDDD".equals(testingMsg.getStepName()))
 						|| ("CCCC".equals(mdStepInfo.getStepName()) && "CCCC".equals(testingMsg.getStepName()))){
 					shellContext.setProperty("svStepEndCurrent", mdStepInfo.getSvStepEndCurrent());//恒压充电工步的 截止电流 （I截止）
 					shellContext.setProperty("svCurrent", mdStepInfo.getSvCurrent());//Ilast为工步最后一点电流值
@@ -169,7 +169,7 @@ public class DataInit {
 			for (MDStepInfo mdStepInfo : mdStepInfos) {
 				if("恒流恒压充电".equals(mdStepInfo.getStepName()) && "恒流恒压充电".equals(testingMsg.getStepName())
 						|| "CCCC".equals(mdStepInfo.getStepName()) && "CCCC".equals(testingMsg.getStepName())
-						|| "恒流充电".equals(mdStepInfo.getStepName()) && "恒流充电".equals(testingMsg.getStepName())
+						|| "DDDD".equals(mdStepInfo.getStepName()) && "DDDD".equals(testingMsg.getStepName())
 						|| "恒功率充电".equals(mdStepInfo.getStepName()) && "恒功率充电".equals(testingMsg.getStepName())
 						|| "恒功率放电".equals(mdStepInfo.getStepName()) && "恒功率放电".equals(testingMsg.getStepName())
 						|| "恒阻放电".equals(mdStepInfo.getStepName()) && "恒阻放电".equals(testingMsg.getStepName())){
@@ -185,7 +185,7 @@ public class DataInit {
 					||"恒阻放电".equals(testingMsg.getStepName())){
 				shellContext.setProperty("pvCapacity", testingMsg.getPvDischargeCapacity());//Ci为工步实时容量值
 			}
-			if("恒流充电".equals(testingMsg.getStepName()) 
+			if("DDDD".equals(testingMsg.getStepName()) 
 					||"恒压充电".equals(testingMsg.getStepName())
 					||"恒流恒压充电".equals(testingMsg.getStepName())
 					||"恒功率充电".equals(testingMsg.getStepName())){
@@ -193,7 +193,7 @@ public class DataInit {
 			}
 			for (MDStepInfo mdStepInfo : mdStepInfos) {
 				if(("CCCC".equals(mdStepInfo.getStepName()) && "CCCC".equals(testingMsg.getStepName())) 
-						||("恒流充电".equals(mdStepInfo.getStepName()) && "恒流充电".equals(testingMsg.getStepName())) 
+						||("DDDD".equals(mdStepInfo.getStepName()) && "DDDD".equals(testingMsg.getStepName())) 
 						||("恒压充电".equals(mdStepInfo.getStepName()) && "恒压充电".equals(testingMsg.getStepName()))
 						||("恒流恒压充电".equals(mdStepInfo.getStepName()) && "恒流恒压充电".equals(testingMsg.getStepName()))
 						||("恒功率充电".equals(mdStepInfo.getStepName()) && "恒功率充电".equals(testingMsg.getStepName()))
@@ -273,7 +273,7 @@ public class DataInit {
 						||("搁置（A-CC）".equals(mdStepInfo.getStepName()) && "搁置（A-CC）".equals(testingMsg.getStepName()))
 						
 						||("CCCC".equals(mdStepInfo.getStepName()) && "CCCC".equals(testingMsg.getStepName())) 
-						||("恒流充电".equals(mdStepInfo.getStepName()) && "恒流充电".equals(testingMsg.getStepName())) 
+						||("DDDD".equals(mdStepInfo.getStepName()) && "DDDD".equals(testingMsg.getStepName())) 
 						||("恒压充电".equals(mdStepInfo.getStepName()) && "恒压充电".equals(testingMsg.getStepName()))
 						||("恒流恒压充电".equals(mdStepInfo.getStepName()) && "恒流恒压充电".equals(testingMsg.getStepName()))
 						||("恒功率充电".equals(mdStepInfo.getStepName()) && "恒功率充电".equals(testingMsg.getStepName()))

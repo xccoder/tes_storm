@@ -127,7 +127,7 @@ public class ResultDataImpl implements IResultData {
             String sql ="insert into TX_ALERT_INFO(HANDLE,SITE,REMARK,SFC,CATEGORY,ALERT_SEQUENCE_NUMBER,TX_ALERT_LIST_INFO_BO,STATUS,PROCESS_INFO_BO,TIMESTAMP,ERP_RESOURCE_BO,CHANNEL_ID,ALERT_LEVEL,DESCRIPTION,UP_LIMIT,LOW_LIMIT,ORIGINAL_PROCESS_DATA_BO,CREATED_DATE_TIME,CREATED_USER,MODIFIED_DATE_TIME,MODIFIED_USER) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
             pst = conn.prepareStatement(sql);
             for (TestingResultData testingResultData : testingResultDatas) {
-                alertHandle = testingResultData.getHandle();//TxAlertInfoBO:<SITE>,<REMARK>,<SFC>,<CATEGORY>
+                alertHandle = testingResultData.getHandle();//TxAlertInfoBO:<SITE>,<REMARK>,<SFC>,<CATEGORY>,<sequencednumber>
                 alertListId = testingResultData.getTestingMessage().getRemark()+","+testingResultData.getTestingMessage().getSequenceId();//alertlistinfo里的字段
                 AlertListInfohandle = "TxAlertListInfoBO:"+testingResultData.getSite()+","+alertListId;//TxAlertListInfoBO:<SITE>,<ALERT_LIST_ID>
                 remark = testingResultData.getTestingMessage().getRemark();
@@ -174,7 +174,7 @@ public class ResultDataImpl implements IResultData {
                 svIvRange = testingResultData.getTestingMessage().getSvIvRange();
                 testTimeDuration = testingResultData.getTestingMessage().getTestTimeDuration();
                 testingmesstimestamp = testingResultData.getTestingMessage().getTimestamp();
-                zipHandle = "TechZipStatusBO:"+testingResultData.getSite()+testingResultData.getTestingMessage().getRemark()+testingResultData.getTestingMessage().getBusinessCycle()+testingResultData.getTestingMessage().getStepId();
+                zipHandle = "TechZipStatusBO:"+","+testingResultData.getSite()+","+testingResultData.getTestingMessage().getRemark()+","+testingResultData.getTestingMessage().getBusinessCycle()+","+testingResultData.getTestingMessage().getStepId();
                 if (alertLevel !=0 && category != null) {
                     switch (category) {
                         case "curr":
