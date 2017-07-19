@@ -85,27 +85,23 @@ public class DataService {
 					for (MDStepInfo mdStepInfo : mdStepInfoList) {
 						if(testingMessage.getStepId()==mdStepInfo.getStepId()){//找到这个测试信息对应的工步信息
 							boolean isCycleSignalStep = mdStepInfo.isCycleSignalStep();
-							if(isCycleSignalStep){
-								//获取这条测试数据的上一条测试数据（通过流程的remark+记录序号来获取）
-								TestingMessage  upTestingMessage = GetDataInterface.getUpTestingMsg(testingMessage,1,cacheService);
-								if(upTestingMessage==null){
-//									throw new Exception("该数据的上一条数据找不到，可能上一条数据还没有处理完！！");
-									System.out.println("该数据的上一条数据找不到，可能上一条数据还没有处理完！！");
+							if(isCycleSignalStep && testingMessage.getPvDataFlag()==89){//如果该测试数据对应的工步的 循环标志为 true 且 是一个工步的第一条数据
+								String businessCycle = jedis.get("businessCycle"+testingMessage.getRemark());
+								if(!StringUtils.isNotBlank(businessCycle)){
+									testingMessage.setBusinessCycle(1);
+									jedis.set("businessCycle"+testingMessage.getRemark(), 1+"");
+								}else{
+									int a = Integer.parseInt(businessCycle);
+									testingMessage.setBusinessCycle(a+1);
+									jedis.set("businessCycle"+testingMessage.getRemark(), a+1+"");
 								}
-								if(upTestingMessage.getStepId()!=testingMessage.getStepId()){
-									//如果当前测试数据的工步类型不等于它上一条数据的工步类型则businessCycle+1
-									String businessCycle = jedis.get("businessCycle"+testingMessage.getRemark());
-									if(!StringUtils.isNotBlank(businessCycle)){
-										testingMessage.setBusinessCycle(1);
-										jedis.set("businessCycle"+testingMessage.getRemark(), 1+"");
-									}else{
-										int a = Integer.parseInt(businessCycle);
-										testingMessage.setBusinessCycle(a+1);
-										jedis.set("businessCycle"+testingMessage.getRemark(), a+1+"");
-									}
-//									break;
-									break bre;
+								break bre;
+							}else{
+								String businessCycle = jedis.get("businessCycle"+testingMessage.getRemark());
+								if(StringUtils.isNotBlank(businessCycle)){
+									testingMessage.setBusinessCycle(Integer.parseInt(businessCycle));
 								}
+								break bre;
 							}
 						}
 					}
@@ -133,6 +129,11 @@ public class DataService {
 				int a = Integer.parseInt(oldStepLogicNumber);
 				testingMessage.setStepLogicNumber(a+1);
 				jedis.set("stepLogicNumber"+testingMessage.getRemark(), a+1+"");
+			}
+		}else{
+			String oldStepLogicNumber = jedis.get("stepLogicNumber"+testingMessage.getRemark());
+			if(StringUtils.isNotBlank(oldStepLogicNumber)){
+				testingMessage.setStepLogicNumber(Integer.parseInt(oldStepLogicNumber));
 			}
 		}
 		jedis.close();//将jedis连接放到redis连接池中

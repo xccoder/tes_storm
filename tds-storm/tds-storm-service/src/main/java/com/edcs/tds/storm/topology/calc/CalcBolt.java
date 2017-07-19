@@ -111,7 +111,7 @@ public class CalcBolt extends BaseRichBolt {
                 jedis.set(testingMessage.getRemark(), cycle + "");
                 jedis.close();
             }*/
-            //修改测试数据中的业务循环号（businessCycle）
+            //维护测试数据中的业务循环号（businessCycle）
             testingMessage = dataService.updateBusinessCycle(testingMessage, cacheService);
             //维护工步的逻辑序号
             testingMessage = dataService.updateStepLogicNumber(testingMessage,cacheService);
