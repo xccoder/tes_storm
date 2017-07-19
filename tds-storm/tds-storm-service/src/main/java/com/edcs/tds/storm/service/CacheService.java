@@ -2,6 +2,7 @@ package com.edcs.tds.storm.service;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -193,8 +194,10 @@ public class CacheService {
         System.out.println("开始》》》》》》》》》》》》");
         try {
             Set<String> MdProcessjsons = jedis.smembers("TES");
-
-
+            if(MdProcessjsons==null || MdProcessjsons.size()==0){
+            	processInfoJsons = new HashSet<String>();
+            	return;
+            }
             System.out.println("MdProcessjsons"+MdProcessjsons.size());
             if (compareSet(MdProcessjsons, processInfoJsons)){
                 ruleConfig.clear();
@@ -298,7 +301,9 @@ public class CacheService {
         }catch (Exception e) {
 			e.printStackTrace();
 		}finally {
-            JedisFactory.closeQuietly(jedis);
+            if(jedis!=null){
+            	jedis.close();
+            }
         }
     }
 

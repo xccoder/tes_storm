@@ -77,6 +77,7 @@ public class CalcBolt extends BaseRichBolt {
 
     @SuppressWarnings("unchecked")
     private void process(Tuple input) {
+    	System.out.println("数据入口**************************************");
         ExecuteContext executeContext = new ExecuteContext();
 
         RuleCalc calc = new RuleCalc();
