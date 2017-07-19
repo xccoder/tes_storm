@@ -31,6 +31,9 @@ public class RedisSync {
         }catch (Exception e){
            e.printStackTrace();
         }
+        if (jedis != null){
+            jedis.close();
+        }
         return resultJson;
     }
 }
