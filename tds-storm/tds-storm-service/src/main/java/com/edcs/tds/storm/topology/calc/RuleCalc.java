@@ -64,7 +64,6 @@ public class RuleCalc {
         //遍历每一个场景
         Set<String> keys = ruleConfig.keySet();//获取所有的key 的值
         for (String string : keys) {
-        	sequenceNumber++;
 			List<RuleConfig> rule = ruleConfig.get(string);//获取每一个场景的值
 			String str = string.substring(string.lastIndexOf("_")+1);
 			String sceneName = str;//场景名称
@@ -86,6 +85,7 @@ public class RuleCalc {
                         executeUsedTime = System.currentTimeMillis() - executeBeginTime;
                     }
                     if (StringUtils.isNotBlank(alterLevel) && !alterLevel.equals("null")) {
+                    	sequenceNumber++;
                     	TestingResultData testingResultData = new TestingResultData();
                         //matchedCount++;
                         // TODO 记录匹配的规则和相关数据
@@ -130,7 +130,7 @@ public class RuleCalc {
                         //调用发送邮件接口发送预警信息  -- end
 
                         
-                        String handle = "TxAlertInfoBO:" + mDprocessInfo.getSite() + "," + mDprocessInfo.getRemark() + "," + testingMessage.getSfc() + "," + sceneName;
+                        String handle = "TxAlertInfoBO:" + mDprocessInfo.getSite() + "," + mDprocessInfo.getRemark() + "," + testingMessage.getSfc() + "," + sceneName + "," + sequenceNumber;
                         
                         testingResultData.setHandle(handle);
                         testingResultData.setSite(mDprocessInfo.getSite());
@@ -162,8 +162,13 @@ public class RuleCalc {
                 }
             }
         }
-        if(listResult.size()==0){//表明这条测试数据一个预警信息都没有，那么我们要产生一个result对象来存放原始测试数据信息
+        if(listResult.size()==0 && mDprocessInfo!=null){//表明这条测试数据一个预警信息都没有，那么我们要产生一个result对象来存放原始测试数据信息
         	TestingResultData testingResultData = new TestingResultData();
+        	testingResultData.setSite(mDprocessInfo.getSite());
+        	testingResultData.setRootRemark(mDprocessInfo.getRootRemark());
+        	testingResultData.setProcessDataBO("MdProcessInfoBO:" + mDprocessInfo.getSite() + "," + mDprocessInfo.getProcessId() + "," + mDprocessInfo.getRemark());
+        	testingResultData.setErpResourceBO("ErpResourceBO:" + mDprocessInfo.getSite() + "," + testingMessage.getResourceId());
+        	testingResultData.setOriginalProcessDataBO("TxOriginalProcessDataBO:" + mDprocessInfo.getSite() + "," + mDprocessInfo.getRemark() + "," + mDprocessInfo.getSfc() + "," + testingMessage.getResourceId() + "," + testingMessage.getChannelId() + "," + testingMessage.getSequenceId());
         	testingResultData.setTestingMessage(testingMessage);
         	listResult.add(testingResultData);
         }
