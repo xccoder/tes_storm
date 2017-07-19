@@ -123,13 +123,13 @@ public class ResultDataImpl implements IResultData {
             conn = db.getConnection();
 
             conn.setAutoCommit(false);//
-            savePoint = conn.setSavepoint("point1");
+            //savePoint = conn.setSavepoint("point1");
             String sql ="insert into TX_ALERT_INFO(HANDLE,SITE,REMARK,SFC,CATEGORY,ALERT_SEQUENCE_NUMBER,TX_ALERT_LIST_INFO_BO,STATUS,PROCESS_INFO_BO,TIMESTAMP,ERP_RESOURCE_BO,CHANNEL_ID,ALERT_LEVEL,DESCRIPTION,UP_LIMIT,LOW_LIMIT,ORIGINAL_PROCESS_DATA_BO,CREATED_DATE_TIME,CREATED_USER,MODIFIED_DATE_TIME,MODIFIED_USER) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
             pst = conn.prepareStatement(sql);
             for (TestingResultData testingResultData : testingResultDatas) {
                 alertHandle = testingResultData.getHandle();//TxAlertInfoBO:<SITE>,<REMARK>,<SFC>,<CATEGORY>
                 alertListId = testingResultData.getTestingMessage().getRemark()+","+testingResultData.getTestingMessage().getSequenceId();//alertlistinfo里的字段
-                AlertListInfohandle = "TxAlertListInfoBO:"+testingResultData.getSite()+alertListId;//TxAlertListInfoBO:<SITE>,<ALERT_LIST_ID>
+                AlertListInfohandle = "TxAlertListInfoBO:"+testingResultData.getSite()+","+alertListId;//TxAlertListInfoBO:<SITE>,<ALERT_LIST_ID>
                 remark = testingResultData.getTestingMessage().getRemark();
                 site = testingResultData.getSite();
                 sfc = testingResultData.getTestingMessage().getSfc();
@@ -380,14 +380,15 @@ public class ResultDataImpl implements IResultData {
 
                 //用于确定工步结束，触发抽取
                 if (pvDataFlag == 88){//工步终止标识
-                    ExtractData extractData = new ExtractData();
+                    ExtractData extractData = new ExtractData(db);
                     try {
-                        extractData.extractData(remark,businessCycle,stepId);
+                        String s = extractData.extractData(remark, businessCycle, stepId);
+                        System.out.println("返回值原是："+s);
                     }catch (Exception e){
-                        //
+                        e.printStackTrace();
                     }
                     //触发压缩表数据初始化
-                    String zipSql = "insert into TECH_ZIP_STATUS(HANDLE,SITE,REMARK,ST_BUSINESS_CYCLE,STEP_ID,I_STATUS,V_STATUS,T_STATUS,C_STATUS,E_STATUS) VALUES (?,?,?,?,?,?,?,?,?,?) ";
+                    String zipSql = "insert into TECH_ZIP_STATUS(HANDLE,SITE,REMARK,ST_BUSINESS_CYCLE,STEP_ID,I_STATUS,V_STATUS,T_STATUS,C_STATUS,E_STATUS,CREATED_DATE_TIME,CREATED_USER,MODIFIED_DATE_TIME,MODIFIED_USER) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?) ";
                     pst4 =  conn.prepareStatement(zipSql);
                     pst4.setString(1,zipHandle);
                     pst4.setString(2,site);
@@ -399,6 +400,10 @@ public class ResultDataImpl implements IResultData {
                     pst4.setInt(8,0);
                     pst4.setInt(9,0);
                     pst4.setInt(10,0);
+                    pst4.setObject(11,createDateTime);
+                    pst4.setString(12,createUser);
+                    pst4.setObject(13,modifiedDateTime);
+                    pst4.setString(14,modifiedUser);
                     pst4.addBatch();
                     pst4.executeBatch();
                     conn.commit();
@@ -407,7 +412,7 @@ public class ResultDataImpl implements IResultData {
             }
 
         } catch (SQLException e) {
-            conn.rollback(savePoint);            //回滚
+        //    conn.rollback(savePoint);            //回滚
             e.printStackTrace();
             System.out.println("插入告警数据错误");
         }finally {
