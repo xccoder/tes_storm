@@ -97,21 +97,21 @@ public class RuleCalc {
                         int alterLe = Integer.parseInt(alters[3]);//报警级别
                         //调用发送邮件接口发送预警信息  -- start
                         //通过redis获取收件人信息
-                        Set<String> sets = jedis.smembers("warningLevel_" + alterLe);
+//                        Set<String> sets = jedis.smembers("warningLevel_" + alterLe);
 
-//                        Set<String> sets = new HashSet<String>();
-//                        sets.add("XiangC@CATLBattery.com");
-//                        sets.add("CaiSL2@CATLBattery.com");
-//                        sets.add("LiQF@CATLBattery.com");
+                        Set<String> sets = new HashSet<String>();
+                        sets.add("XiangC@CATLBattery.com");
+                        sets.add("CaiSL2@CATLBattery.com");
+                        sets.add("LiQF@CATLBattery.com");
                         String content = "通道号为：" + testingMessage.getChannelId() + ";</br>流程号为：" + testingMessage.getRemark() + ";</br>公布名称为：" + ruleConfig2.getStepName() + ";</br>场景名称为：" + sceneName + ";</br>产生了" + alterLe + "级预警！！";//预警信息。
                         System.out.println("报警信息为：" + content + "-----------------------------------------------------------");
                         if (sets != null && sets.size() > 0) {
                             List<String> receiveAccounts = new ArrayList<String>();//存放收件人帐号
                             EmailEntity emailEntity = new EmailEntity();
-                            for (String string2 : sets) {
-                                UserIntegrationRedis userMsg = JsonUtils.toObject(string2, UserIntegrationRedis.class);
-                                receiveAccounts.add(userMsg.getEmail());
-                            }
+//                            for (String string2 : sets) {
+//                                UserIntegrationRedis userMsg = JsonUtils.toObject(string2, UserIntegrationRedis.class);
+//                                receiveAccounts.add(userMsg.getEmail());
+//                            }
                             receiveAccounts.addAll(sets);
                             emailEntity.setReceiveAccounts(receiveAccounts);
                             emailEntity.setBooeanSsl(false);
