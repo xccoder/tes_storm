@@ -58,7 +58,8 @@ public class RuleCalc {
         Jedis jedis = cacheService.getProxyJedisPool().getResource();
         List<TestingResultData> listResult = new ArrayList<TestingResultData>();//用来存放结果数据
         //int matchedCount = 0;
-        String key = null;
+        // key = 流程号+序号
+        String key = testingMessage.getRemark() +"_"+testingMessage.getSequenceId();
         int sequenceNumber = 0;//同一个工步中报警的序号
         //遍历每一个场景
         Set<String> keys = ruleConfig.keySet();//获取所有的key 的值
@@ -128,8 +129,7 @@ public class RuleCalc {
                         }
                         //调用发送邮件接口发送预警信息  -- end
 
-                        // key = 流程号+序号
-                        key = mDprocessInfo.getRemark() +"_"+testingMessage.getSequenceId();
+                        
                         String handle = "TxAlertInfoBO:" + mDprocessInfo.getSite() + "," + mDprocessInfo.getRemark() + "," + testingMessage.getSfc() + "," + sceneName;
                         
                         testingResultData.setHandle(handle);
@@ -165,6 +165,7 @@ public class RuleCalc {
         if(listResult.size()==0){//表明这条测试数据一个预警信息都没有，那么我们要产生一个result对象来存放原始测试数据信息
         	TestingResultData testingResultData = new TestingResultData();
         	testingResultData.setTestingMessage(testingMessage);
+        	listResult.add(testingResultData);
         }
         String result = JsonUtils.toJson(listResult);
         jedis.set(key, result);//用于计算过程中查询历史数据
