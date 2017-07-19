@@ -137,7 +137,7 @@ public class ResultDataImpl implements IResultData {
                 alertSquenceNumber = testingResultData.getAltetSequenceNumber();
                 //txAlertListInfoBo = testingResultData.getTxAlertListInfoBO();
                 status = testingResultData.getStatus();
-                processInfoBo = testingResultData.getTxAlertListInfoBO();
+                processInfoBo = testingResultData.getProcessDataBO();//流程主数据的handle
                 timestamp = testingResultData.getTimestamp();
                 erpResourceBo = testingResultData.getErpResourceBO();
                 channelId = testingResultData.getTestingMessage().getChannelId();
@@ -207,7 +207,7 @@ public class ResultDataImpl implements IResultData {
                     pst.setInt(6,alertSquenceNumber);
                     pst.setString(7,AlertListInfohandle);
                     pst.setString(8,status);
-                    pst.setString(9,processInfoBo);
+                    pst.setString(9,processInfoBo); //备注：流程主数据的handle
                     pst.setObject(10,timestamp);             //注意
                     pst.setString(11,erpResourceBo);
                     pst.setInt(12,channelId);
