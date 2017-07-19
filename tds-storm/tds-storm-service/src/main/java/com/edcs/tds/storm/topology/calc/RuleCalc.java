@@ -140,7 +140,7 @@ public class RuleCalc {
                         //testingResultData.setTxAlertListInfoBO("TxAlertInfoBO:" + mDprocessInfo.getSite() + "," + mDprocessInfo.getRemark() + "," + mDprocessInfo.getSfc() + "," + sceneName);
                         testingResultData.setStatus("new");
                         //MdProcessInfoBO:<SITE>,<PROCESS_ID>,<REMARK>
-                        testingResultData.setProcessDataBO("MdProcessInfoBO:" + mDprocessInfo.getSite() + "," + mDprocessInfo.getProcessId() + "," + mDprocessInfo.getRemark());
+                        testingResultData.setProcessDataBO(mDprocessInfo.getHandle());
                         testingResultData.setTimestamp(new Timestamp(new Date().getTime()));
                         //ErpResourceBO:<SITE>,<RESOURCE_ID>
                         testingResultData.setErpResourceBO("ErpResourceBO:" + mDprocessInfo.getSite() + "," + testingMessage.getResourceId());
@@ -166,7 +166,7 @@ public class RuleCalc {
             TestingResultData testingResultData = new TestingResultData();
             testingResultData.setSite(mDprocessInfo.getSite());
             testingResultData.setRootRemark(mDprocessInfo.getRootRemark());
-            testingResultData.setProcessDataBO("MdProcessInfoBO:" + mDprocessInfo.getSite() + "," + mDprocessInfo.getProcessId() + "," + mDprocessInfo.getRemark());
+            testingResultData.setProcessDataBO(mDprocessInfo.getHandle());
             testingResultData.setErpResourceBO("ErpResourceBO:" + mDprocessInfo.getSite() + "," + testingMessage.getResourceId());
             testingResultData.setOriginalProcessDataBO("TxOriginalProcessDataBO:" + mDprocessInfo.getSite() + "," + mDprocessInfo.getRemark() + "," + mDprocessInfo.getSfc() + "," + testingMessage.getResourceId() + "," + testingMessage.getChannelId() + "," + testingMessage.getSequenceId());
             testingResultData.setTestingMessage(testingMessage);
