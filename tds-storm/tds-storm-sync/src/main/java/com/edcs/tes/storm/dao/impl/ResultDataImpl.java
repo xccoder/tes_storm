@@ -176,14 +176,15 @@ public class ResultDataImpl implements IResultData {
                 testTimeDuration = testingResultData.getTestingMessage().getTestTimeDuration();
                 testingmesstimestamp = testingResultData.getTestingMessage().getTimestamp();
                 isContainMainData = testingResultData.getIsContainMainData();//判断是否匹配上主数据
+                System.out.println("isContainMainData"+isContainMainData);
                 zipHandle = "TechZipStatusBO:"+","+testingResultData.getSite()+","+testingResultData.getTestingMessage().getRemark()+","+testingResultData.getTestingMessage().getBusinessCycle()+","+testingResultData.getTestingMessage().getStepId();
                 if (alertLevel !=0 && category != null) {
                     switch (category) {
-                        case "curr":
+                        case "current":
                             curr = true;
                             processDataAlert = true;
                             break;
-                        case "volt":
+                        case "voltage":
                             volt = true;
                             processDataAlert = true;
                             break;
@@ -191,11 +192,11 @@ public class ResultDataImpl implements IResultData {
                             time = true;
                             processDataAlert = true;
                             break;
-                        case "capa":
+                        case "capacity":
                             capa = true;
                             processDataAlert = true;
                             break;
-                        case "temp":
+                        case "temperature":
                             temp = true;
                             processDataAlert = true;
                             break;
