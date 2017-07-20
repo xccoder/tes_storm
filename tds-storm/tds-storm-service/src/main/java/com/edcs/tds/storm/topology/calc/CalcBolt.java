@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 
+import com.edcs.tds.storm.service.MessageRepeatFilter;
 import org.apache.storm.Config;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
@@ -39,10 +40,10 @@ public class CalcBolt extends BaseRichBolt {
     protected String topologyName;
     protected StormBeanFactory beanFactory;
     protected CacheService cacheService;
-//    protected BeanSerializer beanSerializer;
+    //    protected BeanSerializer beanSerializer;
 //    protected MessageRepeatFilter messageRepeatFilter;
     protected ScriptExecutor scriptExecutor;
-//    protected EngineCommonService engineCommonService;
+    //    protected EngineCommonService engineCommonService;
     protected DataService dataService;
 
     @SuppressWarnings({"rawtypes"})
@@ -51,7 +52,7 @@ public class CalcBolt extends BaseRichBolt {
         this.collector = collector;
         this.topologyName = (String) stormConf.get(Config.TOPOLOGY_NAME);
         this.beanFactory = new StormBeanFactory(stormConf);
-        
+
 //        this.beanSerializer = new BeanSerializer();//对象序列化的工具类
 
 //        this.cacheService = beanFactory.getBean(CacheService.class);
@@ -77,7 +78,7 @@ public class CalcBolt extends BaseRichBolt {
 
     @SuppressWarnings("unchecked")
     private void process(Tuple input) {
-    	System.out.println("数据入口**************************************");
+        System.out.println("数据入口**************************************");
         ExecuteContext executeContext = new ExecuteContext();
 
         RuleCalc calc = new RuleCalc();
@@ -115,44 +116,44 @@ public class CalcBolt extends BaseRichBolt {
             //维护测试数据中的业务循环号（businessCycle）
             testingMessage = dataService.updateBusinessCycle(testingMessage, cacheService);
             //维护工步的逻辑序号
-            testingMessage = dataService.updateStepLogicNumber(testingMessage,cacheService);
-            
+            testingMessage = dataService.updateStepLogicNumber(testingMessage, cacheService);
+
             executeContext.setDebug(testingMessage.isDebug());
             executeContext.setTestingMessage(testingMessage);
-            
+
             // 初始化 ShellContext
 //          DataInit.initShellContext(testingMessage, engineCommonService, executeContext, shellContext);
             shellContext = DataInit.initShellContext(executeContext, cacheService, shellContext);
             // 开始规则计算匹配
             ConcurrentMap<String, List<RuleConfig>> ruleConfig = CacheService.getRuleConfig();
             // 核心计算
-            calc.TestingRuleCalc(scriptExecutor, executeContext, shellContext, ruleConfig,cacheService);
+            calc.TestingRuleCalc(scriptExecutor, executeContext, shellContext, ruleConfig, cacheService);
             // 告知redis此流程已经结束
             int workType = testingMessage.getPvWorkType();//0代表流程结束标志
             if (workType == 0) {
                 //调用redis接口去通知此流程已经结束
-            	Map<String,Object> map = new HashMap<String,Object>();
-            	map.put("remark", testingMessage.getRemark());
-            	map.put("txStatus", "close");
-            	String site = null;
-            	Set<String> mainData = cacheService.getProcessInfoJsons();//获取流程主数据
-            	if(mainData!=null && mainData.size()>0){
-            		for (String string : mainData) {
-            			MDprocessInfo mDprocessInfo = JsonUtils.toObject(string, MDprocessInfo.class);
-            			if(testingMessage.getRemark().equals(mDprocessInfo.getRemark())){
-            				site = mDprocessInfo.getSite();
-            				break;
-            			}
-					}
-            	}
-            	if(site == null){
-            		site = "1000";
-            	}
-            	map.put("site", site);
-            	map.put("totalCycleNum", testingMessage.getBusinessCycle());
-            	String json = JsonUtils.toJson(map);		
-            	String url = "http://172.26.66.35:50000/tes-backing/api/v1/integration/storm/md_process_info";
-            	RestUtils.sendState(url, json);
+                Map<String, Object> map = new HashMap<String, Object>();
+                map.put("remark", testingMessage.getRemark());
+                map.put("txStatus", "close");
+                String site = null;
+                Set<String> mainData = cacheService.getProcessInfoJsons();//获取流程主数据
+                if (mainData != null && mainData.size() > 0) {
+                    for (String string : mainData) {
+                        MDprocessInfo mDprocessInfo = JsonUtils.toObject(string, MDprocessInfo.class);
+                        if (testingMessage.getRemark().equals(mDprocessInfo.getRemark())) {
+                            site = mDprocessInfo.getSite();
+                            break;
+                        }
+                    }
+                }
+                if (site == null) {
+                    site = "1000";
+                }
+                map.put("site", site);
+                map.put("totalCycleNum", testingMessage.getBusinessCycle());
+                String json = JsonUtils.toJson(map);
+                String url = "http://172.26.66.35:50000/tes-backing/api/v1/integration/storm/md_process_info";
+                RestUtils.sendState(url, json);
             }
             executeContext.setSysVariableLog(shellContext.getVariables());
             System.out.println("匹配成功**********************************************************************************");
@@ -166,8 +167,11 @@ public class CalcBolt extends BaseRichBolt {
     }
 
     public boolean repeatFilter(String messageId) {
-    	
-    	
+        MessageRepeatFilter messageRepeatFilter = new MessageRepeatFilter();
+        if (messageRepeatFilter.filter(messageId)) {
+            logger.info("test message is repeat,messageId is{}", messageId);
+            return true;
+        }
         return false;
     }
 
@@ -175,16 +179,16 @@ public class CalcBolt extends BaseRichBolt {
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
         // NOTHING_TO_DO
     }
-    
+
     public static void main(String[] args) {
-    	Map<String,Object> map = new HashMap<String,Object>();
-    	map.put("remark", "T3-20170324-3495-603301_RT-DC-POWER_1_F100C0-BF_0_2");
-    	map.put("txStatus", "close");
-    	map.put("site", "1000");
-    	map.put("totalCycleNum", 10);
-    	String json = JsonUtils.toJson(map);		
-    	String url = "http://172.26.66.35:50000/tes-backing/api/v1/integration/storm/md_process_info";
-    	RestUtils.sendState(url, json);
-	}
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("remark", "T3-20170324-3495-603301_RT-DC-POWER_1_F100C0-BF_0_2");
+        map.put("txStatus", "close");
+        map.put("site", "1000");
+        map.put("totalCycleNum", 10);
+        String json = JsonUtils.toJson(map);
+        String url = "http://172.26.66.35:50000/tes-backing/api/v1/integration/storm/md_process_info";
+        RestUtils.sendState(url, json);
+    }
 
 }
