@@ -22,7 +22,6 @@ import com.edcs.tds.common.util.JsonUtils;
 import com.edcs.tds.common.util.SendEmailUtils;
 import com.edcs.tds.storm.model.ExecuteContext;
 import com.edcs.tds.storm.model.MDprocessInfo;
-import com.edcs.tds.storm.model.UserIntegrationRedis;
 import com.edcs.tds.storm.service.CacheService;
 
 import groovy.lang.Binding;
@@ -64,6 +63,11 @@ public class RuleCalc {
         //遍历每一个场景
         Set<String> keys = ruleConfig.keySet();//获取所有的key 的值
         for (String string : keys) {
+        	//RE_114_current
+        	String str1 = string.substring(0,string.lastIndexOf("_"));
+        	if(!str1.equals(testingMessage.getRemark())){
+        		continue;
+        	}
             List<RuleConfig> rule = ruleConfig.get(string);//获取每一个场景的值
             String str = string.substring(string.lastIndexOf("_") + 1);
             String sceneName = str;//场景名称
