@@ -45,6 +45,8 @@ public class TestingResultData implements Serializable{
 	private String modifiedUser;//最后修改用户
 //	private int sequenceId;  //记录序号
 	
+	private String isContainMainData;//   1 表示匹配上主数据   2 表示没有匹配上主数据
+	
 	private TestingMessage testingMessage;//测试原始数据
     
 
@@ -164,6 +166,13 @@ public class TestingResultData implements Serializable{
 	}
 	public void setModifiedUser(String modifiedUser) {
 		this.modifiedUser = modifiedUser;
+	}
+	
+	public String getIsContainMainData() {
+		return isContainMainData;
+	}
+	public void setIsContainMainData(String isContainMainData) {
+		this.isContainMainData = isContainMainData;
 	}
 
 	public TestingMessage getTestingMessage() {

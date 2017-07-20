@@ -1,7 +1,9 @@
 package com.edcs.tes.storm.sync;
 
-import java.sql.SQLException;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.edcs.tds.common.model.TestingResultData;
 import com.edcs.tds.common.redis.ProxyJedisPool;
@@ -19,6 +21,7 @@ import com.edcs.tes.storm.util.SpringBeanFactory;
 
 public class DataSyncService implements Runnable {
      
+	private final Logger logger = LoggerFactory.getLogger(DataSyncService.class);
 	private ProxyJedisPool proxyJedisPool;
 	private DBHelperUtils dbHelperUtils;
 	public DataSyncService(SpringBeanFactory beanFactory){
@@ -27,16 +30,16 @@ public class DataSyncService implements Runnable {
 	}
     @Override
     public void run() {
-        IResultData iResultData = new ResultDataImpl(dbHelperUtils);
-        RedisSync redisSync = new RedisSync(proxyJedisPool);
-        String processJson = redisSync.getProcessJson();
-        if (processJson != null) {
-            try {
-                List<TestingResultData> testingResultDatas = JsonUtils.toArray(processJson, TestingResultData.class);
-                iResultData.insertResultData(testingResultDatas);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
+    	try {
+    		IResultData iResultData = new ResultDataImpl(dbHelperUtils);
+    		RedisSync redisSync = new RedisSync(proxyJedisPool);
+    		String processJson = redisSync.getProcessJson();
+    		if (processJson != null) {
+    			List<TestingResultData> testingResultDatas = JsonUtils.toArray(processJson, TestingResultData.class);
+    			iResultData.insertResultData(testingResultDatas);
+    		}
+		} catch (Exception e) {
+			logger.error(""+e.getMessage());
+		}
     }
 }
