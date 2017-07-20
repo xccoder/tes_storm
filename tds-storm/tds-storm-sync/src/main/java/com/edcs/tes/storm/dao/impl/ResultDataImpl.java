@@ -72,7 +72,7 @@ public class ResultDataImpl implements IResultData {
     private BigDecimal testTimeDuration;
     private Date testingmesstimestamp;
     private int stepLogicNumber ;
-
+    private String isContainMainData;
     @Override
     public boolean insertResultData(List<TestingResultData> testingResultDatas) throws SQLException {
         String category;//场景
@@ -83,7 +83,7 @@ public class ResultDataImpl implements IResultData {
         String processInfoBo;
         Date timestamp;
         String erpResourceBo;
-        int alertLevel;
+        int alertLevel = 0;
         String description;
         BigDecimal upLimit;
         BigDecimal lowLimit;
@@ -175,6 +175,7 @@ public class ResultDataImpl implements IResultData {
                 svIvRange = testingResultData.getTestingMessage().getSvIvRange();
                 testTimeDuration = testingResultData.getTestingMessage().getTestTimeDuration();
                 testingmesstimestamp = testingResultData.getTestingMessage().getTimestamp();
+                isContainMainData = testingResultData.getIsContainMainData();//判断是否匹配上主数据
                 zipHandle = "TechZipStatusBO:"+","+testingResultData.getSite()+","+testingResultData.getTestingMessage().getRemark()+","+testingResultData.getTestingMessage().getBusinessCycle()+","+testingResultData.getTestingMessage().getStepId();
                 if (alertLevel !=0 && category != null) {
                     switch (category) {
@@ -221,6 +222,7 @@ public class ResultDataImpl implements IResultData {
                     pst.setObject(20,timestamp);                //注意
                     pst.setString(21,"NMCX");
                     pst.addBatch();
+                    pst.executeBatch();
                 }
             }
 
@@ -294,13 +296,13 @@ public class ResultDataImpl implements IResultData {
                     pst1.setString(25,"qqq");
                     pst1.setObject(26,subTimestamp);
                     pst1.setString(27,"www");
-
                     pst1.addBatch();//待定
+                    pst1.executeBatch();
                 }
 
             }
             //第三张表
-            //String procesql = "insert into TX_ORIGINAL_PROCESS_DATA VALUES('" + procehandle + "','" + site + "','" + remark + "','" + sfc + "','" + resourceId + "'," + channelId + "," + sequenceId + "," + cycle + "," + stepId + ",'" + stepName + "'," + testTimeDuration + ",'" + testingmesstimestamp + "'," + svIcRange + "," + svIvRange + "," + pvVoltage + "," + pvCurrent + "," + pvIr + "," + pvTemperature + "," + pvChargeCapacity + "," + pvDischargeCapacity + "," + pvChargeEnergy + "," + pvDischargeEnergy + ",'" + subchannel1 + "','" + subchannel2 + "','" + subchannel3 + "','" + subchannel4 + "','" + subchannel5 + "','" + subchannel6 + "'," + pvDataFlag + "," + pvWorkType + ",'" + processDataAlert + "','" + curr + "','" + volt + "','" + temp + "','" + capa + "','" + time + "','" +"category1"+ "','" +"category2" + "','"+ "rootremark" + "'," + businessCycle + ",'" + createDateTime + "','" + createUser + "','" + modifiedDateTime + "','" + modifiedUser + "',"+stepLogicNumber+")";
+
             String procesql = "insert into TX_ORIGINAL_PROCESS_DATA(HANDLE,SITE,REMARK,SFC,RESOURCE_ID,CHANNEL_ID,SEQUENCE_ID,CYCLE,STEP_ID,STEP_NAME,TEST_TIME_DURATION,TIMESTAMP,SV_IC_RANGE,SV_IV_RANGE,PV_VOLTAGE,PV_CURRENT,PV_IR,PV_TEMPERATURE,PV_CHARGE_CAPACITY,PV_DISCHARGE_CAPACITY,PV_CHARGE_ENERGY,PV_DISCHARGE_ENERGY,PV_SUB_CHANNEL_1,PV_SUB_CHANNEL_2,PV_SUB_CHANNEL_3,PV_SUB_CHANNEL_4,PV_SUB_CHANNEL_5,PV_SUB_CHANNEL_6,PV_DATA_FLAG,PV_WORK_TYPE,TX_IS_EXCEPTIONAL,TX_ALERT_CURRENT,TX_ALERT_VOLTAGE,TX_ALERT_TEMPERATURE,TX_ALERT_CAPACITY,TX_ALERT_DURATION,TX_ALERT_CATEGORY1,TX_ALERT_CATEGORY2,TX_ROOT_REMARK,ST_BUSINESS_CYCLE,CREATED_DATE_TIME,CREATED_USER,MODIFIED_DATE_TIME,MODIFIED_USER,STEP_LOGIC_NUMBER) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ";
             pst2 = conn.prepareStatement(procesql);//插入流程结果表
             pst2.setString(1,procehandle);
@@ -349,38 +351,36 @@ public class ResultDataImpl implements IResultData {
             pst2.setString(44,modifiedUser);
             pst2.setInt(45,stepLogicNumber);
             pst2.addBatch();//待定
-
+            pst2.executeBatch();
 
             //插入第四张表
-            //String alertListsql = "insert into TX_ALERT_LIST_INFO values('"+AlertListInfohandle+"','"+site+"','"+alertListId+"','"+status+"','"+""+"','"+""+"','"+""+"','"+""+"','"+""+"','"+""+"','"+createDateTime + "','" + createUser + "','" + modifiedDateTime + "','" + modifiedUser +"')";
-            String alertListsql = "insert into TX_ALERT_LIST_INFO(HANDLE,SITE,ALERT_LIST_ID,STATUS,FEEDBACK_I,FEEDBACK_U,FEEDBACK_T,FEEDBACK_C,FEEDBACK_D,COMMENTS,CREATED_DATE_TIME,CREATED_USER,MODIFIED_DATE_TIME,MODIFIED_USER) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-            pst3 = conn.prepareStatement(alertListsql);//插入报警列表
-            pst3.setString(1,AlertListInfohandle);
-            pst3.setString(2,site);
-            pst3.setString(3,alertListId);
-            pst3.setString(4,status);
-            pst3.setString(5,"");//用户输入
-            pst3.setString(6,"");
-            pst3.setString(7,"");
-            pst3.setString(8,"");
-            pst3.setString(9,"");
-            pst3.setString(10,"comments");
-            pst3.setObject(11,createDateTime);
-            pst3.setString(12,createUser);
-            pst3.setObject(13,modifiedDateTime);
-            pst3.setString(14,modifiedUser);
-            pst3.addBatch();//待定
+            if(alertLevel !=0 && isContainMainData.equals("1")) {
+                String alertListsql = "insert into TX_ALERT_LIST_INFO(HANDLE,SITE,ALERT_LIST_ID,STATUS,FEEDBACK_I,FEEDBACK_U,FEEDBACK_T,FEEDBACK_C,FEEDBACK_D,COMMENTS,CREATED_DATE_TIME,CREATED_USER,MODIFIED_DATE_TIME,MODIFIED_USER) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                pst3 = conn.prepareStatement(alertListsql);//插入报警列表
+                pst3.setString(1, AlertListInfohandle);
+                pst3.setString(2, site);
+                pst3.setString(3, alertListId);
+                pst3.setString(4, status);
+                pst3.setString(5, "");//用户输入
+                pst3.setString(6, "");
+                pst3.setString(7, "");
+                pst3.setString(8, "");
+                pst3.setString(9, "");
+                pst3.setString(10, "comments");
+                pst3.setObject(11, createDateTime);
+                pst3.setString(12, createUser);
+                pst3.setObject(13, modifiedDateTime);
+                pst3.setString(14, modifiedUser);
+                pst3.addBatch();//待定
+                pst3.executeBatch();
+            }
             //执行四表同时插入
             if (pst != null && pst1 != null && pst2 != null && pst3 != null) {
-                pst.executeBatch();
-                pst1.executeBatch();
-                pst2.executeBatch();
-                pst3.executeBatch();
                 conn.commit();
                 // pst.clearBatch();        //待定
 
                 //用于确定工步结束，触发抽取
-                if (pvDataFlag == 88){//工步终止标识
+                if (pvDataFlag == 88 && isContainMainData.equals("1")){//工步终止标识
                     ExtractData extractData = new ExtractData(db);
                     try {
                         String s = extractData.extractData(remark, businessCycle, stepId);
@@ -417,10 +417,10 @@ public class ResultDataImpl implements IResultData {
             e.printStackTrace();
             System.out.println("插入告警数据错误");
         }finally {
-            db.close(conn, pst);
-            db.close(conn, pst1);
-            db.close(conn, pst2);
-            db.close(conn, pst3);
+            db.close(null, pst);
+            db.close(null, pst1);
+            db.close(null, pst2);
+            db.close(null, pst3);
             db.close(conn,pst4);
         }
 
