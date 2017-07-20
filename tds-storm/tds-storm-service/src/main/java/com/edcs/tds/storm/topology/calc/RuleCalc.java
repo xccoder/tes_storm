@@ -92,9 +92,9 @@ public class RuleCalc {
                         sequenceNumber++;
                         TestingResultData testingResultData = new TestingResultData();
                         //matchedCount++;
-                        // TODO 记录匹配的规则和相关数据
+                        //记录匹配的规则和相关数据
 //                        executeContext.addMatchedRule(ruleConfig2.getId(), 0d, executeUsedTime);
-                        // TODO 将结果集写入Redis缓存
+                        //将结果集写入Redis缓存
                         String[] alters = alterLevel.split("_");
                         BigDecimal upLimit = new BigDecimal(alters[0]);    //.valueOf(Long.valueOf(alters[0]));//报警上限
                         BigDecimal lowLimit = new BigDecimal(alters[1]); //.valueOf(Long.valueOf(alters[1]));//报警下限
@@ -135,7 +135,6 @@ public class RuleCalc {
 
 
                         String handle = "TxAlertInfoBO:" + mDprocessInfo.getSite() + "," + mDprocessInfo.getRemark() + "," + testingMessage.getSfc() + "," + sceneName + "," + sequenceNumber;
-
                         testingResultData.setHandle(handle);
                         testingResultData.setSite(mDprocessInfo.getSite());
                         testingResultData.setCategory(sceneName);
@@ -160,13 +159,14 @@ public class RuleCalc {
                         testingResultData.setModifiedUser(mDprocessInfo.getCreateUser());
                         testingResultData.setRootRemark(mDprocessInfo.getRootRemark());
                         testingResultData.setTestingMessage(testingMessage);
+                        testingResultData.setIsContainMainData("1");//表示匹配上主数据
                         listResult.add(testingResultData);
                     }
                     break;
                 }
             }
         }
-        if (listResult.size() == 0 && mDprocessInfo != null) {//表明这条测试数据一个预警信息都没有，那么我们要产生一个result对象来存放原始测试数据信息
+        if (listResult.size() == 0 && mDprocessInfo != null) {//表明这条测试数据一个预警信息都没有，但是主数据存在，那么我们要产生一个result对象来存放原始测试数据信息
             TestingResultData testingResultData = new TestingResultData();
             testingResultData.setSite(mDprocessInfo.getSite());
             testingResultData.setRootRemark(mDprocessInfo.getRootRemark());
@@ -175,6 +175,17 @@ public class RuleCalc {
             testingResultData.setErpResourceBO("ErpResourceBO:" + mDprocessInfo.getSite() + "," + testingMessage.getResourceId());
             testingResultData.setOriginalProcessDataBO("TxOriginalProcessDataBO:" + mDprocessInfo.getSite() + "," + mDprocessInfo.getRemark() + "," + mDprocessInfo.getSfc() + "," + testingMessage.getResourceId() + "," + testingMessage.getChannelId() + "," + testingMessage.getSequenceId());
             testingResultData.setTestingMessage(testingMessage);
+            testingResultData.setIsContainMainData("1");//表示匹配上主数据
+            listResult.add(testingResultData);
+        }
+        if (listResult.size() == 0 && mDprocessInfo == null) {//表明这条测试数据一个预警信息都没有，但是主数据不存在，那么我们要产生一个result对象来存放原始测试数据信息
+            TestingResultData testingResultData = new TestingResultData();
+            //TODO 从redis中获取site信息
+            String site = "1000";
+            testingResultData.setSite(site);
+            testingResultData.setOriginalProcessDataBO("TxOriginalProcessDataBO:" + site + "," + testingMessage.getRemark() + "," + testingMessage.getSfc() + "," + testingMessage.getResourceId() + "," + testingMessage.getChannelId() + "," + testingMessage.getSequenceId());
+            testingResultData.setTestingMessage(testingMessage);
+            testingResultData.setIsContainMainData("2");//表示没有匹配上主数据
             listResult.add(testingResultData);
         }
         if (listResult.size() > 0) {

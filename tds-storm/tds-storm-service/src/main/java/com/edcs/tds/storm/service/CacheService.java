@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
 import com.edcs.tds.common.engine.groovy.ScriptCacheMapping;
 import com.edcs.tds.common.engine.groovy.ScriptExecutor;
 import com.edcs.tds.common.model.RuleConfig;
-import com.edcs.tds.common.redis.JedisFactory;
 import com.edcs.tds.common.redis.ProxyJedisPool;
 import com.edcs.tds.common.util.DBHelperUtils;
 import com.edcs.tds.common.util.JsonUtils;
