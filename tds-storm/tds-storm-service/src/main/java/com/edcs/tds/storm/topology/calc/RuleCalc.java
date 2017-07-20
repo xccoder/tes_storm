@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
@@ -22,6 +21,7 @@ import com.edcs.tds.common.util.JsonUtils;
 import com.edcs.tds.common.util.SendEmailUtils;
 import com.edcs.tds.storm.model.ExecuteContext;
 import com.edcs.tds.storm.model.MDprocessInfo;
+import com.edcs.tds.storm.model.UserIntegrationRedis;
 import com.edcs.tds.storm.service.CacheService;
 
 import groovy.lang.Binding;
@@ -101,22 +101,22 @@ public class RuleCalc {
                         int alterLe = Integer.parseInt(alters[3]);//报警级别
                         //调用发送邮件接口发送预警信息  -- start
                         //通过redis获取收件人信息
-//                        Set<String> sets = jedis.smembers("warningLevel_" + alterLe);
+                        Set<String> sets = jedis.smembers("warningLevel_" + alterLe);
 
-                        Set<String> sets = new HashSet<String>();
-                        sets.add("XiangC@CATLBattery.com");
-                        sets.add("CaiSL2@CATLBattery.com");
-                        sets.add("LiQF@CATLBattery.com");
+//                        Set<String> sets = new HashSet<String>();
+//                        sets.add("XiangC@CATLBattery.com");
+//                        sets.add("CaiSL2@CATLBattery.com");
+//                        sets.add("LiQF@CATLBattery.com");
                         String content = "通道号为：" + testingMessage.getChannelId() + ";</br>流程号为：" + testingMessage.getRemark() + ";</br>公布名称为：" + ruleConfig2.getStepName() + ";</br>场景名称为：" + sceneName + ";</br>产生了" + alterLe + "级预警！！";//预警信息。
                         System.out.println("报警信息为：" + content + "-----------------------------------------------------------");
                         if (sets != null && sets.size() > 0) {
                             List<String> receiveAccounts = new ArrayList<String>();//存放收件人帐号
                             EmailEntity emailEntity = new EmailEntity();
-//                            for (String string2 : sets) {
-//                                UserIntegrationRedis userMsg = JsonUtils.toObject(string2, UserIntegrationRedis.class);
-//                                receiveAccounts.add(userMsg.getEmail());
-//                            }
-                            receiveAccounts.addAll(sets);
+                            for (String string2 : sets) {
+                                UserIntegrationRedis userMsg = JsonUtils.toObject(string2, UserIntegrationRedis.class);
+                                receiveAccounts.add(userMsg.getEmail());
+                            }
+//                            receiveAccounts.addAll(sets);
                             emailEntity.setReceiveAccounts(receiveAccounts);
                             emailEntity.setBooeanSsl(false);
                             emailEntity.setContent(content);
@@ -134,9 +134,13 @@ public class RuleCalc {
                         //调用发送邮件接口发送预警信息  -- end
 
 
-                        String handle = "TxAlertInfoBO:" + mDprocessInfo.getSite() + "," + mDprocessInfo.getRemark() + "," + testingMessage.getSfc() + "," + sceneName + "," + sequenceNumber;
+                        String site = mDprocessInfo.getSite();
+                        if(!StringUtils.isNotBlank(site)){
+                        	site = "2001";
+                        }
+                        testingResultData.setSite(site);
+                        String handle = "TxAlertInfoBO:" + site + "," + mDprocessInfo.getRemark() + "," + testingMessage.getSfc() + "," + sceneName + "," + sequenceNumber;
                         testingResultData.setHandle(handle);
-                        testingResultData.setSite(mDprocessInfo.getSite());
                         testingResultData.setCategory(sceneName);
                         testingResultData.setAltetSequenceNumber(sequenceNumber);
                         //TxAlertInfoBO:<SITE>,<REMARK>,<SFC>,<CATEGORY>
@@ -146,13 +150,13 @@ public class RuleCalc {
                         testingResultData.setProcessDataBO(mDprocessInfo.getHandle());
                         testingResultData.setTimestamp(new Timestamp(new Date().getTime()));
                         //ErpResourceBO:<SITE>,<RESOURCE_ID>
-                        testingResultData.setErpResourceBO("ErpResourceBO:" + mDprocessInfo.getSite() + "," + testingMessage.getResourceId());
+                        testingResultData.setErpResourceBO("ErpResourceBO:" + site + "," + testingMessage.getResourceId());
                         testingResultData.setAlertLevel(alterLe);
                         testingResultData.setDescription(content);
                         testingResultData.setUpLimit(upLimit);
                         testingResultData.setLowLimit(lowLimit);
                         //TxOriginalProcessDataBO:<SITE>,<REMARK>,<SFC> ,<RESOURCE_ID>,<CHANNEL_ID>,<SEQUENCE_ID>
-                        testingResultData.setOriginalProcessDataBO("TxOriginalProcessDataBO:" + mDprocessInfo.getSite() + "," + mDprocessInfo.getRemark() + "," + mDprocessInfo.getSfc() + "," + testingMessage.getResourceId() + "," + testingMessage.getChannelId() + "," + testingMessage.getSequenceId());
+                        testingResultData.setOriginalProcessDataBO("TxOriginalProcessDataBO:" + site + "," + mDprocessInfo.getRemark() + "," + mDprocessInfo.getSfc() + "," + testingMessage.getResourceId() + "," + testingMessage.getChannelId() + "," + testingMessage.getSequenceId());
                         testingResultData.setCreatedDateTime(mDprocessInfo.getCreateDateTime());
                         testingResultData.setCreatedUser(mDprocessInfo.getCreateUser());
                         testingResultData.setModifiedDateTime(mDprocessInfo.getModifiedDateTime());
@@ -168,12 +172,16 @@ public class RuleCalc {
         }
         if (listResult.size() == 0 && mDprocessInfo != null) {//表明这条测试数据一个预警信息都没有，但是主数据存在，那么我们要产生一个result对象来存放原始测试数据信息
             TestingResultData testingResultData = new TestingResultData();
-            testingResultData.setSite(mDprocessInfo.getSite());
+            String site = mDprocessInfo.getSite();
+            if(!StringUtils.isNotBlank(site)){
+            	site = "2001";
+            }
+            testingResultData.setSite(site);
             testingResultData.setRootRemark(mDprocessInfo.getRootRemark());
 //            testingResultData.setProcessDataBO("MdProcessInfoBO:" + mDprocessInfo.getSite() + "," + mDprocessInfo.getProcessId() + "," + mDprocessInfo.getRemark());
             testingResultData.setProcessDataBO(mDprocessInfo.getHandle());
-            testingResultData.setErpResourceBO("ErpResourceBO:" + mDprocessInfo.getSite() + "," + testingMessage.getResourceId());
-            testingResultData.setOriginalProcessDataBO("TxOriginalProcessDataBO:" + mDprocessInfo.getSite() + "," + mDprocessInfo.getRemark() + "," + mDprocessInfo.getSfc() + "," + testingMessage.getResourceId() + "," + testingMessage.getChannelId() + "," + testingMessage.getSequenceId());
+            testingResultData.setErpResourceBO("ErpResourceBO:" + site + "," + testingMessage.getResourceId());
+            testingResultData.setOriginalProcessDataBO("TxOriginalProcessDataBO:" + site + "," + mDprocessInfo.getRemark() + "," + mDprocessInfo.getSfc() + "," + testingMessage.getResourceId() + "," + testingMessage.getChannelId() + "," + testingMessage.getSequenceId());
             testingResultData.setTestingMessage(testingMessage);
             testingResultData.setIsContainMainData("1");//表示匹配上主数据
             listResult.add(testingResultData);
@@ -181,7 +189,7 @@ public class RuleCalc {
         if (listResult.size() == 0 && mDprocessInfo == null) {//表明这条测试数据一个预警信息都没有，但是主数据不存在，那么我们要产生一个result对象来存放原始测试数据信息
             TestingResultData testingResultData = new TestingResultData();
             //TODO 从redis中获取site信息
-            String site = "1000";
+            String site = "2001";
             testingResultData.setSite(site);
             testingResultData.setOriginalProcessDataBO("TxOriginalProcessDataBO:" + site + "," + testingMessage.getRemark() + "," + testingMessage.getSfc() + "," + testingMessage.getResourceId() + "," + testingMessage.getChannelId() + "," + testingMessage.getSequenceId());
             testingResultData.setTestingMessage(testingMessage);

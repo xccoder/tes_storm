@@ -63,5 +63,9 @@
      </bean> 
      
      <bean id="dataService" class="com.edcs.tds.storm.service.DataService"></bean> 
+     
+     <bean id="messageRepeatFilter" class="com.edcs.tds.storm.service.MessageRepeatFilter">
+          <property name="jedisPool" ref="proxyJedisPool"/>
+     </bean>
 
 </beans>

@@ -1,28 +1,29 @@
 package com.edcs.tds.storm.service;
 
-import com.google.common.base.Joiner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.edcs.tds.common.redis.ProxyJedisPool;
+
 import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
 
 public class MessageRepeatFilter {
     private static final Logger logger = LoggerFactory.getLogger(MessageRepeatFilter.class);
     private int expireTime = 60 * 60 * 8;
-    private JedisPool jedisPool;
-    private static Joiner joiner = Joiner.on(":").skipNulls();
+    private ProxyJedisPool jedisPool;
+//    private static Joiner joiner = Joiner.on(":").skipNulls();
 
     public void setExpireTime(int expireTime) {
         this.expireTime = expireTime;
     }
 
-    public void setJedisPool(JedisPool jedisPool) {
+    public void setJedisPool(ProxyJedisPool jedisPool) {
         this.jedisPool = jedisPool;
     }
 
-    public boolean filter(Object... keys) {
+    public boolean filter(String  key) {
         boolean flag = false;
-        String key = joiner.join(keys);
+//        String key = joiner.join(keys);
         Jedis jedis = null;
         try {
             jedis = jedisPool.getResource();

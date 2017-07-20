@@ -45,6 +45,8 @@ public class CalcBolt extends BaseRichBolt {
     protected ScriptExecutor scriptExecutor;
     //    protected EngineCommonService engineCommonService;
     protected DataService dataService;
+    
+    MessageRepeatFilter messageRepeatFilter;
 
     @SuppressWarnings({"rawtypes"})
     @Override
@@ -61,6 +63,7 @@ public class CalcBolt extends BaseRichBolt {
 //        this.engineCommonService = beanFactory.getBean(EngineCommonService.class);
         this.dataService = beanFactory.getBean(DataService.class);
         this.cacheService = beanFactory.getBean(CacheService.class);
+        this.messageRepeatFilter = beanFactory.getBean(MessageRepeatFilter.class);
         this.cacheService.start();
         System.out.println("****************prepare");
         logger.info("The {} blot is prepared..", topologyName);
@@ -91,7 +94,7 @@ public class CalcBolt extends BaseRichBolt {
             TestingMessage testingMessage = DataInit.initRequestMessage(input);
             //消息重复消费过滤
             isRepeated = repeatFilter(testingMessage.getMessageId());
-            if (isRepeated) {
+            if (!isRepeated) {
                 return;
             }
             //实现对异常的循环次数校验、处理---------因为cycle暂时用不到，所以这里暂时不做维护
@@ -147,7 +150,7 @@ public class CalcBolt extends BaseRichBolt {
                     }
                 }
                 if (site == null) {
-                    site = "1000";
+                    site = "2001";
                 }
                 map.put("site", site);
                 map.put("totalCycleNum", testingMessage.getBusinessCycle());
@@ -167,7 +170,7 @@ public class CalcBolt extends BaseRichBolt {
     }
 
     public boolean repeatFilter(String messageId) {
-        MessageRepeatFilter messageRepeatFilter = new MessageRepeatFilter();
+        
         if (messageRepeatFilter.filter(messageId)) {
             logger.info("test message is repeat,messageId is{}", messageId);
             return true;
