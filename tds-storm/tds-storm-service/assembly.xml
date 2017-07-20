@@ -16,6 +16,9 @@
                 <include>*:jar</include>
             </includes>
             <outputDirectory>/</outputDirectory>
+            <excludes>
+                <exclude>jdk.tools:jdk.tools</exclude>
+            </excludes>
         </dependencySet>
         <dependencySet>
             <outputDirectory>/</outputDirectory>
