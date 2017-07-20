@@ -1,14 +1,11 @@
 package com.edcs.tes.storm.extract;
 
-import com.edcs.tds.common.redis.ProxyJedisPool;
-import com.edcs.tds.common.util.DBHelperUtils;
-import com.edcs.tes.storm.util.SpringBeanFactory;
-import com.mchange.v2.c3p0.ComboPooledDataSource;
-
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Types;
+
+import com.edcs.tds.common.util.DBHelperUtils;
 
 /**
  * Created by cong.xiang on 2017/7/11.
@@ -22,6 +19,7 @@ public class ExtractData {
     public String extractData(String remark, int cycleId, int stepId) {
         Connection conn = dbHelperUtils.getConnection();
         CallableStatement c = null;
+        String state = null;
         try {
             c = conn.prepareCall("{call \"TES\".\"EXTRACTIONDATA\"(?, ?, ?, ?)}");
             c.setString(1, remark);
@@ -29,6 +27,7 @@ public class ExtractData {
             c.setInt(3, stepId);
             c.registerOutParameter(4, Types.VARCHAR);
             c.execute();
+            state = c.getString(4);
             System.out.println("c.getString(4)"+c.getString(4));
         } catch (SQLException e) {
             e.printStackTrace();
@@ -39,12 +38,7 @@ public class ExtractData {
                 e.printStackTrace();
             }
         }
-        try {
-            return c.getString(4);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return state;
     }
 
 
