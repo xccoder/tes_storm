@@ -6,6 +6,9 @@ import java.sql.SQLException;
 import java.sql.Types;
 
 import com.edcs.tds.common.util.DBHelperUtils;
+import com.edcs.tes.storm.sync.DataSyncService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by cong.xiang on 2017/7/11.
@@ -13,6 +16,7 @@ import com.edcs.tds.common.util.DBHelperUtils;
 //remark NVARCHAR(80) 流程号  cycleId INTEGER 业务循环号   stepId INTEGER 工步号
 public class ExtractData {
     private DBHelperUtils dbHelperUtils;
+    private final Logger logger = LoggerFactory.getLogger(DataSyncService.class);
     public ExtractData(DBHelperUtils dbHelperUtils) {
         this.dbHelperUtils = dbHelperUtils;
     }
@@ -35,7 +39,7 @@ public class ExtractData {
             try {
                 conn.close();
             } catch (SQLException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
             }
         }
         return state;

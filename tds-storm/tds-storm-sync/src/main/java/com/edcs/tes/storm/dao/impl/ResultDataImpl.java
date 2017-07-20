@@ -14,13 +14,16 @@ import com.edcs.tds.common.util.DBHelperUtils;
 import com.edcs.tds.common.util.JsonUtils;
 import com.edcs.tes.storm.dao.IResultData;
 import com.edcs.tes.storm.extract.ExtractData;
+import com.edcs.tes.storm.sync.DataSyncService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by CaiSL2 on 2017/7/4.
  */
 public class ResultDataImpl implements IResultData {
     private DBHelperUtils db = new DBHelperUtils();
-
+    private final Logger logger = LoggerFactory.getLogger(DataSyncService.class);
     public ResultDataImpl(DBHelperUtils db) {
         this.db = db;
     }
@@ -81,7 +84,6 @@ public class ResultDataImpl implements IResultData {
     public boolean insertResultData(List<TestingResultData> testingResultDatas) throws SQLException {
         String category;//场景
         int alertSquenceNumber;
-        String txAlertListInfoBo = null;//
         String AlertListInfohandle = null;
         String status = null;
         String processInfoBo;
@@ -117,7 +119,6 @@ public class ResultDataImpl implements IResultData {
 
         Connection conn = null;
         PreparedStatement pst = null;
-        Savepoint savePoint = null;
         PreparedStatement pst1 = null;
         PreparedStatement pst2 = null;
         PreparedStatement pst3 = null;
@@ -142,6 +143,7 @@ public class ResultDataImpl implements IResultData {
                 //txAlertListInfoBo = testingResultData.getTxAlertListInfoBO();
                 status = testingResultData.getStatus();
                 processInfoBo = testingResultData.getProcessDataBO();//流程主数据的handle
+
                 timestamp = testingResultData.getTimestamp();
                 erpResourceBo = testingResultData.getErpResourceBO();
                 channelId = testingResultData.getTestingMessage().getChannelId();
@@ -417,10 +419,9 @@ public class ResultDataImpl implements IResultData {
                 conn.commit();
             }
 
-
         } catch (SQLException e) {
             //    conn.rollback(savePoint);            //回滚
-            e.printStackTrace();
+            logger.error(e.getMessage());
             System.out.println("插入告警数据错误");
         } finally {
             db.close(null, pst);

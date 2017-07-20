@@ -1,5 +1,7 @@
 package com.edcs.tes.storm.sync;
 import com.edcs.tds.common.redis.ProxyJedisPool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
 
 /**
@@ -7,7 +9,7 @@ import redis.clients.jedis.Jedis;
  *
  */
 public class RedisSync {
-
+    private final Logger logger = LoggerFactory.getLogger(DataSyncService.class);
     private ProxyJedisPool proxyJedisPool;
 
     public ProxyJedisPool getProxyJedisPool() {
@@ -29,7 +31,7 @@ public class RedisSync {
             jedis = proxyJedisPool.getResource();
             resultJson = jedis.spop("TES-RESULT");
         }catch (Exception e){
-           e.printStackTrace();
+            logger.error(""+e.getMessage());
         }
         if (jedis != null){
             jedis.close();
