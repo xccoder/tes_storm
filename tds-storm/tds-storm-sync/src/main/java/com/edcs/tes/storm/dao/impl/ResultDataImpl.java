@@ -181,7 +181,7 @@ public class ResultDataImpl implements IResultData {
                 testingmesstimestamp = testingResultData.getTestingMessage().getTimestamp();
                 isContainMainData = testingResultData.getIsContainMainData();//判断是否匹配上主数据
                 System.out.println("isContainMainData" + isContainMainData);
-                zipHandle = "TechZipStatusBO:" + "," + testingResultData.getSite() + "," + testingResultData.getTestingMessage().getRemark() + "," + testingResultData.getTestingMessage().getBusinessCycle() + "," + testingResultData.getTestingMessage().getStepId();
+                zipHandle = "TechZipStatusBO:" + testingResultData.getSite() + "," + testingResultData.getTestingMessage().getRemark() + "," + testingResultData.getTestingMessage().getBusinessCycle() + "," + testingResultData.getTestingMessage().getStepId();
                 if (alertLevel != 0 && category != null) {
                     switch (category) {
                         case "current":
