@@ -39,7 +39,7 @@ public class DataSyncService implements Runnable {
     			iResultData.insertResultData(testingResultDatas);
     		}
 		} catch (Exception e) {
-			logger.error(""+e.getMessage());
+			logger.error(""+e);
 		}
     }
 }

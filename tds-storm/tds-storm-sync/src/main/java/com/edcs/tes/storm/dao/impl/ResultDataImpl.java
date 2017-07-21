@@ -183,7 +183,11 @@ public class ResultDataImpl implements IResultData {
                 testingmesstimestamp = testingResultData.getTestingMessage().getTimestamp();
                 isContainMainData = testingResultData.getIsContainMainData();//判断是否匹配上主数据
                 System.out.println("isContainMainData" + isContainMainData);
-                if (site==null || sfc==null || remark==null  || resourceId==null ){
+                /*if (site==null || sfc==null || remark==null  || resourceId==null ){
+                    logger.error(JsonUtils.toJson(testingResultData));
+                    return false;
+                }*/
+                if (remark==null ) {
                     logger.error(JsonUtils.toJson(testingResultData));
                     return false;
                 }
@@ -423,9 +427,10 @@ public class ResultDataImpl implements IResultData {
                 conn.commit();
             }
 
-        } catch (SQLException e) {
+        } catch (Exception e) {
             logger.error("",e);
             System.out.println("插入告警数据错误");
+            e.printStackTrace();
         } finally {
             db.close(null, pst);
             db.close(null, pst1);
