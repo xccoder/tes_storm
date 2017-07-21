@@ -258,7 +258,7 @@ public class ResultDataImpl implements IResultData {
                             subchannel6 = JsonUtils.toJson(testingSubChannel);
                             break;
                     }
-                    subHandle = "TxOriginalSubChannelDataBO:" + procehandle + testingSubChannel.getSubChannelName();//:< TX_ORIGINAL_PROCESS_DATA_BO>,<SUB_CHANNEL_ID>
+                    subHandle = "TxOriginalSubChannelDataBO:" + procehandle +","+ Integer.valueOf(testingSubChannel.getSubChannelName().substring(testingSubChannel.getSubChannelName().length() - 1));//:< TX_ORIGINAL_PROCESS_DATA_BO>,<SUB_CHANNEL_ID>
                     subChannelId = Integer.valueOf(testingSubChannel.getSubChannelName().substring(testingSubChannel.getSubChannelName().length() - 1));
                     subSequenceId = testingSubChannel.getSequenceId();
                     subCycle = testingSubChannel.getCycle();
