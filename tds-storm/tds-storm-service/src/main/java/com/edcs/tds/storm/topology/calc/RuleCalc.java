@@ -124,7 +124,7 @@ public class RuleCalc {
                             emailEntity.setSendServer(myEmailSMTPHost);
                             emailEntity.setSendAccount(myEmailAccount);
                             emailEntity.setEmailPassword(myEmailPassword);
-                            //发送邮件
+                            //发送邮件 //FIXME 改为异步发送邮件，这里可能会发生网络异常导致waiting
                             try {
                                 SendEmailUtils.sendEmail(emailEntity);
                             } catch (Exception e) {

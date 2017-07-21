@@ -155,6 +155,7 @@ public class CalcBolt extends BaseRichBolt {
                 }
                 map.put("site", site);
                 map.put("totalCycleNum", testingMessage.getBusinessCycle());
+                //FIXME url之类的参数定义到xml配置
                 String json = JsonUtils.toJson(map);
                 String url = "http://172.26.66.35:50000/tes-backing/api/v1/integration/storm/md_process_info";
                 RestUtils.sendState(url, json);
@@ -173,7 +174,7 @@ public class CalcBolt extends BaseRichBolt {
     public boolean repeatFilter(String messageId) {
         
         if (messageRepeatFilter.filter(messageId)) {
-            logger.info("test message is repeat,messageId is{}", messageId);
+            logger.info("test message is repeat,messageId is {}", messageId);
             return true;
         }
         return false;
@@ -184,6 +185,7 @@ public class CalcBolt extends BaseRichBolt {
         // NOTHING_TO_DO
     }
 
+    
     public static void main(String[] args) {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("remark", "T3-20170324-3495-603301_RT-DC-POWER_1_F100C0-BF_0_2");

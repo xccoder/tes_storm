@@ -30,7 +30,7 @@ public class RestUtils {
             dos.flush();
             is = connection.getInputStream();
         } catch (IOException e) {
-            e.printStackTrace();
+            e.printStackTrace();//FIXME 统一输出到日志
             try {
             	if(dos!=null) dos.close();
             	if(os!=null) os.close();

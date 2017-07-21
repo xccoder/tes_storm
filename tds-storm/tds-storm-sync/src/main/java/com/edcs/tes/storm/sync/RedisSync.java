@@ -29,9 +29,9 @@ public class RedisSync {
         String resultJson = null;
         try {
             jedis = proxyJedisPool.getResource();
-            resultJson = jedis.spop("TES-RESULT");
+            resultJson = jedis.spop("TES-RESULT");//FIXME redis key移到RedisCacheKey中，规范命名
         }catch (Exception e){
-            logger.error(""+e.getMessage());
+            logger.error(""+e.getMessage());//FIXME 替换为 
         }
         if (jedis != null){
             jedis.close();

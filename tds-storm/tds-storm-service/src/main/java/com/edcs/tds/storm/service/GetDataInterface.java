@@ -145,7 +145,7 @@ public class GetDataInterface {
 				pst.setInt(3, testingMessage.getStepId());
 				results = pst.executeQuery();
 			} catch (Exception e) {
-				e.printStackTrace();
+				e.printStackTrace();//FIXME 统一输出到日志
 			}
 			try {
 				if (results != null) {
@@ -175,7 +175,7 @@ public class GetDataInterface {
 
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				e.printStackTrace();//FIXME 统一输出到日志
 				dbUtils.close(conn, pst, results);
 			} finally {
 				dbUtils.close(conn, pst, results);
@@ -258,7 +258,7 @@ public class GetDataInterface {
 
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				e.printStackTrace();//FIXME 统一输出到日志
 				dbUtils.close(conn, pst, results);
 			} finally {
 				dbUtils.close(conn, pst, results);
@@ -288,7 +288,7 @@ public class GetDataInterface {
 			pst.setString(1, rootRemark);
 			results = pst.executeQuery();
 		} catch (Exception e) {
-			e.printStackTrace();
+			e.printStackTrace();//FIXME 统一输出到日志
 		}
 		try {
 			if (results != null) {
@@ -297,7 +297,7 @@ public class GetDataInterface {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			e.printStackTrace();//FIXME 统一输出到日志
 			dbUtils.close(conn, pst, results);
 		} finally {
 			dbUtils.close(conn, pst, results);

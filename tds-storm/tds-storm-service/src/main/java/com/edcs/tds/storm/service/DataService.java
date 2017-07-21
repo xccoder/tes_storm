@@ -7,6 +7,7 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 
 import com.edcs.tds.common.model.TestingMessage;
+import com.edcs.tds.common.redis.JedisFactory;
 import com.edcs.tds.common.util.JsonUtils;
 import com.edcs.tds.storm.model.MDStepInfo;
 import com.edcs.tds.storm.model.MDprocessInfo;
@@ -22,7 +23,7 @@ public class DataService {
 		if(!StringUtils.isNotBlank(cycleNum)){
 			if(jedis!=null){
             	jedis.close();
-            }
+            }//FIXME 替换为JedisFactory.closeQuietly(jedis);
 			return -1;
 		}
 		if(jedis!=null){

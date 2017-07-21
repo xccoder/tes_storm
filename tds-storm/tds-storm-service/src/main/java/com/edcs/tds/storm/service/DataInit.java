@@ -38,6 +38,7 @@ public class DataInit {
 		try {
 			json = new String((byte[])input.getValue(0),"UTF-8");
 		} catch (UnsupportedEncodingException e) {
+			//FIXME 如果数据解析异常，直接扔掉，后续逻辑不走
 			logger.error("实现对Kafka测试数据的序列化出现异常，异常位置为DataInit.initRequestMessage",e);
 		}
 		//如果传递过来的参数为空，则直接返回null
@@ -116,7 +117,7 @@ public class DataInit {
 			//获取这个流程的所有工 步信息
 			List<MDStepInfo> mdStepInfos = mDprocessInfo.getMdStepInfoList();
 			for (MDStepInfo mdStepInfo : mdStepInfos) {
-                 
+                //FIXME 中文常量或固定的名称统一移到com.edcs.tds.common.util.SystemConfig
 				if(("恒压充电".equals(mdStepInfo.getStepName()) && "恒压充电".equals(testingMsg.getStepName()))
 						|| ("恒流恒压充电".equals(mdStepInfo.getStepName()) && "恒流恒压充电".equals(testingMsg.getStepName()))
 						|| ("恒功率充电".equals(mdStepInfo.getStepName()) && "恒功率充电".equals(testingMsg.getStepName()))
