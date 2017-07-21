@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 //remark NVARCHAR(80) 流程号  cycleId INTEGER 业务循环号   stepId INTEGER 工步号
 public class ExtractData {
     private DBHelperUtils dbHelperUtils;
-    private final Logger logger = LoggerFactory.getLogger(DataSyncService.class);
+    private final Logger logger = LoggerFactory.getLogger(ExtractData.class);
     public ExtractData(DBHelperUtils dbHelperUtils) {
         this.dbHelperUtils = dbHelperUtils;
     }
@@ -34,6 +34,7 @@ public class ExtractData {
             state = c.getString(4);
             System.out.println("c.getString(4)"+c.getString(4));
         } catch (SQLException e) {
+            logger.error(e.getMessage());
             e.printStackTrace();
         } finally {
             try {

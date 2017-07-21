@@ -9,7 +9,7 @@ import redis.clients.jedis.Jedis;
  *
  */
 public class RedisSync {
-    private final Logger logger = LoggerFactory.getLogger(DataSyncService.class);
+    private final Logger logger = LoggerFactory.getLogger(RedisSync.class);
     private ProxyJedisPool proxyJedisPool;
 
     public ProxyJedisPool getProxyJedisPool() {

@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ResultDataImpl implements IResultData {
     private DBHelperUtils db = new DBHelperUtils();
-    private final Logger logger = LoggerFactory.getLogger(DataSyncService.class);
+    private final Logger logger = LoggerFactory.getLogger(ResultDataImpl.class);
     public ResultDataImpl(DBHelperUtils db) {
         this.db = db;
     }
@@ -84,7 +84,7 @@ public class ResultDataImpl implements IResultData {
     public boolean insertResultData(List<TestingResultData> testingResultDatas) throws SQLException {
         String category;//场景
         int alertSquenceNumber;
-        String AlertListInfohandle = null;
+        String alertListInfohandle = null;
         String status = null;
         String processInfoBo;
         Date timestamp;
@@ -93,7 +93,7 @@ public class ResultDataImpl implements IResultData {
         String description;
         BigDecimal upLimit;
         BigDecimal lowLimit;
-        String originalProBo;
+        //String originalProBo;
         String alertHandle;//每一个场景报警数据的handle
         String alertListId = null;
         //辅助通道
@@ -134,7 +134,7 @@ public class ResultDataImpl implements IResultData {
             for (TestingResultData testingResultData : testingResultDatas) {
                 alertHandle = testingResultData.getHandle();//TxAlertInfoBO:<SITE>,<REMARK>,<SFC>,<CATEGORY>,<sequencednumber>
                 alertListId = testingResultData.getTestingMessage().getRemark() + "," + testingResultData.getTestingMessage().getSequenceId();//alertlistinfo里的字段
-                AlertListInfohandle = "TxAlertListInfoBO:" + testingResultData.getSite() + "," + alertListId;//TxAlertListInfoBO:<SITE>,<ALERT_LIST_ID>
+                alertListInfohandle = "TxAlertListInfoBO:" + testingResultData.getSite() + "," + alertListId;//TxAlertListInfoBO:<SITE>,<ALERT_LIST_ID>
                 remark = testingResultData.getTestingMessage().getRemark();
                 site = testingResultData.getSite();
                 sfc = testingResultData.getTestingMessage().getSfc();
@@ -151,7 +151,7 @@ public class ResultDataImpl implements IResultData {
                 description = testingResultData.getDescription();
                 upLimit = testingResultData.getUpLimit();
                 lowLimit = testingResultData.getLowLimit();
-                originalProBo = testingResultData.getOriginalProcessDataBO();
+                //originalProBo = testingResultData.getOriginalProcessDataBO();
                 createDateTime = testingResultData.getCreatedDateTime();
                 createUser = testingResultData.getCreatedUser();
                 modifiedDateTime = testingResultData.getModifiedDateTime();
@@ -183,6 +183,10 @@ public class ResultDataImpl implements IResultData {
                 testingmesstimestamp = testingResultData.getTestingMessage().getTimestamp();
                 isContainMainData = testingResultData.getIsContainMainData();//判断是否匹配上主数据
                 System.out.println("isContainMainData" + isContainMainData);
+                if (site==null || sfc==null || remark==null  || resourceId==null ){
+                    logger.error(JsonUtils.toJson(testingResultData));
+                    return false;
+                }
                 zipHandle = "TechZipStatusBO:" + testingResultData.getSite() + "," + testingResultData.getTestingMessage().getRemark() + "," + testingResultData.getTestingMessage().getBusinessCycle() + "," + testingResultData.getTestingMessage().getStepId();
                 if (alertLevel != 0 && category != null) {
                     switch (category) {
@@ -213,7 +217,7 @@ public class ResultDataImpl implements IResultData {
                     pst.setString(4, sfc);
                     pst.setString(5, category);
                     pst.setInt(6, alertSquenceNumber);
-                    pst.setString(7, AlertListInfohandle);
+                    pst.setString(7, alertListInfohandle);
                     pst.setString(8, status);
                     pst.setString(9, processInfoBo); //备注：流程主数据的handle
                     pst.setObject(10, timestamp);             //注意
@@ -223,7 +227,7 @@ public class ResultDataImpl implements IResultData {
                     pst.setString(14, description);
                     pst.setBigDecimal(15, upLimit);
                     pst.setBigDecimal(16, lowLimit);
-                    pst.setString(17, originalProBo);
+                    pst.setString(17, procehandle);
                     pst.setObject(18, timestamp);             //注意
                     pst.setString(19, "HJHJ");
                     pst.setObject(20, timestamp);                //注意
@@ -366,7 +370,7 @@ public class ResultDataImpl implements IResultData {
             if (alertLevel != 0 && isContainMainData.equals("1")) {
                 String alertListsql = "insert into TX_ALERT_LIST_INFO(HANDLE,SITE,ALERT_LIST_ID,STATUS,FEEDBACK_I,FEEDBACK_U,FEEDBACK_T,FEEDBACK_C,FEEDBACK_D,COMMENTS,CREATED_DATE_TIME,CREATED_USER,MODIFIED_DATE_TIME,MODIFIED_USER) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
                 pst3 = conn.prepareStatement(alertListsql);//插入报警列表
-                pst3.setString(1, AlertListInfohandle);
+                pst3.setString(1, alertListInfohandle);
                 pst3.setString(2, site);
                 pst3.setString(3, alertListId);
                 pst3.setString(4, status);
