@@ -48,7 +48,8 @@
         <mysql.version>5.1.31</mysql.version>
         <druid.version>1.0.15</druid.version>
         <fastjson.version>1.2.6</fastjson.version>
-        <slf4j.version>1.7.6</slf4j.version>
+        <slf4j.version>1.7.7</slf4j.version>
+        <log4j.version>2.2</log4j.version>
         <fst.version>2.40</fst.version>
         <jetty.version>8.1.16.v20140903</jetty.version>
         <logback.version>1.1.2</logback.version>
@@ -92,7 +93,7 @@
             <groupId>jdk.tools</groupId>
             <artifactId>jdk.tools</artifactId>
             <scope>system</scope>
-            <systemPath>E:/devtool/jdk1.7.0_75/lib/tools.jar</systemPath>
+            <systemPath>E:/software/jdk1.7/jdk1.7.0_75/lib/tools.jar</systemPath>
             <version>${jdk.version}</version>
         </dependency>
         <dependency>
@@ -100,7 +101,7 @@
             <artifactId>hana-connector-java</artifactId>
             <version>1.0</version>
             <scope>system</scope>
-            <systemPath>E:/workspace/CATL/TES-Storm/tds-storm/lib/hana-connector-java-1.0.jar</systemPath>
+            <systemPath>E:/hana-connector-java-1.0.jar</systemPath>
         </dependency>
     </dependencies>
     <build>
