@@ -128,7 +128,7 @@ public class RuleCalc {
                             try {
                                 SendEmailUtils.sendEmail(emailEntity);
                             } catch (Exception e) {
-                                e.printStackTrace();
+                               logger.error("发送邮件出现异常。异常位置为RuleCalc.TestingRuleCalc",e);
                             }
                         }
                         //调用发送邮件接口发送预警信息  -- end

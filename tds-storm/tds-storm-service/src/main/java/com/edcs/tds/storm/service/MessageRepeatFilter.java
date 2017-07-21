@@ -35,7 +35,7 @@ public class MessageRepeatFilter {
                 }
             }
         } catch (Exception e) {
-            logger.error("", e);
+            logger.error("MessageRepeatFilter.filter 出现异常", e);
         } finally {
             if (jedis != null)
                 jedis.close();

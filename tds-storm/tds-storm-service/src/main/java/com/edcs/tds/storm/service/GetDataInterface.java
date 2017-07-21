@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.edcs.tds.common.model.TestingMessage;
 import com.edcs.tds.common.model.TestingResultData;
@@ -23,7 +25,7 @@ import redis.clients.jedis.Jedis;
  *
  */
 public class GetDataInterface {
-	// DBHelperUtils dbUtils = new DBHelperUtils();
+	private static final Logger logger = LoggerFactory.getLogger(GetDataInterface.class);
 	/**
 	 * 根据流程号和序号来获取一条测试数据的上一条数据信息 先到redis中去找，如果找不到再去HANA中找
 	 * 
@@ -63,10 +65,6 @@ public class GetDataInterface {
 				pst.setString(1, testingMessage.getRemark());
 				pst.setInt(2, testingMessage.getSequenceId() - i);
 				results = pst.executeQuery();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			try {
 				if (results != null) {
 					testingMsg = new TestingMessage();
 					while (results.next()) {
@@ -95,7 +93,7 @@ public class GetDataInterface {
 
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("执行hana数据库连接出现错误，错误位置为 GetDataInterface.getUpTestingMsg方法",e);
 				dbUtils.close(conn, pst, results);
 			} finally {
 				dbUtils.close(conn, pst, results);

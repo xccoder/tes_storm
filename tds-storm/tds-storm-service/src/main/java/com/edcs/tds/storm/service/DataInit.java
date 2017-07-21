@@ -7,6 +7,8 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.storm.tuple.Tuple;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSONObject;
 import com.edcs.tds.common.engine.groovy.ContextConfig;
@@ -23,6 +25,8 @@ import groovy.lang.Binding;
 public class DataInit {
 	
 	public static final String SUBCHANNEL_NAME = "pvSubChannelData";//子通道的名称前缀
+	
+	private static final Logger logger = LoggerFactory.getLogger(DataInit.class);
     /**
      * 实现对测试数据（实时数据的初始化，将kafka拿出来的json测试数据转化为对应的java对象）
      * @param input
@@ -34,7 +38,7 @@ public class DataInit {
 		try {
 			json = new String((byte[])input.getValue(0),"UTF-8");
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+			logger.error("实现对Kafka测试数据的序列化出现异常，异常位置为DataInit.initRequestMessage",e);
 		}
 		//如果传递过来的参数为空，则直接返回null
 		if(!StringUtils.isNotBlank(json)){

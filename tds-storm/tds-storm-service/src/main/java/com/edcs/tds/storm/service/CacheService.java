@@ -192,7 +192,7 @@ public class CacheService {
 
         System.out.println("开始》》》》》》》》》》》》");
         try {
-            Set<String> MdProcessjsons = jedis.smembers("TES:PROCESSDATA");
+            Set<String> MdProcessjsons = jedis.smembers("TES");
             if(MdProcessjsons==null || MdProcessjsons.size()==0){
             	processInfoJsons = new HashSet<String>();
             	return;
@@ -298,7 +298,7 @@ public class CacheService {
             }
             processInfoJsons = MdProcessjsons ;
         }catch (Exception e) {
-			e.printStackTrace();
+        	logger.error("CacheService的initRuleConfig方法出现异常。",e);
 		}finally {
             if(jedis!=null){
             	jedis.close();

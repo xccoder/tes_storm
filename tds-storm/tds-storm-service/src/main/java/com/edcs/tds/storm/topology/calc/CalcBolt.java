@@ -95,6 +95,7 @@ public class CalcBolt extends BaseRichBolt {
             //消息重复消费过滤
             isRepeated = repeatFilter(testingMessage.getMessageId());
             if (!isRepeated) {
+            	logger.warn("出现重复数据，数据的Id为："+testingMessage.getMessageId());
                 return;
             }
             //实现对异常的循环次数校验、处理---------因为cycle暂时用不到，所以这里暂时不做维护
@@ -161,7 +162,7 @@ public class CalcBolt extends BaseRichBolt {
             executeContext.setSysVariableLog(shellContext.getVariables());
             System.out.println("匹配成功**********************************************************************************");
         } catch (Exception e) {
-            logger.error("", e);
+            logger.error("bolt层出现错误，错误的位置为CalcBolt.process", e);
             executeContext.addException(e);
             System.out.println("匹配失败**********************************************************************************");
         } finally {
