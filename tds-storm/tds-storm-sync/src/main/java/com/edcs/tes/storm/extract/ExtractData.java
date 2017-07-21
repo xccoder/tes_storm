@@ -39,7 +39,7 @@ public class ExtractData {
             try {
                 conn.close();
             } catch (SQLException e) {
-                logger.error(e.getMessage());
+                logger.error("",e);
             }
         }
         return state;

@@ -395,7 +395,7 @@ public class ResultDataImpl implements IResultData {
                     String s = extractData.extractData(remark, businessCycle, stepId);
                     System.out.println("返回值原是：" + s);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error("",e);
                 }
                 //触发压缩表数据初始化
                 String zipSql = "insert into TECH_ZIP_STATUS(HANDLE,SITE,REMARK,ST_BUSINESS_CYCLE,STEP_ID,I_STATUS,V_STATUS,T_STATUS,C_STATUS,E_STATUS,CREATED_DATE_TIME,CREATED_USER,MODIFIED_DATE_TIME,MODIFIED_USER) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?) ";
@@ -420,8 +420,7 @@ public class ResultDataImpl implements IResultData {
             }
 
         } catch (SQLException e) {
-            //    conn.rollback(savePoint);            //回滚
-            logger.error(e.getMessage());
+            logger.error("",e);
             System.out.println("插入告警数据错误");
         } finally {
             db.close(null, pst);
