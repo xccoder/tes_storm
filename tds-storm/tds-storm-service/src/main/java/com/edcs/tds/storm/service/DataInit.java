@@ -21,6 +21,7 @@ import com.edcs.tds.storm.model.MDStepInfo;
 import com.edcs.tds.storm.model.MDprocessInfo;
 
 import groovy.lang.Binding;
+import redis.clients.jedis.Jedis;
 
 public class DataInit {
 	
@@ -32,7 +33,7 @@ public class DataInit {
      * @param input
      * @return
      */
-	public static TestingMessage initRequestMessage(Tuple input) {
+	public static TestingMessage initRequestMessage(Tuple input,CacheService cacheService) {
 		// TODO 实现DataInit，实现对Kafka测试数据的序列化；
 		String json = null;
 		try {
@@ -46,6 +47,9 @@ public class DataInit {
 			return null;
 		}
 		TestingMessage testingMsg = JsonUtils.toObject(json, TestingMessage.class);
+		//维护sequenceId
+		testingMsg = updateSequenceId(testingMsg,cacheService);
+		
 		//设置测试数据的唯一id
 		String msgId = testingMsg.getRemark()+testingMsg.getStepName()+testingMsg.getSequenceId();
 		testingMsg.setMessageId(msgId);
@@ -71,6 +75,36 @@ public class DataInit {
 			}
 		}
 		testingMsg.setSubChannel(lists);
+		return testingMsg;
+	}
+    /**
+     * 维护sequenceId
+     * @param testingMsg
+     * @return
+     */
+	private static TestingMessage updateSequenceId(TestingMessage testingMsg,CacheService cacheService) {
+		Jedis jedis = cacheService.getProxyJedisPool().getResource();
+		try {
+			String sequenceId = jedis.get(testingMsg.getRemark());
+			if(!StringUtils.isNotBlank(sequenceId)){
+				jedis.set(testingMsg.getRemark(),testingMsg.getSequenceId()+"");
+			}else{
+				int oldsqId = Integer.parseInt(sequenceId);
+				int newsqId = testingMsg.getSequenceId();
+				if(newsqId<=oldsqId){
+					testingMsg.setSequenceId(oldsqId+1);
+					jedis.set(testingMsg.getRemark(), oldsqId+1+"");
+				}else{
+					jedis.set(testingMsg.getRemark(), newsqId+"");
+				}
+			}
+		} catch (Exception e) {
+			logger.error("",e);
+		}finally{
+			if(jedis!=null){
+				jedis.close();
+			}
+		}
 		return testingMsg;
 	}
 

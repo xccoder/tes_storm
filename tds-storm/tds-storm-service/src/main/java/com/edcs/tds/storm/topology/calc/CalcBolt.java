@@ -91,7 +91,7 @@ public class CalcBolt extends BaseRichBolt {
         try {
             //解析请求数据
             logger.info("Start parsing request data...");
-            TestingMessage testingMessage = DataInit.initRequestMessage(input);
+            TestingMessage testingMessage = DataInit.initRequestMessage(input,cacheService);
             //消息重复消费过滤
             isRepeated = repeatFilter(testingMessage.getMessageId());
             if (!isRepeated) {
