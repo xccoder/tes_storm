@@ -4,9 +4,11 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Savepoint;
 import java.util.Date;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.edcs.tds.common.model.TestingResultData;
 import com.edcs.tds.common.model.TestingSubChannel;
@@ -14,15 +16,12 @@ import com.edcs.tds.common.util.DBHelperUtils;
 import com.edcs.tds.common.util.JsonUtils;
 import com.edcs.tes.storm.dao.IResultData;
 import com.edcs.tes.storm.extract.ExtractData;
-import com.edcs.tes.storm.sync.DataSyncService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Created by CaiSL2 on 2017/7/4.
  */
 public class ResultDataImpl implements IResultData {
-    private DBHelperUtils db = new DBHelperUtils();
+    private DBHelperUtils db;
     private final Logger logger = LoggerFactory.getLogger(ResultDataImpl.class);
     public ResultDataImpl(DBHelperUtils db) {
         this.db = db;
@@ -440,10 +439,5 @@ public class ResultDataImpl implements IResultData {
         }
 
         return true;
-    }
-
-    public static void main(String[] args) {
-        IResultData iResultData = new ResultDataImpl();
-
     }
 }

@@ -3,27 +3,30 @@ package com.edcs.tes.storm.sync;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.edcs.tes.storm.util.SpringBeanFactory;
 
 
 public class SyncMain {
-	
+	private static final Logger logger = LoggerFactory.getLogger(SyncMain.class);
 	public static void main(String[] args) {
 		
-		int threadNum = 1;
+		int threadNum = 5;
 		if(args!=null && args.length>0){
 			threadNum = Integer.parseInt(args[0]);
 		}
 		ExecutorService cachedThreadPool = Executors.newFixedThreadPool(threadNum); //线程池 
 		SpringBeanFactory beanFactory = new SpringBeanFactory();
 		DataSyncService threadTask = new DataSyncService(beanFactory);//线程任务
-//		List<Thread> threads = new ArrayList<Thread>();
-//		for(int i = 0;i<threadNum;i++){
-//			Thread thread = new Thread(threadTask);
-//			threads.add(thread);
-//		}
 		while(true){
 			cachedThreadPool.execute(threadTask);
+			try {
+				Thread.sleep(200);
+			} catch (InterruptedException e) {
+				logger.error(""+e);
+			}
 		}
 	}
 }

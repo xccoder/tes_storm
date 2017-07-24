@@ -5,10 +5,10 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Types;
 
-import com.edcs.tds.common.util.DBHelperUtils;
-import com.edcs.tes.storm.sync.DataSyncService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.edcs.tds.common.util.DBHelperUtils;
 
 /**
  * Created by cong.xiang on 2017/7/11.

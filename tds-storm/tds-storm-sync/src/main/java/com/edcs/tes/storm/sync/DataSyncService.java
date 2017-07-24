@@ -9,9 +9,10 @@ import com.edcs.tds.common.model.TestingResultData;
 import com.edcs.tds.common.redis.ProxyJedisPool;
 import com.edcs.tds.common.util.DBHelperUtils;
 import com.edcs.tds.common.util.JsonUtils;
-import com.edcs.tes.storm.dao.IResultData;
 import com.edcs.tes.storm.dao.impl.ResultDataImpl;
 import com.edcs.tes.storm.util.SpringBeanFactory;
+
+import redis.clients.jedis.Jedis;
 
 /**
  * Created by CaiSL2 on 2017/7/4.
@@ -31,15 +32,28 @@ public class DataSyncService implements Runnable {
     @Override
     public void run() {
     	try {
-    		IResultData iResultData = new ResultDataImpl(dbHelperUtils);
-    		RedisSync redisSync = new RedisSync(proxyJedisPool);
-    		String processJson = redisSync.getProcessJson();
+    		String processJson = getProcessJson();
     		if (processJson != null) {
     			List<TestingResultData> testingResultDatas = JsonUtils.toArray(processJson, TestingResultData.class);
-    			iResultData.insertResultData(testingResultDatas);
+    			new ResultDataImpl(dbHelperUtils).insertResultData(testingResultDatas);
     		}
 		} catch (Exception e) {
 			logger.error(""+e);
 		}
+    }
+    
+    public  String getProcessJson(){
+        Jedis jedis = null;
+        String resultJson = null;
+        try {
+            jedis = proxyJedisPool.getResource();
+            resultJson = jedis.spop("TES-RESULT");//FIXME redis key移到RedisCacheKey中，规范命名
+        }catch (Exception e){
+            logger.error(""+e);//FIXME 替换为 
+        }
+        if (jedis != null){
+            jedis.close();
+        }
+        return resultJson;
     }
 }
