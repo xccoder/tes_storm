@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import com.alibaba.fastjson.JSONObject;
 import com.edcs.tds.common.engine.groovy.ContextConfig;
 import com.edcs.tds.common.engine.groovy.service.EngineCommonService;
+import com.edcs.tds.common.model.SystemConfig;
 import com.edcs.tds.common.model.TestingMessage;
 import com.edcs.tds.common.model.TestingSubChannel;
 import com.edcs.tds.common.util.JsonUtils;
@@ -25,7 +26,6 @@ import redis.clients.jedis.Jedis;
 
 public class DataInit {
 	
-	public static final String SUBCHANNEL_NAME = "pvSubChannelData";//子通道的名称前缀
 	
 	private static final Logger logger = LoggerFactory.getLogger(DataInit.class);
     /**
@@ -51,7 +51,7 @@ public class DataInit {
 		testingMsg = updateSequenceId(testingMsg,cacheService);
 		
 		//设置测试数据的唯一id
-		String msgId = testingMsg.getRemark()+testingMsg.getStepName()+testingMsg.getSequenceId();
+		String msgId = testingMsg.getRemark()+"_"+testingMsg.getResourceId()+"_"+testingMsg.getChannelId()+"_"+testingMsg.getSequenceId();
 		testingMsg.setMessageId(msgId);
 		
 		JSONObject jsonObject = JsonUtils.parseObject(json);
@@ -60,17 +60,17 @@ public class DataInit {
 		List<TestingSubChannel> lists = new ArrayList<TestingSubChannel>();//用来存放子通道信息
 		while(true){
 			i++;
-			String str = jsonObject.getString(SUBCHANNEL_NAME+i);
+			String str = jsonObject.getString(SystemConfig.SUBCHANNEL_NAME+i);
 			if("0".equals(str)){
 				continue;
 			}
-			JSONObject subJson = jsonObject.getJSONObject(SUBCHANNEL_NAME+i);
+			JSONObject subJson = jsonObject.getJSONObject(SystemConfig.SUBCHANNEL_NAME+i);
 			if(subJson == null){
 				break;
 			}else{
 				String strJson = JSONObject.toJSONString(subJson);//获取子通道信息
 				TestingSubChannel testingSubChannel = JsonUtils.toObject(strJson, TestingSubChannel.class);//转化为子通道的对象
-				testingSubChannel.setSubChannelName(SUBCHANNEL_NAME+i);
+				testingSubChannel.setSubChannelName(SystemConfig.SUBCHANNEL_NAME+i);
 				lists.add(testingSubChannel);
 			}
 		}
@@ -85,17 +85,17 @@ public class DataInit {
 	private static TestingMessage updateSequenceId(TestingMessage testingMsg,CacheService cacheService) {
 		Jedis jedis = cacheService.getProxyJedisPool().getResource();
 		try {
-			String sequenceId = jedis.get(testingMsg.getRemark());
+			String sequenceId = jedis.get("sequenceId_"+testingMsg.getRemark());
 			if(!StringUtils.isNotBlank(sequenceId)){
-				jedis.set(testingMsg.getRemark(),testingMsg.getSequenceId()+"");
+				jedis.set("sequenceId_"+testingMsg.getRemark(),testingMsg.getSequenceId()+"");
 			}else{
 				int oldsqId = Integer.parseInt(sequenceId);
 				int newsqId = testingMsg.getSequenceId();
 				if(newsqId<=oldsqId){
 					testingMsg.setSequenceId(oldsqId+1);
-					jedis.set(testingMsg.getRemark(), oldsqId+1+"");
+					jedis.set("sequenceId_"+testingMsg.getRemark(), oldsqId+1+"");
 				}else{
-					jedis.set(testingMsg.getRemark(), newsqId+"");
+					jedis.set("sequenceId_"+testingMsg.getRemark(), newsqId+"");
 				}
 			}
 		} catch (Exception e) {
@@ -152,29 +152,29 @@ public class DataInit {
 			List<MDStepInfo> mdStepInfos = mDprocessInfo.getMdStepInfoList();
 			for (MDStepInfo mdStepInfo : mdStepInfos) {
                 //FIXME 中文常量或固定的名称统一移到com.edcs.tds.common.util.SystemConfig
-				if(("恒压充电".equals(mdStepInfo.getStepName()) && "恒压充电".equals(testingMsg.getStepName()))
-						|| ("恒流恒压充电".equals(mdStepInfo.getStepName()) && "恒流恒压充电".equals(testingMsg.getStepName()))
-						|| ("恒功率充电".equals(mdStepInfo.getStepName()) && "恒功率充电".equals(testingMsg.getStepName()))
-						|| ("恒功率放电".equals(mdStepInfo.getStepName()) && "恒功率放电".equals(testingMsg.getStepName()))
-						|| ("恒阻放电".equals(mdStepInfo.getStepName()) && "恒阻放电".equals(testingMsg.getStepName()))
-						|| ("恒流充电".equals(mdStepInfo.getStepName()) && "恒流充电".equals(testingMsg.getStepName()))
-						|| ("恒流放电".equals(mdStepInfo.getStepName()) && "恒流放电".equals(testingMsg.getStepName()))){
+				if((SystemConfig.CONSTANT_VOLTAGE_CHARGE.equals(mdStepInfo.getStepName()) && SystemConfig.CONSTANT_VOLTAGE_CHARGE.equals(testingMsg.getStepName()))
+						|| (SystemConfig.CONSTANT_CURRENT_VOLTAGE_CHARGE.equals(mdStepInfo.getStepName()) && SystemConfig.CONSTANT_CURRENT_VOLTAGE_CHARGE.equals(testingMsg.getStepName()))
+						|| (SystemConfig.CONSTANT_POWER_CHARGE.equals(mdStepInfo.getStepName()) && SystemConfig.CONSTANT_POWER_CHARGE.equals(testingMsg.getStepName()))
+						|| (SystemConfig.CONSTANT_POWER_DISCHARGE.equals(mdStepInfo.getStepName()) && SystemConfig.CONSTANT_POWER_DISCHARGE.equals(testingMsg.getStepName()))
+						|| (SystemConfig.CONSTANT_RESISTANCE_DISCHARGE.equals(mdStepInfo.getStepName()) && SystemConfig.CONSTANT_RESISTANCE_DISCHARGE.equals(testingMsg.getStepName()))
+						|| (SystemConfig.CONSTENT_CURRENT_CHARGE.equals(mdStepInfo.getStepName()) && SystemConfig.CONSTENT_CURRENT_CHARGE.equals(testingMsg.getStepName()))
+						|| (SystemConfig.CONSTANT_CURRENT_DISCHARGE.equals(mdStepInfo.getStepName()) && SystemConfig.CONSTANT_CURRENT_DISCHARGE.equals(testingMsg.getStepName()))){
 					shellContext.setProperty("svStepEndCurrent", mdStepInfo.getSvStepEndCurrent());//恒压充电工步的 截止电流 （I截止）
 					shellContext.setProperty("svCurrent", mdStepInfo.getSvCurrent());//Ilast为工步最后一点电流值
 				}
-				if(("恒功率充电".equals(mdStepInfo.getStepName()) && "恒功率充电".equals(testingMsg.getStepName()))
-						|| ("恒功率放电".equals(mdStepInfo.getStepName()) && "恒功率放电".equals(testingMsg.getStepName()))
-						|| ("恒阻放电".equals(mdStepInfo.getStepName()) && "恒阻放电".equals(testingMsg.getStepName()))
-						|| ("恒流放电".equals(mdStepInfo.getStepName()) && "恒流放电".equals(testingMsg.getStepName()))){
+				if((SystemConfig.CONSTANT_POWER_CHARGE.equals(mdStepInfo.getStepName()) && SystemConfig.CONSTANT_POWER_CHARGE.equals(testingMsg.getStepName()))
+						|| (SystemConfig.CONSTANT_POWER_DISCHARGE.equals(mdStepInfo.getStepName()) && SystemConfig.CONSTANT_POWER_DISCHARGE.equals(testingMsg.getStepName()))
+						|| (SystemConfig.CONSTANT_RESISTANCE_DISCHARGE.equals(mdStepInfo.getStepName()) && SystemConfig.CONSTANT_RESISTANCE_DISCHARGE.equals(testingMsg.getStepName()))
+						|| (SystemConfig.CONSTANT_CURRENT_DISCHARGE.equals(mdStepInfo.getStepName()) && SystemConfig.CONSTANT_CURRENT_DISCHARGE.equals(testingMsg.getStepName()))){
 					shellContext.setProperty("svStepEndVoltage", mdStepInfo.getSvStepEndVoltage());//U截止 为恒功率充电截止电压 (U截止)
 					shellContext.setProperty("svPower", mdStepInfo.getSvPower());//（P恒 冲） （P恒 放）
 				}
-				if("模拟工步（电流模式）".equals(mdStepInfo.getStepName()) && "模拟工步（电流模式）".equals(testingMsg.getStepName())){
+				if(SystemConfig.SIMULATION_WORKSTEP_CURRENT.equals(mdStepInfo.getStepName()) && SystemConfig.SIMULATION_WORKSTEP_CURRENT.equals(testingMsg.getStepName())){
 					shellContext.setProperty("svCurrent", mdStepInfo.getSvCurrent());//I为工况附录文件中规定的电流
 					shellContext.setProperty("svPower", mdStepInfo.getSvPower());//模拟工步（电流模式）中的（P恒）
 				}
-				if(("恒功率放电".equals(mdStepInfo.getStepName()) && "恒功率放电".equals(testingMsg.getStepName()))
-						|| ("恒阻放电".equals(mdStepInfo.getStepName()) && "恒阻放电".equals(testingMsg.getStepName()))){
+				if((SystemConfig.CONSTANT_POWER_DISCHARGE.equals(mdStepInfo.getStepName()) && SystemConfig.CONSTANT_POWER_DISCHARGE.equals(testingMsg.getStepName()))
+						|| (SystemConfig.CONSTANT_RESISTANCE_DISCHARGE.equals(mdStepInfo.getStepName()) && SystemConfig.CONSTANT_RESISTANCE_DISCHARGE.equals(testingMsg.getStepName()))){
 					TestingMessage upTestingMsg  = GetDataInterface.getUpTestingMsg(testingMsg, 1, cacheService);//获取上一条测试数据信息
 					if(upTestingMsg!=null){
 						shellContext.setProperty("upPvCurrent", upTestingMsg.getPvCurrent());//I i-1 为上一条数据的电流值
@@ -206,12 +206,12 @@ public class DataInit {
 			}
 			
 			for (MDStepInfo mdStepInfo : mdStepInfos) {
-				if("恒流恒压充电".equals(mdStepInfo.getStepName()) && "恒流恒压充电".equals(testingMsg.getStepName())
-						|| "恒流放电".equals(mdStepInfo.getStepName()) && "恒流放电".equals(testingMsg.getStepName())
-						|| "恒流充电".equals(mdStepInfo.getStepName()) && "恒流充电".equals(testingMsg.getStepName())
-						|| "恒功率充电".equals(mdStepInfo.getStepName()) && "恒功率充电".equals(testingMsg.getStepName())
-						|| "恒功率放电".equals(mdStepInfo.getStepName()) && "恒功率放电".equals(testingMsg.getStepName())
-						|| "恒阻放电".equals(mdStepInfo.getStepName()) && "恒阻放电".equals(testingMsg.getStepName())){
+				if(SystemConfig.CONSTANT_CURRENT_VOLTAGE_CHARGE.equals(mdStepInfo.getStepName()) && SystemConfig.CONSTANT_CURRENT_VOLTAGE_CHARGE.equals(testingMsg.getStepName())
+						|| SystemConfig.CONSTANT_CURRENT_DISCHARGE.equals(mdStepInfo.getStepName()) && SystemConfig.CONSTANT_CURRENT_DISCHARGE.equals(testingMsg.getStepName())
+						|| SystemConfig.CONSTENT_CURRENT_CHARGE.equals(mdStepInfo.getStepName()) && SystemConfig.CONSTENT_CURRENT_CHARGE.equals(testingMsg.getStepName())
+						|| SystemConfig.CONSTANT_POWER_CHARGE.equals(mdStepInfo.getStepName()) && SystemConfig.CONSTANT_POWER_CHARGE.equals(testingMsg.getStepName())
+						|| SystemConfig.CONSTANT_POWER_DISCHARGE.equals(mdStepInfo.getStepName()) && SystemConfig.CONSTANT_POWER_DISCHARGE.equals(testingMsg.getStepName())
+						|| SystemConfig.CONSTANT_RESISTANCE_DISCHARGE.equals(mdStepInfo.getStepName()) && SystemConfig.CONSTANT_RESISTANCE_DISCHARGE.equals(testingMsg.getStepName())){
 					shellContext.setProperty("svVoltage", mdStepInfo.getSvVoltage());//U恒压 为恒压阶段设定电压值
 				}
 			}
@@ -219,27 +219,27 @@ public class DataInit {
 			/*
 			 * 容量测试场景需要的参数
 			 */
-			if("恒流放电".equals(testingMsg.getStepName())
-					||"恒功率放电".equals(testingMsg.getStepName())
-					||"恒阻放电".equals(testingMsg.getStepName())){
+			if(SystemConfig.CONSTANT_CURRENT_DISCHARGE.equals(testingMsg.getStepName())
+					||SystemConfig.CONSTANT_POWER_DISCHARGE.equals(testingMsg.getStepName())
+					||SystemConfig.CONSTANT_RESISTANCE_DISCHARGE.equals(testingMsg.getStepName())){
 				shellContext.setProperty("pvCapacity", testingMsg.getPvDischargeCapacity());//Ci为工步实时容量值
 			}
-			if("恒流充电".equals(testingMsg.getStepName())
-					||"恒压充电".equals(testingMsg.getStepName())
-					||"恒流恒压充电".equals(testingMsg.getStepName())
-					||"恒功率充电".equals(testingMsg.getStepName())){
+			if(SystemConfig.CONSTENT_CURRENT_CHARGE.equals(testingMsg.getStepName())
+					||SystemConfig.CONSTANT_VOLTAGE_CHARGE.equals(testingMsg.getStepName())
+					||SystemConfig.CONSTANT_CURRENT_VOLTAGE_CHARGE.equals(testingMsg.getStepName())
+					||SystemConfig.CONSTANT_POWER_CHARGE.equals(testingMsg.getStepName())){
 				shellContext.setProperty("pvCapacity", testingMsg.getPvChargeCapacity());//Ci为工步实时容量值
 			}
 			for (MDStepInfo mdStepInfo : mdStepInfos) {
-				if(("恒流放电".equals(mdStepInfo.getStepName()) && "恒流放电".equals(testingMsg.getStepName()))
-						||("恒流充电".equals(mdStepInfo.getStepName()) && "恒流充电".equals(testingMsg.getStepName()))
-						||("恒压充电".equals(mdStepInfo.getStepName()) && "恒压充电".equals(testingMsg.getStepName()))
-						||("恒流恒压充电".equals(mdStepInfo.getStepName()) && "恒流恒压充电".equals(testingMsg.getStepName()))
-						||("恒功率充电".equals(mdStepInfo.getStepName()) && "恒功率充电".equals(testingMsg.getStepName()))
-						||("恒功率放电".equals(mdStepInfo.getStepName()) && "恒功率放电".equals(testingMsg.getStepName()))
-						||("恒阻放电".equals(mdStepInfo.getStepName()) && "恒阻放电".equals(testingMsg.getStepName()))
-						||("模拟工步（电流模式）".equals(mdStepInfo.getStepName()) && "模拟工步（电流模式）".equals(testingMsg.getStepName()))
-						||("模拟工步（功率模式）".equals(mdStepInfo.getStepName()) && "模拟工步（功率模式）".equals(testingMsg.getStepName()))){
+				if((SystemConfig.CONSTANT_CURRENT_DISCHARGE.equals(mdStepInfo.getStepName()) && SystemConfig.CONSTANT_CURRENT_DISCHARGE.equals(testingMsg.getStepName()))
+						||(SystemConfig.CONSTENT_CURRENT_CHARGE.equals(mdStepInfo.getStepName()) && SystemConfig.CONSTENT_CURRENT_CHARGE.equals(testingMsg.getStepName()))
+						||(SystemConfig.CONSTANT_VOLTAGE_CHARGE.equals(mdStepInfo.getStepName()) && SystemConfig.CONSTANT_VOLTAGE_CHARGE.equals(testingMsg.getStepName()))
+						||(SystemConfig.CONSTANT_CURRENT_VOLTAGE_CHARGE.equals(mdStepInfo.getStepName()) && SystemConfig.CONSTANT_CURRENT_VOLTAGE_CHARGE.equals(testingMsg.getStepName()))
+						||(SystemConfig.CONSTANT_POWER_CHARGE.equals(mdStepInfo.getStepName()) && SystemConfig.CONSTANT_POWER_CHARGE.equals(testingMsg.getStepName()))
+						||(SystemConfig.CONSTANT_POWER_DISCHARGE.equals(mdStepInfo.getStepName()) && SystemConfig.CONSTANT_POWER_DISCHARGE.equals(testingMsg.getStepName()))
+						||(SystemConfig.CONSTANT_RESISTANCE_DISCHARGE.equals(mdStepInfo.getStepName()) && SystemConfig.CONSTANT_RESISTANCE_DISCHARGE.equals(testingMsg.getStepName()))
+						||(SystemConfig.SIMULATION_WORKSTEP_CURRENT.equals(mdStepInfo.getStepName()) && SystemConfig.SIMULATION_WORKSTEP_CURRENT.equals(testingMsg.getStepName()))
+						||(SystemConfig.SIMULATION_WORKSTEP_POWER.equals(mdStepInfo.getStepName()) && SystemConfig.SIMULATION_WORKSTEP_POWER.equals(testingMsg.getStepName()))){
 					shellContext.setProperty("svStepEndCapacity", mdStepInfo.getSvStepEndCapacity());//C设定 为工步设定截止容量
 					shellContext.setProperty("svCapacity", mdStepInfo.getSvCapacity());//Clast 为工步最后一点容量值
 				}
@@ -307,19 +307,19 @@ public class DataInit {
 			shellContext.setProperty("testTimeDuration", testingMsg.getTestTimeDuration());//需要用来比较的相对时间
 			
 			for (MDStepInfo mdStepInfo : mdStepInfos) {
-				if(("搁置（Start）".equals(mdStepInfo.getStepName()) && "搁置（Start）".equals(testingMsg.getStepName()))
-						||("搁置（A-DC）".equals(mdStepInfo.getStepName()) && "搁置（A-DC）".equals(testingMsg.getStepName()))
-						||("搁置（A-CC）".equals(mdStepInfo.getStepName()) && "搁置（A-CC）".equals(testingMsg.getStepName()))
+				if((SystemConfig.HOLD_START.equals(mdStepInfo.getStepName()) && SystemConfig.HOLD_START.equals(testingMsg.getStepName()))
+						||(SystemConfig.HOLD_ADC.equals(mdStepInfo.getStepName()) && SystemConfig.HOLD_ADC.equals(testingMsg.getStepName()))
+						||(SystemConfig.HOLD_ACC.equals(mdStepInfo.getStepName()) && SystemConfig.HOLD_ACC.equals(testingMsg.getStepName()))
 						
-						||("恒流放电".equals(mdStepInfo.getStepName()) && "恒流放电".equals(testingMsg.getStepName()))
-						||("恒流充电".equals(mdStepInfo.getStepName()) && "恒流充电".equals(testingMsg.getStepName()))
-						||("恒压充电".equals(mdStepInfo.getStepName()) && "恒压充电".equals(testingMsg.getStepName()))
-						||("恒流恒压充电".equals(mdStepInfo.getStepName()) && "恒流恒压充电".equals(testingMsg.getStepName()))
-						||("恒功率充电".equals(mdStepInfo.getStepName()) && "恒功率充电".equals(testingMsg.getStepName()))
-						||("恒功率放电".equals(mdStepInfo.getStepName()) && "恒功率放电".equals(testingMsg.getStepName()))
-						||("恒阻放电".equals(mdStepInfo.getStepName()) && "恒阻放电".equals(testingMsg.getStepName()))
-						||("模拟工步（电流模式）".equals(mdStepInfo.getStepName()) && "模拟工步（电流模式）".equals(testingMsg.getStepName()))
-						||("模拟工步（功率模式）".equals(mdStepInfo.getStepName()) && "模拟工步（功率模式）".equals(testingMsg.getStepName()))){
+						||(SystemConfig.CONSTANT_CURRENT_DISCHARGE.equals(mdStepInfo.getStepName()) && SystemConfig.CONSTANT_CURRENT_DISCHARGE.equals(testingMsg.getStepName()))
+						||(SystemConfig.CONSTENT_CURRENT_CHARGE.equals(mdStepInfo.getStepName()) && SystemConfig.CONSTENT_CURRENT_CHARGE.equals(testingMsg.getStepName()))
+						||(SystemConfig.CONSTANT_VOLTAGE_CHARGE.equals(mdStepInfo.getStepName()) && SystemConfig.CONSTANT_VOLTAGE_CHARGE.equals(testingMsg.getStepName()))
+						||(SystemConfig.CONSTANT_CURRENT_VOLTAGE_CHARGE.equals(mdStepInfo.getStepName()) && SystemConfig.CONSTANT_CURRENT_VOLTAGE_CHARGE.equals(testingMsg.getStepName()))
+						||(SystemConfig.CONSTANT_POWER_CHARGE.equals(mdStepInfo.getStepName()) && SystemConfig.CONSTANT_POWER_CHARGE.equals(testingMsg.getStepName()))
+						||(SystemConfig.CONSTANT_POWER_DISCHARGE.equals(mdStepInfo.getStepName()) && SystemConfig.CONSTANT_POWER_DISCHARGE.equals(testingMsg.getStepName()))
+						||(SystemConfig.CONSTANT_RESISTANCE_DISCHARGE.equals(mdStepInfo.getStepName()) && SystemConfig.CONSTANT_RESISTANCE_DISCHARGE.equals(testingMsg.getStepName()))
+						||(SystemConfig.SIMULATION_WORKSTEP_CURRENT.equals(mdStepInfo.getStepName()) && SystemConfig.SIMULATION_WORKSTEP_CURRENT.equals(testingMsg.getStepName()))
+						||(SystemConfig.SIMULATION_WORKSTEP_POWER.equals(mdStepInfo.getStepName()) && SystemConfig.SIMULATION_WORKSTEP_POWER.equals(testingMsg.getStepName()))){
 					shellContext.setProperty("svTime", mdStepInfo.getSvTime());//工步的相对时间
 					
 				}

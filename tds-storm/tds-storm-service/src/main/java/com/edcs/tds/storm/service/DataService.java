@@ -7,7 +7,6 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 
 import com.edcs.tds.common.model.TestingMessage;
-import com.edcs.tds.common.redis.JedisFactory;
 import com.edcs.tds.common.util.JsonUtils;
 import com.edcs.tds.storm.model.MDStepInfo;
 import com.edcs.tds.storm.model.MDprocessInfo;
@@ -76,12 +75,12 @@ public class DataService {
 						int cycleNum = GetDataInterface.getCycleNum(rootRemark,cacheService);
 						testingMessage.setBusinessCycle(cycleNum+1);
 						//写到redis中
-						jedis.set("businessCycle"+testingMessage.getRemark(), cycleNum+1+"");
+						jedis.set("businessCycle_"+testingMessage.getRemark(), cycleNum+1+"");
 						break;
 					}else{
 						testingMessage.setBusinessCycle(1);
 						//写到redis中
-						jedis.set("businessCycle"+testingMessage.getRemark(), 1+"");
+						jedis.set("businessCycle_"+testingMessage.getRemark(), 1+"");
 						break;
 					}
 				}
@@ -98,18 +97,18 @@ public class DataService {
 						if(testingMessage.getStepId()==mdStepInfo.getStepId()){//找到这个测试信息对应的工步信息
 							boolean isCycleSignalStep = mdStepInfo.isCycleSignalStep();
 							if(isCycleSignalStep && testingMessage.getPvDataFlag()==89){//如果该测试数据对应的工步的 循环标志为 true 且 是一个工步的第一条数据
-								String businessCycle = jedis.get("businessCycle"+testingMessage.getRemark());
+								String businessCycle = jedis.get("businessCycle_"+testingMessage.getRemark());
 								if(!StringUtils.isNotBlank(businessCycle)){
 									testingMessage.setBusinessCycle(1);
-									jedis.set("businessCycle"+testingMessage.getRemark(), 1+"");
+									jedis.set("businessCycle_"+testingMessage.getRemark(), 1+"");
 								}else{
 									int a = Integer.parseInt(businessCycle);
 									testingMessage.setBusinessCycle(a+1);
-									jedis.set("businessCycle"+testingMessage.getRemark(), a+1+"");
+									jedis.set("businessCycle_"+testingMessage.getRemark(), a+1+"");
 								}
 								break bre;
 							}else{
-								String businessCycle = jedis.get("businessCycle"+testingMessage.getRemark());
+								String businessCycle = jedis.get("businessCycle_"+testingMessage.getRemark());
 								if(StringUtils.isNotBlank(businessCycle)){
 									testingMessage.setBusinessCycle(Integer.parseInt(businessCycle));
 								}
@@ -135,17 +134,17 @@ public class DataService {
 		Jedis jedis = cacheService.getProxyJedisPool().getResource();
 		int dataFlag = testingMessage.getPvDataFlag();//数据类型标识,能够表示工步起始点，工步终结点等信息（89代表起始，88代表终节点）
 		if(dataFlag==89){
-			String oldStepLogicNumber = jedis.get("stepLogicNumber"+testingMessage.getRemark());
+			String oldStepLogicNumber = jedis.get("stepLogicNumber_"+testingMessage.getRemark());
 			if(!StringUtils.isNotBlank(oldStepLogicNumber)){
 				testingMessage.setStepLogicNumber(1);
-				jedis.set("stepLogicNumber"+testingMessage.getRemark(), 1+"");
+				jedis.set("stepLogicNumber_"+testingMessage.getRemark(), 1+"");
 			}else{
 				int a = Integer.parseInt(oldStepLogicNumber);
 				testingMessage.setStepLogicNumber(a+1);
-				jedis.set("stepLogicNumber"+testingMessage.getRemark(), a+1+"");
+				jedis.set("stepLogicNumber_"+testingMessage.getRemark(), a+1+"");
 			}
 		}else{
-			String oldStepLogicNumber = jedis.get("stepLogicNumber"+testingMessage.getRemark());
+			String oldStepLogicNumber = jedis.get("stepLogicNumber_"+testingMessage.getRemark());
 			if(StringUtils.isNotBlank(oldStepLogicNumber)){
 				testingMessage.setStepLogicNumber(Integer.parseInt(oldStepLogicNumber));
 			}
