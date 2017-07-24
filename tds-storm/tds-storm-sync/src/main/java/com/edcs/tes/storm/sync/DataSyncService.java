@@ -2,6 +2,7 @@ package com.edcs.tes.storm.sync;
 
 import java.util.List;
 
+import com.edcs.tds.common.redis.RedisCacheKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,37 +22,40 @@ import redis.clients.jedis.Jedis;
  */
 
 public class DataSyncService implements Runnable {
-     
-	private final Logger logger = LoggerFactory.getLogger(DataSyncService.class);
-	private ProxyJedisPool proxyJedisPool;
-	private DBHelperUtils dbHelperUtils;
-	public DataSyncService(SpringBeanFactory beanFactory){
-		this.proxyJedisPool = beanFactory.getBean(ProxyJedisPool.class);
-		this.dbHelperUtils = beanFactory.getBean(DBHelperUtils.class);
-	}
+
+    private final Logger logger = LoggerFactory.getLogger(DataSyncService.class);
+    private ProxyJedisPool proxyJedisPool;
+    private DBHelperUtils dbHelperUtils;
+
+    public DataSyncService(SpringBeanFactory beanFactory) {
+        this.proxyJedisPool = beanFactory.getBean(ProxyJedisPool.class);
+        this.dbHelperUtils = beanFactory.getBean(DBHelperUtils.class);
+    }
+
     @Override
     public void run() {
-    	try {
-    		String processJson = getProcessJson();
-    		if (processJson != null) {
-    			List<TestingResultData> testingResultDatas = JsonUtils.toArray(processJson, TestingResultData.class);
-    			new ResultDataImpl(dbHelperUtils).insertResultData(testingResultDatas);
-    		}
-		} catch (Exception e) {
-			logger.error(""+e);
-		}
+        try {
+            String processJson = getProcessJson();
+            if (processJson != null) {
+                List<TestingResultData> testingResultDatas = JsonUtils.toArray(processJson, TestingResultData.class);
+                new ResultDataImpl(dbHelperUtils).insertResultData(testingResultDatas);
+            }
+        } catch (Exception e) {
+            logger.error("" ,e);
+        }
     }
-    
-    public  String getProcessJson(){
+
+    public String getProcessJson() {
         Jedis jedis = null;
         String resultJson = null;
+        String key = RedisCacheKey.getDataSyncKey();
         try {
             jedis = proxyJedisPool.getResource();
-            resultJson = jedis.spop("TES-RESULT");//FIXME redis key移到RedisCacheKey中，规范命名
-        }catch (Exception e){
-            logger.error(""+e);//FIXME 替换为 
+            resultJson = jedis.spop(key);//FIXME redis key移到RedisCacheKey中，规范命名
+        } catch (Exception e) {
+            logger.error("get process json data failed", e);//FIXME 替换为
         }
-        if (jedis != null){
+        if (jedis != null) {
             jedis.close();
         }
         return resultJson;

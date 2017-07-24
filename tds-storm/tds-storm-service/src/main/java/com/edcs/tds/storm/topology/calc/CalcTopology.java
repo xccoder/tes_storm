@@ -12,7 +12,8 @@ public class CalcTopology extends BaseTopology {
 
     private int spoutNum = 1;
     private int calcNum = 1;
-    private String topicName = "DToKAFKA";
+        private String topicName = "TES_test";
+//    private String topicName = "DToTEStest";
 
     @Override
     public String getTopologyName() {
@@ -37,6 +38,7 @@ public class CalcTopology extends BaseTopology {
 
     @Override
     public void setupOptionValue(CommandLine cmd) {
+
         spoutNum = Integer.parseInt(cmd.getOptionValue("spout", "1").trim());
         calcNum = Integer.parseInt(cmd.getOptionValue("calc", "1").trim());
     }
@@ -52,7 +54,7 @@ public class CalcTopology extends BaseTopology {
 
     public static void main(String[] args) throws Exception {
         CalcTopology topology = new CalcTopology();
-		topology.run(args);
+        topology.run(args);
 //        topology.createTopology(new TopologyBuilder());
     }
 

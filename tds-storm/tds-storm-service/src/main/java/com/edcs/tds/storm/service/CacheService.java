@@ -195,7 +195,7 @@ public class CacheService {
 
         System.out.println("开始》》》》》》》》》》》》");
         try {
-            Set<String> MdProcessjsons = jedis.smembers("TES");
+            Set<String> MdProcessjsons = jedis.smembers("TES:PROCESSDATA");
             if (MdProcessjsons == null || MdProcessjsons.size() == 0) {
                 processInfoJsons = new HashSet<String>();
                 return;
