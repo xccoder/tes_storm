@@ -11,6 +11,7 @@ public class RuleConfig implements Serializable {
 	private String ruleName;
 	private String stepSign;//用于标识流程工步场景
 	private String stepName;
+	private int stepId;
 	private Long ruleGroup;
 	private String ruleDesc;
 	private Integer ruleState;
@@ -19,6 +20,14 @@ public class RuleConfig implements Serializable {
 	private Date updatetime;
 	private String ruleScript;
 	private String hashcode;
+
+	public int getStepId() {
+		return stepId;
+	}
+
+	public void setStepId(int stepId) {
+		this.stepId = stepId;
+	}
 
 	public String getStepSign() {
 		return stepSign;
