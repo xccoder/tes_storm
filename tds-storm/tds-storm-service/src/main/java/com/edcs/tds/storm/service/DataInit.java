@@ -307,10 +307,7 @@ public class DataInit {
 			shellContext.setProperty("testTimeDuration", testingMsg.getTestTimeDuration());//需要用来比较的相对时间
 			
 			for (MDStepInfo mdStepInfo : mdStepInfos) {
-				if((SystemConfig.HOLD_START.equals(mdStepInfo.getStepName()) && SystemConfig.HOLD_START.equals(testingMsg.getStepName()))
-						||(SystemConfig.HOLD_ADC.equals(mdStepInfo.getStepName()) && SystemConfig.HOLD_ADC.equals(testingMsg.getStepName()))
-						||(SystemConfig.HOLD_ACC.equals(mdStepInfo.getStepName()) && SystemConfig.HOLD_ACC.equals(testingMsg.getStepName()))
-						
+				if((SystemConfig.HOLD.equals(mdStepInfo.getStepName()) && SystemConfig.HOLD.equals(testingMsg.getStepName()))
 						||(SystemConfig.CONSTANT_CURRENT_DISCHARGE.equals(mdStepInfo.getStepName()) && SystemConfig.CONSTANT_CURRENT_DISCHARGE.equals(testingMsg.getStepName()))
 						||(SystemConfig.CONSTENT_CURRENT_CHARGE.equals(mdStepInfo.getStepName()) && SystemConfig.CONSTENT_CURRENT_CHARGE.equals(testingMsg.getStepName()))
 						||(SystemConfig.CONSTANT_VOLTAGE_CHARGE.equals(mdStepInfo.getStepName()) && SystemConfig.CONSTANT_VOLTAGE_CHARGE.equals(testingMsg.getStepName()))
@@ -321,7 +318,6 @@ public class DataInit {
 						||(SystemConfig.SIMULATION_WORKSTEP_CURRENT.equals(mdStepInfo.getStepName()) && SystemConfig.SIMULATION_WORKSTEP_CURRENT.equals(testingMsg.getStepName()))
 						||(SystemConfig.SIMULATION_WORKSTEP_POWER.equals(mdStepInfo.getStepName()) && SystemConfig.SIMULATION_WORKSTEP_POWER.equals(testingMsg.getStepName()))){
 					shellContext.setProperty("svTime", mdStepInfo.getSvTime());//工步的相对时间
-					
 				}
 			}
 		}

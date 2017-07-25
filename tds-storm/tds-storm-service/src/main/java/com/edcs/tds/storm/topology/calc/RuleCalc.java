@@ -72,7 +72,7 @@ public class RuleCalc {
             String str = string.substring(string.lastIndexOf("_") + 1);
             String sceneName = str;//场景名称
             for (RuleConfig ruleConfig2 : rule) {//遍历一个场景下的所有规则
-                if (testingMessage.getStepName().equals(ruleConfig2.getStepName())) {
+                if (testingMessage.getStepId()==ruleConfig2.getStepId()) {
                     long executeUsedTime = 0;
                     long executeBeginTime = System.currentTimeMillis();
                     String alterLevel = null;
