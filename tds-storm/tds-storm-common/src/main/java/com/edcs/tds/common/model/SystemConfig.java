@@ -15,8 +15,14 @@ public class SystemConfig {
 	public static final String SIMULATION_WORKSTEP_CURRENT = "模拟工步（电流模式）";
 	public static final String SIMULATION_WORKSTEP_POWER = "模拟工步（功率模式）";
 	/*工步名称结束*/
-//	public static final String 
-//	public static final String 
+	public static final String SITE = "2001";
+	/*邮件通知配置-开始*/
+	public static final String MY_EMAIL_ACCOUNT = "TDS-Admin@catlbattery.com";
+    public static final String MY_EMAIL_PASSWORD = "Aa123456";
+    public static final String MY_EMAIL_SMTPHOST = "Mail.catlbattery.com";
+    public static final boolean IS_BOOEAN_SSL = false;
+    /*邮件通知配置-结束*/
+	public static final String URL = "http://172.26.66.35:50000/tes-backing/api/v1/integration/storm/md_process_info";
 //	public static final String 
 //	public static final String 
 //	public static final String 

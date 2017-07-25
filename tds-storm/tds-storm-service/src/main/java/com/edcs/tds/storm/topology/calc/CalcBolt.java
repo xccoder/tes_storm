@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import com.edcs.tds.common.engine.groovy.ScriptExecutor;
 import com.edcs.tds.common.model.RuleConfig;
+import com.edcs.tds.common.model.SystemConfig;
 import com.edcs.tds.common.model.TestingMessage;
 import com.edcs.tds.common.util.JsonUtils;
 import com.edcs.tds.storm.model.ExecuteContext;
@@ -40,10 +41,7 @@ public class CalcBolt extends BaseRichBolt {
     protected String topologyName;
     protected StormBeanFactory beanFactory;
     protected CacheService cacheService;
-    //    protected BeanSerializer beanSerializer;
-//    protected MessageRepeatFilter messageRepeatFilter;
     protected ScriptExecutor scriptExecutor;
-    //    protected EngineCommonService engineCommonService;
     protected DataService dataService;
     
     MessageRepeatFilter messageRepeatFilter;
@@ -54,13 +52,7 @@ public class CalcBolt extends BaseRichBolt {
         this.collector = collector;
         this.topologyName = (String) stormConf.get(Config.TOPOLOGY_NAME);
         this.beanFactory = new StormBeanFactory(stormConf);
-
-//        this.beanSerializer = new BeanSerializer();//对象序列化的工具类
-
-//        this.cacheService = beanFactory.getBean(CacheService.class);
-//        this.messageRepeatFilter = beanFactory.getBean(MessageRepeatFilter.class);
         this.scriptExecutor = beanFactory.getBean(ScriptExecutor.class);
-//        this.engineCommonService = beanFactory.getBean(EngineCommonService.class);
         this.dataService = beanFactory.getBean(DataService.class);
         this.cacheService = beanFactory.getBean(CacheService.class);
         this.messageRepeatFilter = beanFactory.getBean(MessageRepeatFilter.class);
@@ -126,7 +118,6 @@ public class CalcBolt extends BaseRichBolt {
             executeContext.setTestingMessage(testingMessage);
 
             // 初始化 ShellContext
-//          DataInit.initShellContext(testingMessage, engineCommonService, executeContext, shellContext);
             shellContext = DataInit.initShellContext(executeContext, cacheService, shellContext);
             // 开始规则计算匹配
             ConcurrentMap<String, List<RuleConfig>> ruleConfig = CacheService.getRuleConfig();
@@ -151,13 +142,13 @@ public class CalcBolt extends BaseRichBolt {
                     }
                 }
                 if (site == null) {
-                    site = "2001";
+                    site = SystemConfig.SITE;
                 }
                 map.put("site", site);
                 map.put("totalCycleNum", testingMessage.getBusinessCycle());
                 //FIXME url之类的参数定义到xml配置
                 String json = JsonUtils.toJson(map);
-                String url = "http://172.26.66.35:50000/tes-backing/api/v1/integration/storm/md_process_info";
+                String url = SystemConfig.URL;
                 RestUtils.sendState(url, json);
             }
             executeContext.setSysVariableLog(shellContext.getVariables());
