@@ -56,10 +56,8 @@ public class RuleCalc {
         }
         Jedis jedis = cacheService.getProxyJedisPool().getResource();
         List<TestingResultData> listResult = new ArrayList<TestingResultData>();//用来存放结果数据
-        //int matchedCount = 0;
         // key = 流程号+序号
         String key = testingMessage.getRemark() + "_" + testingMessage.getSequenceId();
-        int sequenceNumber = 0;//同一个工步中报警的序号
         //遍历每一个场景
         Set<String> keys = ruleConfig.keySet();//获取所有的key 的值
         for (String string : keys) {
@@ -88,8 +86,17 @@ public class RuleCalc {
                     } finally {
                         executeUsedTime = System.currentTimeMillis() - executeBeginTime;
                     }
-                    if (StringUtils.isNotBlank(alterLevel) && !alterLevel.equals("null")) {
-                        sequenceNumber++;
+                    if (StringUtils.isNotBlank(alterLevel) && !alterLevel.equals("null")) {//表明有报警情况
+                    	int sequenceNumber = 0;//同一个流程同一个场景的报警次数
+                    	String sequenceNumberStr = jedis.get(testingMessage.getRemark()+"_"+sceneName);//获取同一个流程上面测试数据的scenecName场景的报警次数
+                    	if(!StringUtils.isNotBlank(sequenceNumberStr)){
+                    		jedis.set(testingMessage.getRemark()+"_"+sceneName, 1+"");
+                    		sequenceNumber = 1;
+                    	}else{
+                    		sequenceNumber = Integer.parseInt(sequenceNumberStr)+1;
+                    		jedis.set(testingMessage.getRemark()+"_"+sceneName, sequenceNumber+"");
+                    	}
+                    	
                         TestingResultData testingResultData = new TestingResultData();
                         //matchedCount++;
                         //记录匹配的规则和相关数据
@@ -102,11 +109,6 @@ public class RuleCalc {
                         //调用发送邮件接口发送预警信息  -- start
                         //通过redis获取收件人信息
                         Set<String> sets = jedis.smembers("warningLevel_" + alterLe);
-
-//                        Set<String> sets = new HashSet<String>();
-//                        sets.add("XiangC@CATLBattery.com");
-//                        sets.add("CaiSL2@CATLBattery.com");
-//                        sets.add("LiQF@CATLBattery.com");
                         String content = "通道号为：" + testingMessage.getChannelId() + ";</br>流程号为：" + testingMessage.getRemark() + ";</br>公布名称为：" + ruleConfig2.getStepName() + ";</br>场景名称为：" + sceneName + ";</br>产生了" + alterLe + "级预警！！";//预警信息。
                         System.out.println("报警信息为：" + content + "-----------------------------------------------------------");
                         if (sets != null && sets.size() > 0) {
@@ -116,7 +118,6 @@ public class RuleCalc {
                                 UserIntegrationRedis userMsg = JsonUtils.toObject(string2, UserIntegrationRedis.class);
                                 receiveAccounts.add(userMsg.getEmail());
                             }
-//                            receiveAccounts.addAll(sets);
                             emailEntity.setReceiveAccounts(receiveAccounts);
                             emailEntity.setBooeanSsl(false);
                             emailEntity.setContent(content);
