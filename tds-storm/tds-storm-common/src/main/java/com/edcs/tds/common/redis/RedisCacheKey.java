@@ -2,7 +2,6 @@ package com.edcs.tds.common.redis;
 
 import com.google.common.base.Joiner;
 
-import com.sun.tools.hat.internal.model.Root;
 import redis.clients.util.SafeEncoder;
 
 public class RedisCacheKey {
@@ -42,7 +41,7 @@ public class RedisCacheKey {
     }
 
     public static String getDataSyncKey() {
-        return joiner.join(ROOT, "-", "RESULT");
+        return ROOT+"-"+"RESULT";
     }
 
 }
