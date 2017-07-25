@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -42,9 +44,9 @@ public class ResultDataImpl implements IResultData {
     private String sfc = null;
     private int channelId;
 
-    private Date createDateTime;
+    private String createDateTime;
     private String createUser = null;
-    private Date modifiedDateTime;
+    private String modifiedDateTime;
     private String modifiedUser = null;
 
     private int sequenceId;
@@ -150,17 +152,18 @@ public class ResultDataImpl implements IResultData {
                 description = testingResultData.getDescription();
                 upLimit = testingResultData.getUpLimit();
                 lowLimit = testingResultData.getLowLimit();
-                //originalProBo = testingResultData.getOriginalProcessDataBO();
-                createDateTime = testingResultData.getCreatedDateTime();
-                createUser = testingResultData.getCreatedUser();
-                modifiedDateTime = testingResultData.getModifiedDateTime();
-                modifiedUser = testingResultData.getModifiedUser();
+                Date date = new Date();
+                DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                createDateTime = format.format(date);
+                createUser = "STORM";
+                modifiedDateTime = format.format(date);
+                modifiedUser = "STORM";
                 sequenceId = testingResultData.getTestingMessage().getSequenceId();
                 pvDataFlag = testingResultData.getTestingMessage().getPvDataFlag();
                 businessCycle = testingResultData.getTestingMessage().getBusinessCycle();
                 cycle = testingResultData.getTestingMessage().getCycle();
                 procehandle = testingResultData.getOriginalProcessDataBO();
-                System.out.println(procehandle + "procehandleprocehandleprocehandleprocehandle");
+                //System.out.println(procehandle + "procehandleprocehandleprocehandleprocehandle");
                 pvChargeCapacity = testingResultData.getTestingMessage().getPvChargeCapacity();
                 pvChargeEnergy = testingResultData.getTestingMessage().getPvChargeEnergy();
                 pvCurrent = testingResultData.getTestingMessage().getPvCurrent();
@@ -169,6 +172,7 @@ public class ResultDataImpl implements IResultData {
                 pvDischargeEnergy = testingResultData.getTestingMessage().getPvDischargeEnergy();
                 pvIr = testingResultData.getTestingMessage().getPvIr();
                 pvTemperature = testingResultData.getTestingMessage().getPvTemperature();
+
                 pvVoltage = testingResultData.getTestingMessage().getPvVoltage();
                 pvWorkType = testingResultData.getTestingMessage().getPvWorkType();
                 resourceId = testingResultData.getTestingMessage().getResourceId();//设备号
@@ -191,7 +195,8 @@ public class ResultDataImpl implements IResultData {
                     return false;
                 }
                 zipHandle = "TechZipStatusBO:" + testingResultData.getSite() + "," + testingResultData.getTestingMessage().getRemark() + "," + testingResultData.getTestingMessage().getBusinessCycle() + "," + testingResultData.getTestingMessage().getStepId();
-                if (alertLevel != 0 && category != null) {
+                if (alertLevel != 0 && category != null && alertHandle !=null) {
+                    System.out.println("alertHandle==========="+alertHandle);
                     switch (category) {
                         case "current":
                             curr = true;
@@ -232,9 +237,9 @@ public class ResultDataImpl implements IResultData {
                     pst.setBigDecimal(16, lowLimit);
                     pst.setString(17, procehandle);
                     pst.setObject(18, timestamp);             //注意
-                    pst.setString(19, "HJHJ");
+                    pst.setString(19, createUser);
                     pst.setObject(20, timestamp);                //注意
-                    pst.setString(21, "NMCX");
+                    pst.setString(21, modifiedUser);
                     pst.addBatch();
                     pst.executeBatch();
                 }
@@ -307,9 +312,9 @@ public class ResultDataImpl implements IResultData {
                     pst1.setInt(22, subDataFlag);
                     pst1.setInt(23, subWorkType);
                     pst1.setObject(24, subTimestamp);
-                    pst1.setString(25, "qqq");
+                    pst1.setString(25, createUser);
                     pst1.setObject(26, subTimestamp);
-                    pst1.setString(27, "www");
+                    pst1.setString(27, modifiedUser);
                     pst1.addBatch();//待定
                     pst1.executeBatch();
                     System.out.println("子通道表插入成功");
