@@ -85,17 +85,17 @@ public class DataInit {
 	private static TestingMessage updateSequenceId(TestingMessage testingMsg,CacheService cacheService) {
 		Jedis jedis = cacheService.getProxyJedisPool().getResource();
 		try {
-			String sequenceId = jedis.get("sequenceId_"+testingMsg.getRemark());
+			String sequenceId = jedis.get(SystemConfig.SEQUENCEID+testingMsg.getRemark());
 			if(!StringUtils.isNotBlank(sequenceId)){
-				jedis.set("sequenceId_"+testingMsg.getRemark(),testingMsg.getSequenceId()+"");
+				jedis.set(SystemConfig.SEQUENCEID+testingMsg.getRemark(),testingMsg.getSequenceId()+"");
 			}else{
 				int oldsqId = Integer.parseInt(sequenceId);
 				int newsqId = testingMsg.getSequenceId();
 				if(newsqId<=oldsqId){
 					testingMsg.setSequenceId(oldsqId+1);
-					jedis.set("sequenceId_"+testingMsg.getRemark(), oldsqId+1+"");
+					jedis.set(SystemConfig.SEQUENCEID+testingMsg.getRemark(), oldsqId+1+"");
 				}else{
-					jedis.set("sequenceId_"+testingMsg.getRemark(), newsqId+"");
+					jedis.set(SystemConfig.SEQUENCEID+testingMsg.getRemark(), newsqId+"");
 				}
 			}
 		} catch (Exception e) {

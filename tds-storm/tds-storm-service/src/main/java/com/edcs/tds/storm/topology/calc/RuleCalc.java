@@ -56,7 +56,7 @@ public class RuleCalc {
 			}
 			List<TestingResultData> listResult = new ArrayList<TestingResultData>();//用来存放结果数据
 			// key = 流程号+序号
-			String key = testingMessage.getRemark() + "_" + testingMessage.getSequenceId();
+			String key = SystemConfig.RESULTDATA+testingMessage.getRemark() + "_" + testingMessage.getSequenceId();
 			//遍历每一个场景
 			Set<String> keys = ruleConfig.keySet();//获取所有的key 的值
 			for (String string : keys) {
@@ -87,13 +87,13 @@ public class RuleCalc {
 						}
 						if (StringUtils.isNotBlank(alterLevel) && !alterLevel.equals("null")) {//表明有报警情况
 							int sequenceNumber = 0;//同一个流程同一个场景的报警次数
-							String sequenceNumberStr = jedis.get(testingMessage.getRemark()+"_"+sceneName);//获取同一个流程上面测试数据的scenecName场景的报警次数
+							String sequenceNumberStr = jedis.get("alterLevel_"+testingMessage.getRemark()+"_"+sceneName);//获取同一个流程上面测试数据的scenecName场景的报警次数
 							if(!StringUtils.isNotBlank(sequenceNumberStr)){
-								jedis.set(testingMessage.getRemark()+"_"+sceneName, 1+"");
+								jedis.set("alterLevel_"+testingMessage.getRemark()+"_"+sceneName, 1+"");
 								sequenceNumber = 1;
 							}else{
 								sequenceNumber = Integer.parseInt(sequenceNumberStr)+1;
-								jedis.set(testingMessage.getRemark()+"_"+sceneName, sequenceNumber+"");
+								jedis.set("alterLevel_"+testingMessage.getRemark()+"_"+sceneName, sequenceNumber+"");
 							}
 							
 							TestingResultData testingResultData = new TestingResultData();

@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.edcs.tds.common.model.SystemConfig;
 import com.edcs.tds.common.model.TestingMessage;
 import com.edcs.tds.common.model.TestingResultData;
 import com.edcs.tds.common.redis.ProxyJedisPool;
@@ -39,7 +40,7 @@ public class GetDataInterface {
 		// 先从redis读取数据，如果读取不到，则再去hana中读取
 		ProxyJedisPool jedisPool = cacheService.getProxyJedisPool();// 获取连接池
 		Jedis jedis = jedisPool.getResource();
-		String json = jedis.get(testingMessage.getRemark() +"_"+(testingMessage.getSequenceId() - i));
+		String json = jedis.get(SystemConfig.RESULTDATA+testingMessage.getRemark() +"_"+(testingMessage.getSequenceId() - i));
 		if(jedis!=null){
         	jedis.close();
         }//将jedis连接放到redis连接池中
@@ -112,7 +113,7 @@ public class GetDataInterface {
 		// 先从redis读取数据，如果读取不到，则再去hana中读取
 		ProxyJedisPool jedisPool = cacheService.getProxyJedisPool();// 获取连接池
 		Jedis jedis = jedisPool.getResource();
-		Set<String> keys = jedis.keys(testingMessage.getRemark()+"_*");
+		Set<String> keys = jedis.keys(SystemConfig.RESULTDATA+testingMessage.getRemark()+"_*");
 		for (String string : keys) {
 			String json = jedis.get(string);
 			List<TestingResultData> testingResultDatas = JsonUtils.toArray(json, TestingResultData.class);
@@ -196,7 +197,7 @@ public class GetDataInterface {
 		TestingMessage testingMsgReturn = null;
 		ProxyJedisPool jedisPool = cacheService.getProxyJedisPool();// 获取连接池
 		Jedis jedis = jedisPool.getResource();
-		Set<String> keys = jedis.keys(testingMessage.getRemark()+"_*");
+		Set<String> keys = jedis.keys(SystemConfig.RESULTDATA+testingMessage.getRemark()+"_*");
 		for (String string : keys) {
 			String json = jedis.get(string);
 			List<TestingResultData> testingResultDatas = JsonUtils.toArray(json, TestingResultData.class);

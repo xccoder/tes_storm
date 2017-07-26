@@ -66,7 +66,8 @@ public abstract class BaseTopology {
 		Map<String, Object> stormConfig = stormBeanFactory.getBean("stormConfig", Map.class);
 		Preconditions.checkNotNull(stormConfig);
 		config.putAll(stormConfig);
-		config.put(StormBeanFactory.SPRING_BEAN_FACTORY_XML, stormBeanFactory.getXml());
+//		config.put(StormBeanFactory.SPRING_BEAN_FACTORY_XML, stormBeanFactory.getXml());
+		config.put("STORM_BEAN_FACTORY", stormBeanFactory);
 
 		String numWorkers = cmd.getOptionValue("workers");
 		if (numWorkers != null) {
@@ -94,7 +95,7 @@ public abstract class BaseTopology {
 		List<String> zkServers = (List<String>) config.get("kafka.offset.zkServers");
 		Integer zkPort = Integer.parseInt(String.valueOf(config.get("kafka.offset.zkPort")));
 		String zkRoot = (String) config.get("kafka.offset.zkRoot");
-		String id = StringUtils.join(getTopologyName(), "-", topic);
+		String id = StringUtils.join(getTopologyName(), "-cai-", topic);
 
 		BrokerHosts kafkaBrokerZk = new ZkHosts(brokerZkStr, brokerZkPath);
 		SpoutConfig spoutConfig = new SpoutConfig(kafkaBrokerZk, topic, zkRoot, id);
