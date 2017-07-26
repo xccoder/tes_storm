@@ -87,13 +87,13 @@ public class RuleCalc {
 						}
 						if (StringUtils.isNotBlank(alterLevel) && !alterLevel.equals("null")) {//表明有报警情况
 							int sequenceNumber = 0;//同一个流程同一个场景的报警次数
-							String sequenceNumberStr = jedis.get("alterLevel_"+testingMessage.getRemark()+"_"+sceneName);//获取同一个流程上面测试数据的scenecName场景的报警次数
+							String sequenceNumberStr = jedis.get(SystemConfig.ALTERLEVEL+testingMessage.getRemark()+"_"+testingMessage.getResourceId()+"_"+testingMessage.getChannelId()+"_"+sceneName);//获取同一个流程上面测试数据的scenecName场景的报警次数
 							if(!StringUtils.isNotBlank(sequenceNumberStr)){
-								jedis.set("alterLevel_"+testingMessage.getRemark()+"_"+sceneName, 1+"");
+								jedis.set(SystemConfig.ALTERLEVEL+testingMessage.getRemark()+"_"+testingMessage.getResourceId()+"_"+testingMessage.getChannelId()+"_"+sceneName, 1+"");
 								sequenceNumber = 1;
 							}else{
 								sequenceNumber = Integer.parseInt(sequenceNumberStr)+1;
-								jedis.set("alterLevel_"+testingMessage.getRemark()+"_"+sceneName, sequenceNumber+"");
+								jedis.set(SystemConfig.ALTERLEVEL+testingMessage.getRemark()+"_"+testingMessage.getResourceId()+"_"+testingMessage.getChannelId()+"_"+sceneName, sequenceNumber+"");
 							}
 							
 							TestingResultData testingResultData = new TestingResultData();
@@ -111,7 +111,7 @@ public class RuleCalc {
 							System.out.println("报警信息为：" + content + "-----------------------------------------------------------");
 							//调用发送邮件接口发送预警信息  -- start
 							//通过redis获取收件人信息
-							Set<String> sets = jedis.smembers("warningLevel_" + alterLe);
+							Set<String> sets = jedis.smembers(SystemConfig.WARNINGLEVEL + alterLe);
 							if (sets != null && sets.size() > 0) {
 								List<String> receiveAccounts = new ArrayList<String>();//存放收件人帐号
 								EmailEntity emailEntity = new EmailEntity();

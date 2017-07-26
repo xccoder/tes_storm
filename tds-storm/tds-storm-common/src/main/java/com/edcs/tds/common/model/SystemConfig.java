@@ -27,8 +27,8 @@ public class SystemConfig {
 	public static final String BUSINESSCYCLE = "businessCycle_";//维护 业务循环号 redis 中对应的key
 	public static final String STEPLOGICNUMBER = "stepLogicNumber_";//维护工步的逻辑序号 redis 中对应的key
 	public static final String RESULTDATA = "resultData_";//维护测试结果数据，用于查询上一条数据使用，会定期清理   redis 中对应的key
-//	public static final String 
-//	public static final String 
+	public static final String ALTERLEVEL = "alterLevel_";//维护报警序号  redis 中对应的key
+	public static final String WARNINGLEVEL = "warningLevel_";//收件人信息在redis中的key
 //	public static final String 
 //	public static final String 
 //	public static final String 
