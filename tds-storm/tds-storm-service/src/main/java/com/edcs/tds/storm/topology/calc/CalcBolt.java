@@ -51,8 +51,8 @@ public class CalcBolt extends BaseRichBolt {
     public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
         this.collector = collector;
         this.topologyName = (String) stormConf.get(Config.TOPOLOGY_NAME);
-//        this.beanFactory = new StormBeanFactory(stormConf);
-        this.beanFactory = (StormBeanFactory)stormConf.get("STORM_BEAN_FACTORY");
+        this.beanFactory = new StormBeanFactory(stormConf);
+//        this.beanFactory = (StormBeanFactory)stormConf.get("STORM_BEAN_FACTORY");
         this.scriptExecutor = beanFactory.getBean(ScriptExecutor.class);
         this.dataService = beanFactory.getBean(DataService.class);
         this.cacheService = beanFactory.getBean(CacheService.class);

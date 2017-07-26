@@ -66,8 +66,8 @@ public abstract class BaseTopology {
 		Map<String, Object> stormConfig = stormBeanFactory.getBean("stormConfig", Map.class);
 		Preconditions.checkNotNull(stormConfig);
 		config.putAll(stormConfig);
-//		config.put(StormBeanFactory.SPRING_BEAN_FACTORY_XML, stormBeanFactory.getXml());
-		config.put("STORM_BEAN_FACTORY", stormBeanFactory);
+		config.put(StormBeanFactory.SPRING_BEAN_FACTORY_XML, stormBeanFactory.getXml());
+//		config.put("STORM_BEAN_FACTORY", stormBeanFactory);
 
 		String numWorkers = cmd.getOptionValue("workers");
 		if (numWorkers != null) {
